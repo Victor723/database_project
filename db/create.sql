@@ -22,29 +22,3 @@ CREATE TABLE Purchases (
     pid INT NOT NULL REFERENCES Products(id),
     time_purchased timestamp without time zone NOT NULL DEFAULT (current_timestamp AT TIME ZONE 'UTC')
 );
-
-CREATE TABLE seller (
-    sr_sellerkey BIGINT NOT NULL PRIMARY KEY,
-    sr_userkey BIGINT NOT NULL,
-    sr_RegistrationDate DATE NOT NULL
-);
-
-
-CREATE TABLE inventory (
-    in_sellerkey BIGINT NOT NULL,
-    in_productkey BIGINT NOT NULL PRIMARY KEY,
-    in_actionstatus BOOLEAN NOT NULL,
-    in_discount DECIMAL(10, 2),
-    in_tax DECIMAL(10, 2)
-);
-
-
-   ALTER TABLE seller
-ADD CONSTRAINT seller_user_fk
-   FOREIGN KEY (sr_userkey) REFERENCES user(u_userkey);
-
-
-
-    ALTER TABLE inventory
-ADD CONSTRAINT fk_product 
-    FOREIGN KEY (in_productkey) REFERENCES product(p_productkey);
