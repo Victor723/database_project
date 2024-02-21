@@ -8,17 +8,15 @@ CREATE TABLE ProductCart (
     pc_sellerkey BIGINT NOT NULL, 
     pc_savequantity BIGINT NOT NULL,
     pc_incartquantity BIGINT NOT NULL,
-    -- pc_price DECIMAL(12,2) NOT NULL,-- Don't need to be stored
-    -- pc__discount DECIMAL(12,2) NOT NULL,--retrive from products
     PRIMARY KEY(pc_prodcartkey, pc_cartkey),
-    FOREIGN KEY(pc_productkey) REFERENCES Product(p_productkey),
-    FOREIGN KEY(pc_sellerkey) REFERENCES Seller(s_sellerkey)
-
+    FOREIGN KEY(pc_cartkey) REFERENCES Cart(c_cartkey),
+    FOREIGN KEY(pc_productkey) REFERENCES ProductSeller(ps_productkey),
+    FOREIGN KEY(pc_sellerkey) REFERENCES ProductSeller(ps_sellerkey)
 );
 
 CREATE TABLE Cart (
-    c_cartkey INT NOT NULL,
-    c_userkey INT NOT NULL
+    c_cartkey BIGINT NOT NULL,
+    c_userkey BIGINT NOT NULL
     PRIMARY KEY(c_cartkey),
     FOREIGN KEY(c_userkey) REFERENCES User(u_userkey)
 );
@@ -30,20 +28,20 @@ CREATE TABLE Lineitem (
     l_productkey BIGINT NOT NULL,
     l_sellerkey BIGINT NOT NULL,
     l_quantity BIGINT NOT NULL,
-    l_price DOUBLE PRECISION NOT NULL,
+    l_originalprice DOUBLE PRECISION NOT NULL,
     l_fulfillmentdate DATE,
     l_discount DOUBLE PRECISION,
-    l_tax DOUBLE PRECISION,
+    l_tax DOUBLE PRECISION NOT NULL,
     PRIMARY KEY(l_linenumber, l_orderkey),
     FOREIGN KEY(l_orderkey) REFERENCES Order(o_orderkey),
-    FOREIGN KEY(l_productkey) REFERENCES Product(p_productkey)
+    FOREIGN KEY(l_productkey) REFERENCES ProductSeller(ps_productkey),
+    FOREIGN KEY(l_sellerkey) REFERENCES ProductSeller(ps_sellerkey)
 
 );
 
 CREATE TABLE Order (
     o_orderkey BIGINT NOT NULL,
     o_userkey BIGINT NOT NULL,
-    o_orderstatus BOOLEAN NOT NULL,
     o_totalprice BIGINT NOT NULL,
     o_ordercreatedate DATE NOT NULL,
     o_fulfillmentdate DATE
