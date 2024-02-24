@@ -2,11 +2,9 @@
 -- Here we only create 3 tables for demo purpose.
 
 CREATE TABLE Seller (
-    sr_sellerkey BIGINT NOT NULL PRIMARY KEY,
-    sr_userkey BIGINT NOT NULL,
-    sr_registrationdate DATE NOT NULL
+    s_sellerkey BIGINT NOT NULL,
+    s_userkey BIGINT NOT NULL,
+    s_registrationdate DATE NOT NULL,
+    PRIMARY KEY s_sellerkey,
+    FOREIGN KEY (s_userkey) REFERENCES User(u_userkey)
 );
-
-   ALTER TABLE Seller
-ADD CONSTRAINT seller_user_fk
-   FOREIGN KEY (sr_userkey) REFERENCES user(u_userkey);
