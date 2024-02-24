@@ -37,4 +37,4 @@ CREATE TABLE Users (
     u_zipcode VARCHAR(20) NOT NULL,
     u_country VARCHAR(100) NOT NULL,
     u_phonenumber VARCHAR(20)
-);
+);\\
