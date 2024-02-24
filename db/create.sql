@@ -8,6 +8,7 @@ CREATE TABLE ProductReview (
     pr_orderkey BIGINT NOT NULL,
     pr_reviewdate DATE NOT NULL,
     pr_review TEXT NOT NULL,
+    pr_rating DECIMAL(2,1) NOT NULL,
     PRIMARY KEY (pr_productkey, pr_userkey),
     FOREIGN KEY(pr_productkey) REFERENCES Product(p_productkey),
     FOREIGN KEY(pr_userkey) REFERENCES User(u_userkey)
@@ -20,7 +21,7 @@ CREATE TABLE SellerReview (
     sr_orderkey BIGINT NOT NULL,
     sr_reviewdate DATE NOT NULL,
     sr_review TEXT NOT NULL,
-    sr_rating INT NOT NULL,
+    sr_rating DECIMAL(2,1) NOT NULL,
     PRIMARY KEY (sr_sellerkey, sr_userkey),
     FOREIGN KEY(sr_sellerkey) REFERENCES Seller(s_sellerkey),
     FOREIGN KEY(sr_userkey) REFERENCES User(u_userkey)
