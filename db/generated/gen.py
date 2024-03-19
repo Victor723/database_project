@@ -14,6 +14,24 @@ def get_csv_writer(f):
     return csv.writer(f, dialect='unix')
 
 
+# def gen_users(num_users):
+#     with open('Users.csv', 'w') as f:
+#         writer = get_csv_writer(f)
+#         print('Users...', end=' ', flush=True)
+#         for uid in range(num_users):
+#             if uid % 10 == 0:
+#                 print(f'{uid}', end=' ', flush=True)
+#             profile = fake.profile()
+#             email = profile['mail']
+#             plain_password = f'pass{uid}'
+#             password = generate_password_hash(plain_password)
+#             name_components = profile['name'].split(' ')
+#             firstname = name_components[0]
+#             lastname = name_components[-1]
+#             writer.writerow([uid, email, password, firstname, lastname])
+#         print(f'{num_users} generated')
+#     return
+
 def gen_users(num_users):
     with open('Users.csv', 'w') as f:
         writer = get_csv_writer(f)
@@ -25,12 +43,19 @@ def gen_users(num_users):
             email = profile['mail']
             plain_password = f'pass{uid}'
             password = generate_password_hash(plain_password)
-            name_components = profile['name'].split(' ')
-            firstname = name_components[0]
-            lastname = name_components[-1]
-            writer.writerow([uid, email, password, firstname, lastname])
+            firstname = profile['first_name']
+            lastname = profile['last_name']
+            balance = round(fake.pydecimal(left_digits=4, right_digits=2, positive=True), 2)
+            companyname = fake.company()
+            streetaddress = fake.street_address()
+            city = fake.city()
+            stateregion = fake.state()
+            zipcode = fake.zipcode()
+            country = fake.country()
+            phonenumber = fake.phone_number()
+            writer.writerow([email, password, firstname, lastname, balance, companyname, streetaddress, city, stateregion, zipcode, country, phonenumber])
         print(f'{num_users} generated')
-    return
+
 
 
 def gen_products(num_products):
