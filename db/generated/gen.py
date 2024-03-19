@@ -43,8 +43,9 @@ def gen_users(num_users):
             email = profile['mail']
             plain_password = f'pass{uid}'
             password = generate_password_hash(plain_password)
-            firstname = profile['first_name']
-            lastname = profile['last_name']
+            name_components = profile['name'].split(' ')
+            firstname = name_components[0]
+            lastname = name_components[-1]
             balance = round(fake.pydecimal(left_digits=4, right_digits=2, positive=True), 2)
             companyname = fake.company()
             streetaddress = fake.street_address()
