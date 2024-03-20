@@ -23,3 +23,9 @@ def index():
     return render_template('index.html',
                            avail_products=products,
                            purchase_history=purchases)
+
+@bp.route('/find_top_k_products', methods=['GET'])
+def find_top_k_products():
+    k = int(request.args.get('k'))
+    top_k_products = sorted(avail_products, key=lambda x: x['price'], reverse=True)[:k]
+    return jsonify(top_k_products)
