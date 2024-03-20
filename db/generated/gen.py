@@ -140,13 +140,44 @@ def gen_product_carts(num_product_carts, num_carts, valid_pairs):
             writer.writerow([pc_id, pc_cartkey, pc_productkey, pc_sellerkey, pc_savequantity, pc_incartquantity])
         print('Done generating ProductCarts.')
 
-gen_product_sellers(num_products, num_sellers)
+
+def gen_orders(num_orders, num_users):
+    with open('./db/data/Orders.csv', 'w', newline='') as f:
+        writer = get_csv_writer(f)
+        # writer.writerow(['o_orderkey', 'o_userkey', 'o_totalprice', 'o_ordercreatedate', 'o_fulfillmentdate'])  # Header
+        for order_id in range(num_orders):
+            o_userkey = fake.random_int(min=1, max=num_users)
+            o_totalprice = round(fake.pydecimal(left_digits=5, right_digits=2, positive=True), 2)
+            o_ordercreatedate = fake.date_between(start_date='-2y', end_date='today')
+            o_fulfillmentdate = fake.date_between(start_date=o_ordercreatedate, end_date='today') if fake.boolean(chance_of_getting_true=75) else ''
+            writer.writerow([order_id, o_userkey, o_totalprice, o_ordercreatedate, o_fulfillmentdate])
+        print(f'{num_orders} Orders generated.')
+
+
+def gen_lineitems(num_lineitems, num_orders, valid_pairs):
+    with open('./db/data/Lineitems.csv', 'w', newline='') as f:
+        writer = get_csv_writer(f)
+        # writer.writerow(['l_linenumber', 'l_orderkey', 'l_productkey', 'l_sellerkey', 'l_quantity', 'l_originalprice', 'l_fulfillmentdate', 'l_discount', 'l_tax'])  # Header
+        for lineitem_id in range(num_lineitems):
+            l_orderkey = fake.random_int(min=1, max=num_orders)
+            l_productkey, l_sellerkey = random.choice(list(valid_pairs))
+            l_quantity = fake.random_int(min=1, max=10)
+            l_originalprice = round(fake.pydecimal(left_digits=5, right_digits=2, positive=True), 2)
+            l_fulfillmentdate = fake.date_between(start_date='-2y', end_date='today') if fake.boolean(chance_of_getting_true=75) else ''
+            l_discount = round(fake.pydecimal(left_digits=2, right_digits=2, positive=True), 2)
+            l_tax = round(fake.pydecimal(left_digits=2, right_digits=2, positive=True), 2)
+            writer.writerow([lineitem_id, l_orderkey, l_productkey, l_sellerkey, l_quantity, l_originalprice, l_fulfillmentdate, l_discount, l_tax])
+        print(f'{num_lineitems} Lineitems generated.')
+
+
+
+# gen_product_sellers(num_products, num_sellers)
 valid_pairs = read_valid_product_seller_pairs()  # Read valid pairs from ProductSellers.csv
-gen_product_carts(num_product_carts, num_carts, valid_pairs)  # Generate ProductCarts.csv using valid pairs
-gen_users(num_users)
-gen_sellers(num_sellers)
-gen_products(num_products)
-gen_categories(num_categories)
-gen_carts(num_carts)
-
-
+# gen_product_carts(num_product_carts, num_carts, valid_pairs)  # Generate ProductCarts.csv using valid pairs
+# gen_users(num_users)
+# gen_sellers(num_sellers)
+# gen_products(num_products)
+# gen_categories(num_categories)
+# gen_carts(num_carts)
+gen_orders(num_orders, num_users)
+gen_lineitems(num_lineitems, num_orders, valid_pairs)
