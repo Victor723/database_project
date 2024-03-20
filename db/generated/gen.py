@@ -54,7 +54,7 @@ def gen_users(num_users):
             zipcode = fake.zipcode()
             country = fake.country()
             phonenumber = fake.phone_number()
-            writer.writerow([email, password, firstname, lastname, balance, companyname, streetaddress, city, stateregion, zipcode, country, phonenumber])
+            writer.writerow([uid, email, password, firstname, lastname, balance, companyname, streetaddress, city, stateregion, zipcode, country, phonenumber])
         print(f'{num_users} generated')
 
 
@@ -79,7 +79,7 @@ def gen_products(num_products):
             if available == 'true':
                 available_pids.append(pid)
             # writer.writerow([pid, name, price, available])
-            writer.writerow([name, description, imageurl, price, catkey, link])
+            writer.writerow([pid, name, description, imageurl, price, catkey, link])
         print(f'{num_products} generated; {len(available_pids)} available')
     return available_pids
 
