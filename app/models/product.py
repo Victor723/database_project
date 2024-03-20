@@ -12,7 +12,7 @@ class Product:
     def get(id):
         rows = app.db.execute('''
 SELECT id, name, price, available
-FROM Products
+FROM Product
 WHERE id = :id
 ''',
                               id=id)
@@ -22,7 +22,7 @@ WHERE id = :id
     def get_all(available=True):
         rows = app.db.execute('''
 SELECT id, name, price, available
-FROM Products
+FROM Product
 WHERE available = :available
 ''',
                               available=available)
