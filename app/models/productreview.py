@@ -32,4 +32,16 @@ ORDER BY pr_reviewdate DESC
 ''',
                               pr_userkey = pr_userkey)
         return [ProductReview(*row) for row in rows]
+    
+    @staticmethod
+    def get_top5_user_reviews(pr_userkey):
+        rows = app.db.execute('''
+SELECT pr_productkey, pr_userkey, pr_productname, pr_orderkey, pr_reviewdate, pr_review, pr_rating
+FROM ProductReview
+WHERE pr_userkey = :pr_userkey
+ORDER BY pr_reviewdate DESC
+LIMIT 5
+''',
+                              pr_userkey = pr_userkey)
+        return [ProductReview(*row) for row in rows]
 

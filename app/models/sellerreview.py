@@ -33,3 +33,15 @@ ORDER BY sr_reviewdate DESC
                               sr_userkey = sr_userkey)
         return [SellerReview(*row) for row in rows]
 
+    @staticmethod
+    def get_top5_user_reviews(sr_userkey):
+        rows = app.db.execute('''
+SELECT sr_sellerkey, sr_userkey, sr_sellername, sr_orderkey, sr_reviewdate, sr_review, sr_rating
+FROM SellerReview
+WHERE sr_userkey = :sr_userkey
+ORDER BY sr_reviewdate DESC
+LIMIT 5
+''',
+                              sr_userkey = sr_userkey)
+        return [SellerReview(*row) for row in rows]
+

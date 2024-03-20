@@ -21,4 +21,7 @@ def create_app():
     from .users import bp as user_bp
     app.register_blueprint(user_bp)
 
+    from .myreview import bp as myreview_bp
+    app.register_blueprint(myreview_bp)
+
     return app
