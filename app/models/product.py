@@ -11,9 +11,9 @@ class Product:
     @staticmethod
     def get(id):
         rows = app.db.execute('''
-SELECT id, name, price, available
+SELECT p_productkey, name, price, available
 FROM Product
-WHERE id = :id
+WHERE p_productkey = :p_productkey
 ''',
                               id=id)
         return Product(*(rows[0])) if rows is not None else None
@@ -21,7 +21,7 @@ WHERE id = :id
     @staticmethod
     def get_all(available=True):
         rows = app.db.execute('''
-SELECT id, name, price, available
+SELECT p_productkey, name, price, available
 FROM Product
 WHERE available = :available
 ''',
