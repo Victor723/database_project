@@ -149,7 +149,7 @@ def gen_orders(num_orders, num_users):
             o_userkey = fake.random_int(min=1, max=num_users)
             o_totalprice = round(fake.pydecimal(left_digits=5, right_digits=2, positive=True), 2)
             o_ordercreatedate = fake.date_between(start_date='-2y', end_date='today')
-            o_fulfillmentdate = fake.date_between(start_date=o_ordercreatedate, end_date='today') if fake.boolean(chance_of_getting_true=75) else ''
+            o_fulfillmentdate = fake.date_between(start_date=o_ordercreatedate, end_date='today') if fake.boolean(chance_of_getting_true=75) else None
             writer.writerow([order_id, o_userkey, o_totalprice, o_ordercreatedate, o_fulfillmentdate])
         print(f'{num_orders} Orders generated.')
 
@@ -163,7 +163,7 @@ def gen_lineitems(num_lineitems, num_orders, valid_pairs):
             l_productkey, l_sellerkey = random.choice(list(valid_pairs))
             l_quantity = fake.random_int(min=1, max=10)
             l_originalprice = round(fake.pydecimal(left_digits=5, right_digits=2, positive=True), 2)
-            l_fulfillmentdate = fake.date_between(start_date='-2y', end_date='today') if fake.boolean(chance_of_getting_true=75) else ''
+            l_fulfillmentdate = fake.date_between(start_date='-2y', end_date='today') if fake.boolean(chance_of_getting_true=75) else None
             l_discount = round(fake.pydecimal(left_digits=2, right_digits=2, positive=True), 2)
             l_tax = round(fake.pydecimal(left_digits=2, right_digits=2, positive=True), 2)
             writer.writerow([lineitem_id, l_orderkey, l_productkey, l_sellerkey, l_quantity, l_originalprice, l_fulfillmentdate, l_discount, l_tax])
