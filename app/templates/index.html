@@ -16,9 +16,9 @@
   <tbody>
     {% for product in avail_products%}
       <tr>
-        <th scope="row">{{product.id}}</th>
-        <td>{{product.name}}</td>
-        <td>{{product.price}}</td>
+        <th scope="row">{{product.p_productkey}}</th>
+        <td>{{product.p_productname}}</td>
+        <td>{{product.p_price}}</td>
       </tr>
     {% endfor %}
   </tbody>
