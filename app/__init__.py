@@ -20,5 +20,8 @@ def create_app():
 
     from .users import bp as user_bp
     app.register_blueprint(user_bp)
+    
+    from .sellers import bp as seller_bp
+    app.register_blueprint(seller_bp)
 
     return app

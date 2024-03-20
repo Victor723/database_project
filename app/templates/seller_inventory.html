@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="main-content">
+        <h1>Inventory for Seller {{ s_sellerkey }}</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Key</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Discount</th>
+                    <th>Create Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in product_info %}
+                <tr>
+                    <td>{{ product.productkey }}</td>
+                    <td>{{ product.productname }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.price }}</td>
+                    <td>{{ product.discount }}</td>
+                    <td>{{ product.createtime }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
