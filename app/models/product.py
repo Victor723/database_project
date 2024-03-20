@@ -6,7 +6,6 @@ class Product:
         self.p_productkey = p_productkey
         self.p_productname = p_productname
         self.p_price = p_price
-        # self.available = available
 
     @staticmethod
     def get(p_productkey):
@@ -23,5 +22,6 @@ WHERE p_productkey = :p_productkey
         rows = app.db.execute('''
 SELECT p_productkey, p_productname, p_price
 FROM Product
-''')
+''',
+                              available=available)
         return [Product(*row) for row in rows]
