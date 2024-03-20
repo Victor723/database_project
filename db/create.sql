@@ -13,7 +13,7 @@ CREATE TABLE Product (
     p_catkey BIGINT NOT NULL,
     p_link TEXT NOT NULL,
     PRIMARY KEY (p_productkey),
-    FOREIGN KEY (p_catkey) REFERENCES Category(cat_catkey)
+    -- FOREIGN KEY (p_catkey) REFERENCES Category(cat_catkey)
 );
 
 CREATE TABLE Users (
