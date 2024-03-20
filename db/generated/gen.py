@@ -171,13 +171,13 @@ def gen_lineitems(num_lineitems, num_orders, valid_pairs):
 
 
 
-# gen_product_sellers(num_products, num_sellers)
+gen_product_sellers(num_products, num_sellers)
 valid_pairs = read_valid_product_seller_pairs()  # Read valid pairs from ProductSellers.csv
-# gen_product_carts(num_product_carts, num_carts, valid_pairs)  # Generate ProductCarts.csv using valid pairs
-# gen_users(num_users)
-# gen_sellers(num_sellers)
-# gen_products(num_products)
-# gen_categories(num_categories)
-# gen_carts(num_carts)
+gen_product_carts(num_product_carts, num_carts, valid_pairs)  # Generate ProductCarts.csv using valid pairs
+gen_users(num_users)
+gen_sellers(num_sellers)
+gen_products(num_products)
+gen_categories(num_categories)
+gen_carts(num_carts)
 gen_orders(num_orders, num_users)
 gen_lineitems(num_lineitems, num_orders, valid_pairs)
