@@ -121,7 +121,7 @@ def gen_product_sellers(num_products, num_sellers):
 
 def read_valid_product_seller_pairs():
     valid_pairs = set()
-    with open('ProductSellers.csv', 'r', newline='') as f:
+    with open('./db/data/ProductSellers.csv', 'r', newline='') as f:
         reader = csv.reader(f)
         next(reader)  # Skip the header
         for row in reader:
