@@ -11,7 +11,7 @@ class Product:
     @staticmethod
     def get(id):
         rows = app.db.execute('''
-SELECT p_productkey, p_productname, p_price, available
+SELECT p_productkey, p_productname, p_price
 FROM Product
 WHERE p_productkey = :p_productkey
 ''',
@@ -21,9 +21,8 @@ WHERE p_productkey = :p_productkey
     @staticmethod
     def get_all(available=True):
         rows = app.db.execute('''
-SELECT p_productkey, p_productname, p_price, available
+SELECT p_productkey, p_productname, p_price
 FROM Product
-WHERE available = :available
 ''',
                               available=available)
         return [Product(*row) for row in rows]
