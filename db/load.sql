@@ -5,7 +5,7 @@ SELECT pg_catalog.setval('public.users_u_userkey_seq',
                          (SELECT MAX(u_userkey)+1 FROM Users),
                          false);
 
-\COPY Products FROM 'Products.csv' WITH DELIMITER ',' NULL '' CSV
+\COPY Product FROM 'Products.csv' WITH DELIMITER ',' NULL '' CSV
 SELECT pg_catalog.setval('public.product_p_productkey_seq',
                          (SELECT MAX(p_productkey)+1 FROM Product),
                          false);
