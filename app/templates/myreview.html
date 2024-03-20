@@ -38,7 +38,7 @@
   {% endfor %}
 {% endif %}
 
-<!-- Display Top 5 Most Recent Reviews -->
+<!-- Display Top 5 Most Recent Reviews
 {% if my_top5_reviews %}
   <h2>Top 5 Most Recent Reviews</h2>
   {% for review in my_top5_reviews %}
@@ -49,6 +49,6 @@
       <p>Product/Seller Name: {{ review[1].pr_productname if review[1].pr_productname else review[1].sr_sellername }}</p>
     </div>
   {% endfor %}
-{% endif %}
+{% endif %} -->
 
 {% endblock %}
