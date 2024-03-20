@@ -88,17 +88,17 @@ def gen_seller_reviews(num_seller_reviews):
     with open('Seller_Reviews.csv', 'w') as f:
         writer = get_csv_writer(f)
         print('Seller_Reviews...', end=' ', flush=True)
-        for sid in range(num_users):
-            if sid % 10 == 0:
-                print(f'{sid}', end=' ', flush=True)
-            uid = f'{fake.random_int(max=500)}'
-            seller_name = fake.sentence(nb_words=4)[:-1]
-            order_key = f'{str(fake.random_int(max=5000))}'
-            time_reviewed = fake.date_time()
-            review = fake.sentence(nb_words=15)[:-1]
-            rating = f'{str(fake.random_int(max=4))}.{fake.random_int(max=9):01}'
-            writer.writerow([sid, uid, seller_name, order_key, time_reviewed, review, rating])
-        print(f'{num_product_reviews} generated')
+        for sr_sellerkey in range(num_users):
+            if sr_sellerkey % 10 == 0:
+                print(f'{sr_sellerkey}', end=' ', flush=True)
+            sr_userkey = f'{fake.random_int(max=500)}'
+            sr_sellername = fake.sentence(nb_words=4)[:-1]
+            sr_orderkey = f'{str(fake.random_int(max=5000))}'
+            sr_reviewdate = fake.date_time()
+            sr_review = fake.sentence(nb_words=15)[:-1]
+            sr_rating = f'{str(fake.random_int(max=4))}.{fake.random_int(max=9):01}'
+            writer.writerow([sr_sellerkey, sr_userkey, sr_sellername, sr_orderkey, sr_reviewdate, sr_review, sr_rating])
+        print(f'{num_seller_reviews} generated')
     return
 
 gen_users(num_users)

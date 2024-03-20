@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Form for User ID Input -->
+<h2>Enter User ID to View Reviews</h2>
+<form action="/myreview" method="post">
+  <div class="form-group">
+    <label for="user_id">User ID:</label>
+    <input type="text" class="form-control" id="user_id" name="user_id" required>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<!-- Display All Product Reviews -->
+{% if my_products_reviews %}
+  <h2>Product Reviews</h2>
+  {% for review in my_products_reviews %}
+    <div class="review">
+      <p>Product Name: {{ review.pr_productname }}</p>
+      <p>Review Date: {{ review.pr_reviewdate }}</p>
+      <p>Review: {{ review.pr_review }}</p>
+      <p>Rating: {{ review.pr_rating }}</p>
+    </div>
+  {% endfor %}
+{% endif %}
+
+<!-- Display All Seller Reviews -->
+{% if my_seller_reviews %}
+  <h2>Seller Reviews</h2>
+  {% for review in my_seller_reviews %}
+    <div class="review">
+      <p>Seller Name: {{ review.sr_sellername }}</p>
+      <p>Review Date: {{ review.sr_reviewdate }}</p>
+      <p>Review: {{ review.sr_review }}</p>
+      <p>Rating: {{ review.sr_rating }}</p>
+    </div>
+  {% endfor %}
+{% endif %}
+
+<!-- Display Top 5 Most Recent Reviews -->
+{% if my_top5_reviews %}
+  <h2>Top 5 Most Recent Reviews</h2>
+  {% for review in my_top5_reviews %}
+    <div class="review">
+      <p>Review Date: {{ review[0] }}</p>
+      <p>Review: {{ review[1].pr_review if review[1].pr_review else review[1].sr_review }}</p>
+      <p>Rating: {{ review[1].pr_rating if review[1].pr_rating else review[1].sr_rating }}</p>
+      <p>Product/Seller Name: {{ review[1].pr_productname if review[1].pr_productname else review[1].sr_sellername }}</p>
+    </div>
+  {% endfor %}
+{% endif %}
+
+{% endblock %}
