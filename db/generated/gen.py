@@ -80,7 +80,7 @@ def gen_purchases(num_purchases, available_pids):
         print(f'{num_purchases} generated')
     return
 
-def gen
+# def gen
 
 
 gen_users(num_users)
