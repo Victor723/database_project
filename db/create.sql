@@ -8,9 +8,9 @@ CREATE TABLE Product (
     p_productname VARCHAR(255) NOT NULL,
     p_price DOUBLE PRECISION NOT NULL,
     p_description TEXT NOT NULL,
-    p_imageurl VARCHAR(255) NOT NULL,
+    p_imageurl VARCHAR(255),
     p_catkey BIGINT NOT NULL,
-    p_link TEXT NOT NULL,
+    p_link TEXT,
     FOREIGN KEY (p_catkey) REFERENCES Category(cat_catkey)
 );
 
