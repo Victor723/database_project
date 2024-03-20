@@ -9,13 +9,13 @@ class Product:
         # self.available = available
 
     @staticmethod
-    def get(id):
+    def get(p_productkey):
         rows = app.db.execute('''
 SELECT p_productkey, p_productname, p_price
 FROM Product
 WHERE p_productkey = :p_productkey
 ''',
-                              id=id)
+                              p_productkey=p_productkey)
         return Product(*(rows[0])) if rows is not None else None
 
     @staticmethod
@@ -23,6 +23,5 @@ WHERE p_productkey = :p_productkey
         rows = app.db.execute('''
 SELECT p_productkey, p_productname, p_price
 FROM Product
-''',
-                              available=available)
+''')
         return [Product(*row) for row in rows]
