@@ -86,6 +86,19 @@ def gen_categories(num_categories):
         print(f'{num_categories} generated')
     return
 
+def gen_sellers(num_sellers):
+    with open('Sellers.csv', 'w') as f:
+        writer = get_csv_writer(f)
+        print('Sellers...', end=' ', flush=True)
+        for sid in range(num_sellers):
+            if sid % 10 == 0:
+                print(f'{sid}', end=' ', flush=True)
+            userkey = sid
+            registration_date = fake.date_time_this_year()
+            writer.writerow([sid, userkey, registration_date])
+        print(f'{num_sellers} generated')
+    return
+
 
 """def gen_purchases(num_purchases, available_pids):
     with open('Purchases.csv', 'w') as f:
