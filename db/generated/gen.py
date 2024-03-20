@@ -86,15 +86,6 @@ def gen_categories(num_categories):
         print(f'{num_categories} generated')
     return
 
-def gen_sellers(num_sellers):
-    with open('Sellers.csv', 'w') as f:
-            available = fake.random_element(elements=('true', 'false'))
-            if available == 'true':
-                available_pids.append(pid)
-            writer.writerow([pid, name, price, available])
-        print(f'{num_products} generated; {len(available_pids)} available')
-    return available_pids
-
 
 """def gen_purchases(num_purchases, available_pids):
     with open('Purchases.csv', 'w') as f:
