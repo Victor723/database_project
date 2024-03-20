@@ -53,7 +53,7 @@ def gen_users(num_users):
             stateregion = fake.state()
             zipcode = fake.zipcode()
             country = fake.country()
-            phonenumber = fake.phone_number()
+            phonenumber = fake.phone_number()[:20]  # Ensure the phone number is no longer than 20 characters
             writer.writerow([uid, email, password, firstname, lastname, balance, companyname, streetaddress, city, stateregion, zipcode, country, phonenumber])
         print(f'{num_users} generated')
 
