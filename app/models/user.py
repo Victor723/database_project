@@ -70,9 +70,21 @@ WHERE u_userkey = :id
         return User(*(rows[0])) if rows else None
     
 
-#     @staticmethod
-#     def get_order_history_by_id(userkey):
-#         rows = app.db.execute("""
-
-# """)
-#         return 
+    @staticmethod
+    def get_order_history_by_id(userkey):
+        rows = app.db.execute("""
+SELECT
+    P.p_productkey AS Product_Key,
+    P.p_productname AS Product_Name,
+    L.l_quantity AS Quantity,
+    L.l_originalprice AS Original_Price
+FROM
+    Orders O
+JOIN Lineitem L ON O.o_orderkey = L.l_orderkey
+JOIN Product P ON L.l_productkey = P.p_productkey
+WHERE
+    O.o_userkey = :userkey;
+""",
+                            userkey=userkey)
+        # rows: list of tuples
+        return rows
