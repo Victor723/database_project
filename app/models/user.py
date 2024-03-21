@@ -70,4 +70,9 @@ WHERE u_userkey = :id
         return User(*(rows[0])) if rows else None
     
 
-    # @staticmethod
+#     @staticmethod
+#     def get_order_history_by_id(userkey):
+#         rows = app.db.execute("""
+
+# """)
+#         return 
