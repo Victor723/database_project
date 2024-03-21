@@ -159,7 +159,7 @@ def gen_lineitems(num_lineitems, num_orders, valid_pairs):
         writer = get_csv_writer(f)
         # writer.writerow(['l_linenumber', 'l_orderkey', 'l_productkey', 'l_sellerkey', 'l_quantity', 'l_originalprice', 'l_fulfillmentdate', 'l_discount', 'l_tax'])  # Header
         for lineitem_id in range(num_lineitems):
-            l_orderkey = fake.random_int(min=1, max=num_orders)
+            l_orderkey = fake.random_int(min=0, max=num_orders-1)
             l_productkey, l_sellerkey = random.choice(list(valid_pairs))
             l_quantity = fake.random_int(min=1, max=10)
             l_originalprice = round(fake.pydecimal(left_digits=5, right_digits=2, positive=True), 2)
