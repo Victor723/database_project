@@ -15,9 +15,9 @@ class User(UserMixin):
     @staticmethod
     def get_by_auth(email, password):
         rows = app.db.execute("""
-SELECT password, id, email, firstname, lastname
+SELECT u_password, u_userkey, u_email, u_firstname, u_lastname
 FROM Users
-WHERE email = :email
+WHERE u_email = :email
 """,
                               email=email)
         if not rows:  # email not found
@@ -31,9 +31,9 @@ WHERE email = :email
     @staticmethod
     def email_exists(email):
         rows = app.db.execute("""
-SELECT email
+SELECT u_email
 FROM Users
-WHERE email = :email
+WHERE u_email = :email
 """,
                               email=email)
         return len(rows) > 0
@@ -61,9 +61,9 @@ RETURNING id
     @login.user_loader
     def get(id):
         rows = app.db.execute("""
-SELECT id, email, firstname, lastname
+SELECT u_userkey, u_email, u_firstname, u_lastname
 FROM Users
-WHERE id = :id
+WHERE u_userkey = :id
 """,
                               id=id)
         return User(*(rows[0])) if rows else None
