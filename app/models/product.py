@@ -22,6 +22,5 @@ WHERE p_productkey = :p_productkey
         rows = app.db.execute('''
 SELECT p_productkey, p_productname, p_price
 FROM Product
-''',
-                              available=available)
+''')
         return [Product(*row) for row in rows]
