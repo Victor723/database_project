@@ -241,7 +241,8 @@ gen_products(num_products)
 gen_categories(num_categories)
 gen_carts(num_carts)
 
-
+gen_orders(num_orders, num_users)
+gen_lineitems(num_lineitems, num_orders, valid_pairs)
 
 available_pids = gen_products(num_products)
 """gen_purchases(num_purchases, available_pids)"""
