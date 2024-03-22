@@ -74,6 +74,8 @@ WHERE u_userkey = :id
     def get_order_history_by_id(userkey):
         rows = app.db.execute("""
 SELECT
+    O.o_orderkey AS Order_Key,
+    O.o_ordercreatedate AS Order_Date,
     P.p_productkey AS Product_Key,
     P.p_productname AS Product_Name,
     L.l_quantity AS Quantity,
@@ -83,7 +85,8 @@ FROM
 JOIN Lineitem L ON O.o_orderkey = L.l_orderkey
 JOIN Product P ON L.l_productkey = P.p_productkey
 WHERE
-    O.o_userkey = :userkey;
+    O.o_userkey = :userkey
+ORDER BY O.o_ordercreatedate;
 """,
                             userkey=userkey)
         # rows: list of tuples
