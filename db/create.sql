@@ -58,8 +58,8 @@ CREATE TABLE ProductReview (
     pr_review TEXT NOT NULL,
     pr_rating DECIMAL(2,1) NOT NULL,
     PRIMARY KEY (pr_productkey, pr_userkey)
-    --FOREIGN KEY(pr_productkey) REFERENCES Product(p_productkey),
-    --FOREIGN KEY(pr_userkey) REFERENCES Users(u_userkey)
+    -- FOREIGN KEY(pr_productkey) REFERENCES Product(p_productkey),
+    -- FOREIGN KEY(pr_userkey) REFERENCES Users(u_userkey)
 );
 
 CREATE TABLE SellerReview (
@@ -71,8 +71,8 @@ CREATE TABLE SellerReview (
     sr_review TEXT NOT NULL,
     sr_rating DECIMAL(2,1) NOT NULL,
     PRIMARY KEY (sr_sellerkey, sr_userkey)
-    --FOREIGN KEY(sr_sellerkey) REFERENCES Seller(s_sellerkey),
-    --FOREIGN KEY(sr_userkey) REFERENCES Users(u_userkey)
+    -- FOREIGN KEY(sr_sellerkey) REFERENCES Seller(s_sellerkey),
+    -- FOREIGN KEY(sr_userkey) REFERENCES Users(u_userkey)
 );
 
 CREATE TABLE Cart (
