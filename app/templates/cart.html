@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% if current_user.is_authenticated %}
+{#{% if current_user.is_authenticated %}#}
     {% if cart_items %}
     <h2>Cart for User ID: {{ user_id }}</h2>
     <table class='table table-hover table-bordered'>
@@ -34,8 +34,8 @@
     {% else %}
     <h2>No cart items found for User ID: {{ user_id }}</h2>
     {% endif %}
-    {% else %} 
-    <p>You must be logged in to view this page.</p>
-    {% endif %}
+    {#{% else %}#} 
+    <!-- <p>You must be logged in to view this page.</p> -->
+    {#{% endif %}#}
 
 {% endblock %}
