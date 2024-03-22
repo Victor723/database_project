@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template, request
 from flask_login import current_user
 import datetime
 
@@ -9,23 +9,24 @@ from flask import Blueprint
 bp = Blueprint('index', __name__)
 
 
-@bp.route('/')
+@bp.route('/', methods=['GET', 'POST'])
 def index():
     # get all available products for sale:
     products = Product.get_all(True)
     # find the products current user has bought:
+    
     if current_user.is_authenticated:
         purchases = Purchase.get_all_by_uid_since(
             current_user.id, datetime.datetime(1980, 9, 14, 0, 0, 0))
     else:
         purchases = None
+    
+    if request.method == 'POST':
+        k = int(request.form.get('topK', 5))
+        if k > 0:
+            products = Product.get_top_K(k)
+    
     # render the page by adding information to the index.html file
     return render_template('index.html',
                            avail_products=products,
                            purchase_history=purchases)
-
-@bp.route('/find_top_k_products', methods=['GET'])
-def find_top_k_products():
-    k = int(request.args.get('k'))
-    top_k_products = sorted(avail_products, key=lambda x: x['price'], reverse=True)[:k]
-    return jsonify(top_k_products)
