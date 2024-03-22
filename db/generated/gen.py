@@ -141,6 +141,56 @@ def gen_product_carts(num_product_carts, num_carts, valid_pairs):
 gen_product_sellers(num_products, num_sellers)
 valid_pairs = read_valid_product_seller_pairs()  # Read valid pairs from ProductSellers.csv
 gen_product_carts(num_product_carts, num_carts, valid_pairs)  # Generate ProductCarts.csv using valid pairs
+
+def gen_seller_reviews(num_seller_reviews):
+    with open('Seller_Reviews.csv', 'w') as f:
+        writer = get_csv_writer(f)
+        print('Seller_Reviews...', end=' ', flush=True)
+        for sr_sellerkey in range(num_users):
+            if sr_sellerkey % 10 == 0:
+                print(f'{sr_sellerkey}', end=' ', flush=True)
+            sr_userkey = f'{fake.random_int(max=500)}'
+            sr_sellername = fake.sentence(nb_words=4)[:-1]
+            sr_orderkey = f'{str(fake.random_int(max=5000))}'
+            sr_reviewdate = fake.date_time()
+            sr_review = fake.sentence(nb_words=15)[:-1]
+            sr_rating = f'{str(fake.random_int(max=4))}.{fake.random_int(max=9):01}'
+            writer.writerow([sr_sellerkey, sr_userkey, sr_sellername, sr_orderkey, sr_reviewdate, sr_review, sr_rating])
+        print(f'{num_seller_reviews} generated')
+    return
+
+
+def gen_orders(num_orders, num_users):
+    with open('Orders.csv', 'w', newline='') as f:
+        writer = get_csv_writer(f)
+        print('Orders...', end=' ', flush=True)
+        for order_id in range(num_orders):
+            user_key = random.randint(0, num_users - 1)  # Choose a random user key
+            total_price = round(random.uniform(10, 1000), 2)  # Generate a random total price
+            order_created_date = fake.date_time_this_year()  # Generate a fake order creation date
+            fulfillment_date = fake.date_time_this_year()
+            writer.writerow([order_id, user_key, total_price, order_created_date, fulfillment_date])
+        print('Orders generated.')
+
+def gen_line_items(num_lineitems, num_orders, valid_pairs):
+    with open('LineItems.csv', 'w', newline='') as f:
+        writer = get_csv_writer(f)
+        print('Lineitems...', end=' ', flush=True)
+        for line_item_id in range(num_lineitems):
+            order_key = random.randint(0, num_orders - 1)  # Choose a random order key
+            product_key, seller_key = random.choice(list(valid_pairs))  # Choose a valid product-seller pair
+            quantity = random.randint(1, 10)  # Generate a random quantity
+            original_price = round(random.uniform(5, 200), 2)  # Generate a random original price
+            fulfillment_date = fake.date_time_this_year()  # Generate a fake fulfillment date
+            discount = round(random.uniform(0, original_price), 2)  # Generate a random discount
+            tax = round(original_price * 0.1, 2)  # Calculate tax (assuming 10%)
+            writer.writerow([line_item_id, order_key, product_key, seller_key, quantity, original_price, fulfillment_date, discount, tax])
+        print('Lineitems generated.')
+
+# Generate orders and line items data
+gen_orders(num_orders, num_users)
+gen_line_items(num_lineitems, num_orders, valid_pairs)
+
 gen_users(num_users)
 gen_sellers(num_sellers)
 gen_products(num_products)
