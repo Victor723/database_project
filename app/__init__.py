@@ -30,4 +30,7 @@ def create_app():
     from .myreview import bp as myreview_bp
     app.register_blueprint(myreview_bp)
 
+    from .order_history import bp as order_history_bp
+    app.register_blueprint(order_history_bp)
+
     return app
