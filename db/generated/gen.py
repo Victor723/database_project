@@ -59,8 +59,6 @@ def gen_products(num_products):
             if pid % 100 == 0:
                 print(f'{pid}', end=' ', flush=True)
             name = fake.sentence(nb_words=4)[:-1]
-            description = fake.text(max_nb_chars=200)
-            imageurl = fake.image_url()
             price = f'{str(fake.random_int(max=500))}.{fake.random_int(max=99):02}'
             # Generating additional fields to match the Product table structure
             p_description = fake.text(max_nb_chars=200)  # Generate a fake product description
@@ -165,7 +163,7 @@ def gen_product_sellers(num_products, num_sellers):
 
 def read_valid_product_seller_pairs():
     valid_pairs = set()
-    with open('./db/data/ProductSellers.csv', 'r', newline='') as f:
+    with open('ProductSellers.csv', 'r', newline='') as f:
         reader = csv.reader(f)
         next(reader)  # Skip the header
         for row in reader:
