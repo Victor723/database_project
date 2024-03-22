@@ -2,6 +2,10 @@
 
 {% block content %}
 
+<form action="{{ url_for('order_history.order_history') }}" method="post">
+    <input type="text" name="userkey" placeholder="Enter User Key">
+    <button type="submit">Submit</button>
+</form>
 
 <h2>Purchase History:</h2>
 <table class='table table-hover table-bordered container'>
@@ -14,7 +18,7 @@
     </tr>
   </thead>
   <tbody>
-    {% for product in order_history%}
+    {% for product in order_history %}
       <tr>
         <th scope="row">{{product[0]}}</th>
         <td>{{product[1]}}</td>
