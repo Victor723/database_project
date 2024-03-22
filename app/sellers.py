@@ -32,11 +32,26 @@ def seller_homepage(s_sellerkey):
 
 @bp.route('/seller/<s_sellerkey>/inventory', methods=['GET', 'POST'])
 def seller_inventory(s_sellerkey):
-    # Get product information for the specified sellerkey
-    product_info = Seller.get_product_info(s_sellerkey)
-    
-    # Render the template with the product information
-    return render_template('seller_inventory.html', product_info=product_info)
+    # Get the current page from the query parameters or default to page 1
+    page = int(request.args.get('page', 1))
+
+    # Define the number of products per page
+    products_per_page = 10
+
+    # Calculate the offset for the query based on the current page
+    offset = (page - 1) * products_per_page
+
+    # Get product information for the specified sellerkey, limited by pagination
+    product_info = Seller.get_product_info(s_sellerkey, limit=products_per_page, offset=offset)
+
+    # Calculate the total number of products
+    total_products = Seller.get_total_product_count(s_sellerkey)
+
+    # Calculate the total number of pages
+    total_pages = (total_products + products_per_page - 1) // products_per_page
+
+    # Render the template with the product information and pagination details
+    return render_template('seller_inventory.html', product_info=product_info, current_page=page, total_pages=total_pages)
 
 
 @bp.route('/seller/<s_sellerkey>/order', methods=['GET', 'POST'])

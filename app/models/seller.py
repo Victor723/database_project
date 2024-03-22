@@ -20,14 +20,15 @@ class Seller():
 
 
     @staticmethod
-    def get_product_info(sellerkey):
+    def get_product_info(id, limit=10, offset=0):
         rows = app.db.execute("""
             SELECT ps.ps_productkey, p.p_productname, ps.ps_quantity, ps.ps_price, ps.ps_discount, ps.ps_createtime
             FROM ProductSeller ps
             INNER JOIN Product p ON ps.ps_productkey = p.p_productkey
-            WHERE ps.ps_sellerkey = :sellerkey
+            WHERE ps.ps_sellerkey = :id
+            LIMIT :limit OFFSET :offset
             """,
-            sellerkey=sellerkey)
+            id=id, limit=limit, offset=offset)
         
         products = []
         for row in rows:
@@ -41,6 +42,23 @@ class Seller():
             }
             products.append(product_info)      
         return products
+
+    @staticmethod
+    def get_total_product_count(id):
+        row = app.db.execute("""
+            SELECT COUNT(*)
+            FROM ProductSeller
+            WHERE ps_sellerkey = :id
+            """,
+            id=id)
+        
+        if row:
+        # Extract count from the first row of the result list
+            total_count = row[0][0] if row[0] else 0
+            return total_count
+
+        # Return 0 if there are no rows or if the first row is empty
+        return 0
 
 
     @staticmethod
