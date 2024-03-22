@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% if current_user.is_authenticated %}
+{% if current_user %}
   <!-- Display All Product Reviews in a Table -->
   {% if my_products_reviews %}
     <h2>Product Reviews</h2>
