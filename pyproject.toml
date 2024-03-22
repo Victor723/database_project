@@ -3,7 +3,6 @@ name = "mini-amazon"
 version = "1.2023.0"
 authors = ["CompSci 316 Teaching Staff <compsci-316@duke.edu>"]
 description = "Mini Amazon Course Project"
-package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"

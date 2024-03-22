@@ -27,3 +27,9 @@ def myreview():
         # render the page by adding information to the myreviews.html file
         return render_template('myreview.html', my_products_reviews = productreviews, my_seller_reviews = sellerreviews)#, my_top5_reviews = top5_reviews)
     return render_template('myreview.html')
+
+@bp.route('/<u_userkey>/myreview', methods=['GET'])
+def get_myreview(u_userkey):
+    productreviews = ProductReview.get_top5_user_reviews(u_userkey)
+    sellerreviews = SellerReview.get_top5_user_reviews(u_userkey)
+    return render_template('myreview.html', my_products_reviews = productreviews, my_seller_reviews = sellerreviews)#, my_top5_reviews = top5_reviews)
