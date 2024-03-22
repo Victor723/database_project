@@ -24,3 +24,13 @@ SELECT p_productkey, p_productname, p_price
 FROM Product
 ''')
         return [Product(*row) for row in rows]
+
+    @staticmethod
+    def get_top_K(k):
+        rows = app.db.execute(f'''
+SELECT p_productkey, p_productname, p_price
+FROM Product
+ORDER BY p_price DESC
+LIMIT {k};
+''')
+        return [Product(*row) for row in rows]

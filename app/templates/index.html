@@ -5,9 +5,11 @@
 <br><br>
 
 <div>
-  <label for="topK">Enter value for k:</label>
-  <input type="number" id="topK" name="topK" min="1" value="5">
-  <button onclick="findTopK()">Find Top K</button>
+  <form method="post">
+    <label for="topK">Enter value for k:</label>
+    <input type="number" id="topK" name="topK" min="1" value="5">
+    <button type="submit">Show Top K</button>
+  </form>
 </div>
 
 <h2>Products for sale:</h2>
@@ -22,9 +24,9 @@
   <tbody>
     {% for product in avail_products%}
       <tr>
-        <th scope="row">{{product.id}}</th>
-        <td>{{product.name}}</td>
-        <td>{{product.price}}</td>
+        <th scope="row">{{product.p_productkey}}</th>
+        <td>{{product.p_productname}}</td>
+        <td>{{product.p_price}}</td>
       </tr>
     {% endfor %}
   </tbody>
@@ -53,7 +55,7 @@
 </table>
 {% else %}
 <p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history!</p>
-{% endif %}
- -->
+{% endif %} 
+-->
 
 {% endblock %}
