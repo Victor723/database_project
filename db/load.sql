@@ -49,3 +49,11 @@ SELECT pg_catalog.setval('public.cart_c_cartkey_seq',
 SELECT pg_catalog.setval('public.productcart_pc_prodcartkey_seq',
                          (SELECT MAX(pc_prodcartkey)+1 FROM ProductCart),
                          false);
+
+\COPY Orders FROM 'Orders.csv' WITH DELIMITER ',' NULL '' CSV
+SELECT pg_catalog.setval('public.orders_o_orderkey_seq',
+                         (SELECT MAX(o_orderkey)+1 FROM Orders),
+                         false);
+
+\COPY Lineitem FROM 'LineItems.csv' WITH DELIMITER ',' NULL '' CSV
+
