@@ -52,12 +52,7 @@ def seller_inventory(s_sellerkey):
     total_pages = (total_products + products_per_page - 1) // products_per_page
 
     # Render the template with the product information and pagination details
-<<<<<<< HEAD
-    return render_template('seller_inventory.html', product_info=product_info, current_page=page, total_pages=total_pages)
-=======
     return render_template('seller_inventory.html', seller_key=s_sellerkey, product_info=product_info, current_page=page, total_pages=total_pages)
->>>>>>> a1bf68067653a094b07c2951eb100c320146f30a
-
 
 @bp.route('/seller/<s_sellerkey>/order', methods=['GET', 'POST'])
 def seller_order(s_sellerkey):
