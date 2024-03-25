@@ -20,12 +20,13 @@ def seller_login(u_userkey):
 
 @bp.route('/seller/<s_sellerkey>', methods=['GET', 'POST'])
 def seller_homepage(s_sellerkey):
-    # user = User.get_user(u_userkey)
-    # Extract the user's/seller's name
-    # seller_name = f"{user.u_firstname} {user.u_lastname}" if user else None 
-    
-    seller_name = "Zero"
-
+    user_info = Seller.get_seller_information(s_sellerkey)
+    # Check if user_info is not empty and contains user's name
+    if user_info:
+        seller_name = user_info[0]['first_name'] + user_info[0]['last_name']
+    else:
+        # Handle case where user_info is empty or invalid seller key
+        seller_name = "User Not Found"
     # Render the HTML template with the fetched data
     return render_template('seller_homepage.html', seller_name=seller_name, seller_key=s_sellerkey)
 
@@ -51,7 +52,11 @@ def seller_inventory(s_sellerkey):
     total_pages = (total_products + products_per_page - 1) // products_per_page
 
     # Render the template with the product information and pagination details
+<<<<<<< HEAD
     return render_template('seller_inventory.html', product_info=product_info, current_page=page, total_pages=total_pages)
+=======
+    return render_template('seller_inventory.html', seller_key=s_sellerkey, product_info=product_info, current_page=page, total_pages=total_pages)
+>>>>>>> a1bf68067653a094b07c2951eb100c320146f30a
 
 
 @bp.route('/seller/<s_sellerkey>/order', methods=['GET', 'POST'])
@@ -60,14 +65,17 @@ def seller_order(s_sellerkey):
     order_info = Seller.get_order_info(s_sellerkey)
     
     # Render the template with the order information
-    return render_template('seller_order.html', order_info=order_info)
+    return render_template('seller_order.html', seller_key=s_sellerkey, order_info=order_info)
 
 
 @bp.route('/seller/<s_sellerkey>/review', methods=['GET', 'POST'])
 def seller_review(s_sellerkey):
     seller_review = Seller.get_seller_review(s_sellerkey)
-    return render_template('seller_review.html',seller_review=seller_review)
+    return render_template('seller_review.html', seller_key=s_sellerkey, seller_review=seller_review)
 
 
-
+@bp.route('/seller/<s_sellerkey>/profile', methods=['GET', 'POST'])
+def seller_profile(s_sellerkey):
+    seller_profile = Seller.get_seller_information(s_sellerkey)
+    return render_template('seller_profile.html', seller_key=s_sellerkey, seller_profile=seller_profile)
 

@@ -2,9 +2,10 @@ from flask import current_app as app
 
 
 class Seller():
-    def __init__(self, id, userkey, registrationdate):
+    def __init__(self, id, userkey, companyname, registrationdate):
         self.id = id
         self.userkey = userkey
+        self.companyname = companyname
         self.registrationdate = registrationdate
 
     @staticmethod
@@ -17,6 +18,34 @@ class Seller():
             userkey=userkey)
         sellerkey = rows[0][0] if rows else None
         return sellerkey
+    
+
+    @staticmethod
+    def get_seller_information(id):
+        rows = app.db.execute("""
+            SELECT u.u_firstname, u.u_lastname, u.u_email, s.s_companyname, u.u_streetaddress, 
+                   u.u_city, u.u_stateregion, u.u_zipcode, u.u_country, u.u_phonenumber
+            FROM Seller s
+            JOIN Users u ON s.s_userkey = u.u_userkey
+            WHERE s.s_sellerkey = :id
+            """, 
+            id=id)
+
+        seller_information = []
+        for row in rows:
+            seller_information.append({
+                'first_name': row[0],
+                'last_name': row[1],
+                'email': row[2],
+                'company_name': row[3],
+                'street_address': row[4],
+                'city': row[5],
+                'state_region': row[6],
+                'zipcode': row[7],
+                'country': row[8],
+                'phone_number': row[9],
+            })
+        return seller_information
 
 
     @staticmethod
@@ -42,6 +71,24 @@ class Seller():
             }
             products.append(product_info)      
         return products
+
+    @staticmethod
+    def get_total_product_count(id):
+        row = app.db.execute("""
+            SELECT COUNT(*)
+            FROM ProductSeller
+            WHERE ps_sellerkey = :id
+            """,
+            id=id)
+        
+        if row:
+        # Extract count from the first row of the result list
+            total_count = row[0][0] if row[0] else 0
+            return total_count
+
+        # Return 0 if there are no rows or if the first row is empty
+        return 0
+
 
     @staticmethod
     def get_total_product_count(id):
@@ -88,14 +135,22 @@ class Seller():
         return order_info
 
 
-
     @staticmethod
     def get_seller_review(id):
         rows = app.db.execute("""
-            SELECT sr_sellerkey, sr_userkey, sr_sellername, sr_orderkey, sr_reviewdate, sr_review, sr_rating
-            FROM SellerReview
+            SELECT CONCAT(u.u_firstname, ' ', u.u_lastname) AS user_name, sr.sr_userkey, sr.sr_reviewdate, sr.sr_review, sr.sr_rating
+            FROM SellerReview sr
+            JOIN Users u ON sr.sr_userkey = u.u_userkey
             WHERE sr_sellerkey = :id
-            """,
-            id=id)
-        return [row for row in rows]
+        """, id=id)
 
+        seller_review = []
+        for row in rows:
+            seller_review.append({
+                'user_name': row[0],
+                'user_key': row[1],
+                'date': row[2],
+                'review': row[3],
+                'rating': row[4]
+            })
+        return seller_review
