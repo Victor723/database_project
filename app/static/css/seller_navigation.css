@@ -1,0 +1,82 @@
+/* Navigation */
+.navigation {
+    position: absolute;
+    width: 244px;
+    height: 459px;
+    left: 24 px;
+    top: 115px;
+}
+
+.navigation ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navigation li {
+    margin-bottom: 7px;
+}
+
+.navigation a {
+    display: block;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 18px;
+    text-decoration: none;
+    color: #3858D6;
+}
+
+.navigation a:hover {
+    color: #8B8E99;
+}
+
+/* Dashboard Link */
+.dashboard-link {
+    position: absolute;
+    width: 169px;
+    height: 42px;
+    left: 12%;
+    top: 20%;
+    color: #3858D6;
+}
+
+/* Inventory Link */
+.inventory-link {
+    position: absolute;
+    width: 169px;
+    height: 42px;
+    left: 12%;
+    top: 30%;
+    color: #3858D6;
+}
+
+/* Order Link */
+.order-link {
+    position: absolute;
+    width: 169px;
+    height: 42px;
+    left: 12%;
+    top: 40%;
+    color: #3858D6;
+}
+
+/* Review Link */
+.review-link {
+    position: absolute;
+    width: 169px;
+    height: 42px;
+    left: 12%;
+    top: 50%;
+    color: #3858D6;
+}
+
+/* Profile Link */
+.profile-link {
+    position: absolute;
+    width: 169px;
+    height: 42px;
+    left: 12%;
+    top: 60%;
+    color: #3858D6;
+}

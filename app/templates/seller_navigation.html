@@ -1,10 +1,10 @@
 <!-- navigation.html -->
 <div class="navigation">
     <ul>
-        <li><a href="{{ url_for('sellers.seller_homepage', s_sellerkey=seller_key) }}">Dashboard</a></li>
-        <li><a href="{{ url_for('sellers.seller_inventory', s_sellerkey=seller_key) }}">Inventory</a></li>
-        <li><a href="{{ url_for('sellers.seller_order', s_sellerkey=seller_key) }}">Order</a></li>
-        <li><a href="{{ url_for('sellers.seller_review', s_sellerkey=seller_key) }}">Review</a></li>
-        <li><a href="{{ url_for('sellers.seller_profile', s_sellerkey=seller_key) }}">Profile</a></li>
+        <li><a class="dashboard-link" href="{{ url_for('sellers.seller_homepage', s_sellerkey=seller_key) }}">Dashboard</a></li>
+        <li><a class="inventory-link" href="{{ url_for('sellers.seller_inventory', s_sellerkey=seller_key) }}">Inventory</a></li>
+        <li><a class="order-link" href="{{ url_for('sellers.seller_order', s_sellerkey=seller_key) }}">Order</a></li>
+        <li><a class="review-link" href="{{ url_for('sellers.seller_review', s_sellerkey=seller_key) }}">Review</a></li>
+        <li><a class="profile-link" href="{{ url_for('sellers.seller_profile', s_sellerkey=seller_key) }}">Profile</a></li>
     </ul>
 </div>
