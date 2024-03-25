@@ -95,7 +95,8 @@ def gen_sellers(num_sellers):
                 print(f'{sid}', end=' ', flush=True)
             userkey = sid
             registration_date = fake.date_time_this_year()
-            writer.writerow([sid, userkey, registration_date])
+            company_name = fake.company()
+            writer.writerow([sid, userkey, company_name, registration_date])
         print(f'{num_sellers} generated')
     return
 
