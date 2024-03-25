@@ -5,12 +5,14 @@
 <br><br>
 
 <div>
-  <form method="post">
+  <form method="post" id="topKForm">
     <label for="topK">Enter value for k:</label>
-    <input type="number" id="topK" name="topK" min="1" value="5">
+    <input type="number" id="topK" name="topK" min="1" value="">
     <button type="submit">Show Top K</button>
   </form>
 </div>
+
+
 
 <h2>Products for sale:</h2>
 <table class='table table-hover table-bordered container'>
@@ -33,6 +35,23 @@
 </table>
 
 <br><br>
+
+<script>
+  // Wait for the DOM to be fully loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if there's a stored value in Local Storage and set it as the input value
+    const savedTopK = localStorage.getItem('topKValue');
+    if (savedTopK) {
+      document.getElementById('topK').value = savedTopK;
+    }
+  
+    // Listen for form submission to store the input value
+    document.getElementById('topKForm').addEventListener('submit', function() {
+      const topKValue = document.getElementById('topK').value;
+      localStorage.setItem('topKValue', topKValue);
+    });
+  });
+  </script>
 <!-- {% if current_user.is_authenticated %}
 <h2>Your recent purchases:</h2>
 <table class='table table-hover table-bordered container'>
