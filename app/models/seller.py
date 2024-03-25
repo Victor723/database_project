@@ -72,6 +72,23 @@ class Seller():
             products.append(product_info)      
         return products
 
+    @staticmethod
+    def get_total_product_count(id):
+        row = app.db.execute("""
+            SELECT COUNT(*)
+            FROM ProductSeller
+            WHERE ps_sellerkey = :id
+            """,
+            id=id)
+        
+        if row:
+        # Extract count from the first row of the result list
+            total_count = row[0][0] if row[0] else 0
+            return total_count
+
+        # Return 0 if there are no rows or if the first row is empty
+        return 0
+
 
     @staticmethod
     def get_total_product_count(id):
