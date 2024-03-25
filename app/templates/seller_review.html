@@ -1,0 +1,31 @@
+<!-- seller_review.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+    {% include "seller_navigation.html" %}
+    <h1>Seller Review</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Custom Name</th>
+                <th>Custom ID</th>
+                <th>Review Date</th>
+                <th>Review</th>
+                <th>Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for review in seller_review %}
+            <tr>
+                <td>{{ review.user_name }}</td>
+                <td>{{ review.user_key }}</td>
+                <td>{{ review.date }}</td>
+                <td>{{ review.review }}</td>
+                <td>{{ review.rating }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
