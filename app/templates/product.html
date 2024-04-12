@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div>
+  
+  <h2>Products details: </h2>
+  <table class='table table-hover table-bordered container'>
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Product ID</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Description</th>
+            <th scope="col">Image</th>
+            <th scope="col">Category</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">{{product_details.p_productkey}}</th>
+            <td>{{product.p_productname}}</td>
+            <td>{{product.p_price}}</td>
+            <td>{{product.p_description}}</td>
+            <td>{{product.p_imageurl}}</td>
+            <td>{{cat_name}}</td>
+
+        </tr>
+    </tbody>
+  </table>
+
+{% endblock %}

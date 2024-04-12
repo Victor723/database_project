@@ -64,7 +64,7 @@ def gen_products(num_products):
             p_description = fake.text(max_nb_chars=200)  # Generate a fake product description
             p_imageurl = fake.image_url()  # Generate a fake image URL
             p_catkey = fake.random_int(min=0, max=num_categories - 1)
-            p_link = fake.url()  # Generate a fake URL for the product
+            #p_link = fake.url()  # Generate a fake URL for the product
             writer.writerow([pid, name, price, p_description, p_imageurl, p_catkey, p_link])
         print(f'\n{num_products} generated.')
 
