@@ -12,14 +12,17 @@ class ProductReview:
         self.pr_rating = pr_rating
 
     @staticmethod
-    def get(pr_productkey, pr_userkey):
+    def get(pr_userkey, pr_productkey):
         rows = app.db.execute('''
 SELECT pr_productkey, pr_userkey, pr_productname, pr_orderkey, pr_reviewdate, pr_review, pr_rating
 FROM ProductReview
 WHERE pr_productkey = :pr_productkey AND pr_userkey = :pr_userkey
 ''',
                               pr_productkey = pr_productkey, pr_userkey = pr_userkey)
-        return ProductReview(*(rows[0])) if rows is not None else None
+        if rows:
+            return ProductReview(*rows[0])
+        else:
+            return None
 
     
     @staticmethod
@@ -44,4 +47,13 @@ LIMIT 5
 ''',
                               pr_userkey = pr_userkey)
         return [ProductReview(*row) for row in rows]
+    
+    @staticmethod
+    def delete_product_review(pr_userkey, pr_productkey):
+        app.db.execute('''
+DELETE
+FROM ProductReview
+WHERE pr_productkey = :pr_productkey AND pr_userkey = :pr_userkey
+''',
+                              pr_userkey = pr_userkey, pr_productkey = pr_productkey)
 

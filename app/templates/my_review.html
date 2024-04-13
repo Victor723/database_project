@@ -22,6 +22,14 @@
             <td>{{ review.pr_reviewdate }}</td>
             <td>{{ review.pr_review }}</td>
             <td>{{ review.pr_rating }}</td>
+            <td>
+              <!-- Edit button -->
+              <a href="{{ url_for('myreview.edit_product_review', pr_userkey=review.pr_userkey, pr_productkey=review.pr_productkey) }}" class="btn btn-primary">Edit</a>
+              <!-- Delete button -->
+              <form action="{{ url_for('myreview.delete_product_review', pr_userkey=review.pr_userkey, pr_productkey=review.pr_productkey) }}" method="POST">
+                  <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+          </td>
           </tr>
         {% endfor %}
       </tbody>
@@ -47,6 +55,14 @@
             <td>{{ review.sr_reviewdate }}</td>
             <td>{{ review.sr_review }}</td>
             <td>{{ review.sr_rating }}</td>
+            <td>
+              <!-- Edit button -->
+              <a href="{{ url_for('myreview.edit_seller_review', sr_userkey=review.sr_userkey, sr_sellerkey=review.sr_sellerkey) }}" class="btn btn-primary">Edit</a>
+              <!-- Delete button -->
+              <form action="{{ url_for('myreview.delete_seller_review', sr_userkey=review.sr_userkey, sr_sellerkey=review.sr_sellerkey) }}" method="POST">
+                  <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+          </td>
           </tr>
         {% endfor %}
       </tbody>

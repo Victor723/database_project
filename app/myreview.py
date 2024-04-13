@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for, flash
 from flask_login import current_user
 import datetime
 
@@ -9,27 +9,47 @@ from flask import Blueprint
 bp = Blueprint('myreview', __name__)
 
 
-@bp.route('/myreview', methods=['GET', 'POST'])
-def myreview():
-    if request.method == 'POST':
-        user_id = request.form.get('user_id')
-        # get all product reviews from the user:
-        productreviews = ProductReview.get_top5_user_reviews(user_id)
-        # get all seller reviews from the user:
-        sellerreviews = SellerReview.get_top5_user_reviews(user_id)
-        # get the most recent five reviews 
-        # standardize reviews into a common format: (date, review_object)
-        #standardized_reviews = [(review.pr_reviewdate, review) for review in productreviews] + [(review.sr_reviewdate, review) for review in sellerreviews]
-        # sort standardized reviews by date in descending order
-        #standardized_reviews.sort(key=lambda x: x[0], reverse=True)
-        # extract the review objects from the sorted list and get the top 5
-        #top5_reviews = [review for _, review in standardized_reviews[:5]]
-        # render the page by adding information to the myreviews.html file
-        return render_template('myreview.html', my_products_reviews = productreviews, my_seller_reviews = sellerreviews)#, my_top5_reviews = top5_reviews)
-    return render_template('myreview.html')
-
 @bp.route('/<u_userkey>/myreview', methods=['GET'])
 def get_myreview(u_userkey):
-    productreviews = ProductReview.get_top5_user_reviews(u_userkey)
-    sellerreviews = SellerReview.get_top5_user_reviews(u_userkey)
-    return render_template('myreview.html', my_products_reviews = productreviews, my_seller_reviews = sellerreviews)#, my_top5_reviews = top5_reviews)
+    productreviews = ProductReview.get_user_reviews(u_userkey)
+    sellerreviews = SellerReview.get_user_reviews(u_userkey)
+    # display all reviews written by the user
+    return render_template('my_review.html', my_products_reviews = productreviews, my_seller_reviews = sellerreviews)#, my_top5_reviews = top5_reviews)
+
+@bp.route('/delete_product_review/<pr_userkey>/<pr_productkey>', methods=['POST'])
+def delete_product_review(pr_userkey, pr_productkey):
+    # Assuming a method exists to delete the review based on both keys
+    review = ProductReview.get(pr_userkey, pr_productkey)
+    if review:
+        ProductReview.delete_product_review(pr_userkey, pr_productkey)
+        flash('Review successfully deleted.', 'success')
+        pass
+    return redirect(url_for('myreview.get_myreview', u_userkey=pr_userkey))
+
+@bp.route('/delete_seller_review/<sr_userkey>/<sr_sellerkey>', methods=['POST'])
+def delete_seller_review(sr_userkey, sr_sellerkey):
+    # Assuming a method exists to delete the review based on both keys
+    review = SellerReview.get(sr_userkey, sr_sellerkey)
+    if review:
+        SellerReview.delete_seller_review(sr_userkey, sr_sellerkey)
+        flash('Review successfully deleted.', 'success')
+        pass
+    return redirect(url_for('myreview.get_myreview', u_userkey=sr_userkey))
+
+@bp.route('/edit_product_review/<pr_userkey>/<pr_productkey>', methods=['GET'])
+def edit_product_review(pr_userkey, pr_productkey):
+    review = ProductReview.get(pr_userkey, pr_productkey)
+    if review:
+        return render_template('edit_review.html', review=review, pr_userkey=pr_userkey, pr_productkey=pr_productkey)
+    else:
+        # Handle the case where the review does not exist
+        return redirect(url_for('myreview.get_myreview', u_userkey=pr_userkey))
+    
+@bp.route('/edit_product_review/<sr_userkey>/<sr_sellerkey>', methods=['GET'])
+def edit_seller_review(sr_userkey, sr_sellerkey):
+    review = SellerReview.get(sr_userkey, sr_sellerkey)
+    if review:
+        return render_template('edit_review.html', review=review, sr_userkey=sr_userkey, sr_sellerkey=sr_sellerkey)
+    else:
+        # Handle the case where the review does not exist
+        return redirect(url_for('myreview.get_myreview', u_userkey=sr_userkey))
