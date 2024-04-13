@@ -15,10 +15,11 @@
                     <th>Price</th>
                     <th>Discount</th>
                     <th>Create Time</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% for product in product_info %}
+                {% for product in productseller_info %}
                 <tr>
                     <td>{{ product.productkey }}</td>
                     <td>{{ product.productname }}</td>
@@ -26,6 +27,11 @@
                     <td>{{ product.price }}</td>
                     <td>{{ product.discount }}</td>
                     <td>{{ product.createtime }}</td>
+                    <td>
+                        <!-- Button for redirecting to product details -->
+                        <a href="{{ url_for('sellers.seller_product_details', s_sellerkey=seller_key, p_productkey=product.productkey) }}" class="btn btn-primary">Details</a>
+                    </td>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

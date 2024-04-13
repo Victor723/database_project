@@ -6,6 +6,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
 from .models.seller import Seller
+from .models.productseller import ProductSeller
 
 
 from flask import Blueprint
@@ -43,25 +44,50 @@ def seller_inventory(s_sellerkey):
     offset = (page - 1) * products_per_page
 
     # Get product information for the specified sellerkey, limited by pagination
-    product_info = Seller.get_product_info(s_sellerkey, limit=products_per_page, offset=offset)
+    productseller_info = ProductSeller.get_productseller_info(s_sellerkey, limit=products_per_page, offset=offset)
 
     # Calculate the total number of products
-    total_products = Seller.get_total_product_count(s_sellerkey)
+    total_products = ProductSeller.get_total_product_count(s_sellerkey)
 
     # Calculate the total number of pages
     total_pages = (total_products + products_per_page - 1) // products_per_page
 
     # Render the template with the product information and pagination details
-    return render_template('seller_inventory.html', seller_key=s_sellerkey, product_info=product_info, current_page=page, total_pages=total_pages)
+    return render_template('seller_inventory.html', seller_key=s_sellerkey, productseller_info=productseller_info, current_page=page, total_pages=total_pages)
+
+
+@bp.route('/seller/<s_sellerkey>/<p_productkey>/details', methods=['GET', 'POST'])
+def seller_product_details(s_sellerkey, p_productkey):
+    # Get product information for the specified seller key and product key
+    product_info = ProductSeller.get_product_info(s_sellerkey, p_productkey)
+    print(product_info)
+    # Render the template with the product information
+    return render_template('seller_product_details.html', product_info=product_info)
 
 
 @bp.route('/seller/<s_sellerkey>/order', methods=['GET', 'POST'])
 def seller_order(s_sellerkey):
-    # Get order information for the specified sellerkey
-    order_info = Seller.get_order_info(s_sellerkey)
-    
-    # Render the template with the order information
-    return render_template('seller_order.html', seller_key=s_sellerkey, order_info=order_info)
+    # Get the current page from the query parameters or default to page 1
+    page = int(request.args.get('page', 1))
+
+    # Define the number of orders per page
+    orders_per_page = 10
+
+    # Calculate the offset for the query based on the current page
+    offset = (page - 1) * orders_per_page
+
+    # Get order information for the specified seller key, limited by pagination
+    order_info = Seller.get_order_info(s_sellerkey, limit=orders_per_page, offset=offset)
+
+    # Calculate the total number of orders
+    total_orders = Seller.get_total_order_count(s_sellerkey)
+
+    # Calculate the total number of pages
+    total_pages = (total_orders + orders_per_page - 1) // orders_per_page
+
+    # Render the template with the order information and pagination details
+    return render_template('seller_order.html', seller_key=s_sellerkey, order_info=order_info, current_page=page, total_pages=total_pages)
+
 
 
 @bp.route('/seller/<s_sellerkey>/review', methods=['GET', 'POST'])
