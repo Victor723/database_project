@@ -45,7 +45,7 @@ def edit_product_review(pr_userkey, pr_productkey):
         # Handle the case where the review does not exist
         return redirect(url_for('myreview.get_myreview', u_userkey=pr_userkey))
     
-@bp.route('/edit_product_review/<sr_userkey>/<sr_sellerkey>', methods=['GET'])
+@bp.route('/edit_seller_review/<sr_userkey>/<sr_sellerkey>', methods=['GET'])
 def edit_seller_review(sr_userkey, sr_sellerkey):
     review = SellerReview.get(sr_userkey, sr_sellerkey)
     if review:
