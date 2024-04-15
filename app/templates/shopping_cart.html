@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+{# {% if current_user.is_authenticated %} #}
+<div class="container mt-3">
+    <div class="row">
+        <!-- Cart Items Column -->
+        <div class="col-md-8">
+            {% if cart_items %}
+                <h2 class="mb-4 duke-blue">Shopping Cart</h2>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr class="duke-blue-bg white-text">
+                                <th scope="col">Product</th>
+                                <th scope="col">Seller</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                            <tr>
+                                <td>{{ item.p_productname }}</td>
+                                <td>{{ item.u_firstname ~ ' ' ~ item.u_lastname }}</td>
+                                <td>${{ "%.2f"|format(item.ps_price) }}</td>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" value="{{ item.pc_incartquantity }}" min="1">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-secondary" type="button">Update</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary" type="button">Save for Later</button>
+                                   <!-- 'Remove' Button with a Red Color -->
+                                    <button class="btn btn-danger" type="button">Remove</button>
+
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">No items in the cart.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Button to go to Save for Later page -->
+                <div class="mt-3">
+                    <a href="http://127.0.0.1:8080/{{ u_userkey }}/save-for-later" class="btn btn-secondary btn-block">
+                        Go to Save for Later
+                    </a>
+                </div>
+
+
+            {% else %}
+                <h2 class="text-center mt-5">Your Shopping Cart is empty.</h2>
+            {% endif %}
+        </div>
+        
+        <!-- Cart Summary Column -->
+        <div class="col-md-4">
+            {% if cart_items %}
+                <div class="card mb-3">
+                    <div class="card-header">Cart Summary</div>
+                    <div class=card-body black-text">
+                        <p class="card-text">Subtotal: ${{ subtotal }}</p>
+                        <p class="card-text">Shipping: ${{ shipping }}</p>
+                        <p class="card-text">Discount: ${{ discount }}</p>
+                        <p class="card-text">Tax: ${{ tax }}</p>
+                        <h4 class="card-title">Total: ${{ total }}</h4>
+                        <button class="btn btn-primary btn-block" type="button">Proceed to Checkout</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body black-bg white-text">
+                        <h5 class="card-title">Have a Coupon?</h5>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Coupon Code">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">Apply Coupon</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+ {# {% else %} #}
+    <!-- <p>You must be logged in to view this page.</p> -->
+    <!-- <a href="{{ url_for('users.login') }}" class="btn btn-primary">Login</a> -->
+ {# {% endif %} #}
+
