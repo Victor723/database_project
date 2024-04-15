@@ -10,15 +10,25 @@ class Product:
         self.p_imageurl = p_imageurl 
         self.p_catkey = p_catkey
 
+#     @staticmethod
+#     def get(p_productkey):
+#         rows = app.db.execute('''
+# SELECT p_productkey, p_productname, p_price
+# FROM Product
+# WHERE p_productkey = :p_productkey
+# ''',
+#                               p_productkey=p_productkey)
+#         return Product(*(rows[0])) if rows is not None else None
+
     @staticmethod
-    def get(p_productkey):
+    def get_prod_details(p_productkey):
         rows = app.db.execute('''
-SELECT p_productkey, p_productname, p_price
-FROM Product
+SELECT * FROM Product
 WHERE p_productkey = :p_productkey
 ''',
-                              p_productkey=p_productkey)
+                      p_productkey=p_productkey)
         return Product(*(rows[0])) if rows is not None else None
+    
 
     @staticmethod
     def get_all(available=True):
@@ -38,11 +48,4 @@ LIMIT {k};
 ''')
         return [Product(*row) for row in rows]
 
-    @staticmethod
-    def get_prod_details(p_productkey):
-        rows = app.db.execute('''
-SELECT * FROM Product
-WHERE p_productkey = :p_productkey
-''',
-                      p_productkey=p_productkey)
-        return Product(*(rows[0]))
+

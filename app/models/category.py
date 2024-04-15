@@ -7,11 +7,11 @@ class Category:
         self.catname = catname
 
     @staticmethod
-    def get(catkey):
+    def get_catname(catkey):
         row = app.db.execute('''
 SELECT cat_catname
 FROM Category
 WHERE cat_catkey = :catkey
 ''',
                               catkey=catkey)
-        return row[0] if row else None
+        return row[0][0] if row else None
