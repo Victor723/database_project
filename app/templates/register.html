@@ -21,7 +21,7 @@
     {% endfor %}
   </p>
   <p>
-    {{ form.email.label }} (Could be fake email address)<br/>
+    {{ form.email.label }}<br/>
     {{ form.email(size=64) }}<br/>
     {% for error in form.email.errors %}
     <span style="color: red;">[{{ error }}]</span>
@@ -41,7 +41,58 @@
     <span style="color: red;">[{{ error }}]</span>
     {% endfor %}
   </p>
+  <!-- Additional fields for registration -->
+  <p>
+    {{ form.companyname.label }}<br/>
+    {{ form.companyname(size=32) }}<br/>
+    {% for error in form.companyname.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
+    {{ form.streetaddress.label }}<br/>
+    {{ form.streetaddress(size=32) }}<br/>
+    {% for error in form.streetaddress.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
+    {{ form.city.label }}<br/>
+    {{ form.city(size=32) }}<br/>
+    {% for error in form.city.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
+    {{ form.stateregion.label }}<br/>
+    {{ form.stateregion(size=32) }}<br/>
+    {% for error in form.stateregion.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
+    {{ form.zipcode.label }}<br/>
+    {{ form.zipcode(size=32) }}<br/>
+    {% for error in form.zipcode.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
+    {{ form.country.label }}<br/>
+    {{ form.country(size=32) }}<br/>
+    {% for error in form.country.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  </p>
+  <p>
+    {{ form.phonenumber.label }}<br/>
+    {{ form.phonenumber(size=32) }}<br/>
+    {% for error in form.phonenumber.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+  </p>
   <p>{{ form.submit() }}</p>
 </form>
 
 {% endblock %}
+
