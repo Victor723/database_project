@@ -1,0 +1,31 @@
+{% block content %}
+
+<!-- Display All Seller Reviews in a Table -->
+{% if seller_reviews %}
+<h2>Seller Reviews</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Review Date</th>
+      <th>Review</th>
+      <th>Rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for review in seller_reviews %}
+      <tr>
+        <td>{{ review.sr_reviewdate }}</td>
+        <td>{{ review.sr_review }}</td>
+        <td>{{ review.sr_rating }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% else %}
+<h2>Please log in to view reviews.</h2>
+<!-- You can add a login link or button here -->
+<!-- <a href="/login" class="btn btn-primary">Login</a> -->
+{% endif %}
+
+{% endblock %}
