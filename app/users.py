@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request
 from werkzeug.urls import url_parse
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
@@ -17,25 +17,6 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
-
-
-@bp.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index.index'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.get_by_auth(form.email.data, form.password.data)
-        if user is None:
-            flash('Invalid email or password')
-            return redirect(url_for('users.login'))
-        login_user(user)
-        next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index.index')
-
-        return redirect(next_page)
-    return render_template('login.html', title='Sign In', form=form)
 
 
 class RegistrationForm(FlaskForm):
@@ -69,6 +50,37 @@ class RegistrationForm(FlaskForm):
     #         raise ValidationError('Phone number must be 10 or 11 digits long.')
 
 
+class UserDetailsForm(FlaskForm):
+    firstname = StringField('First Name', validators=[DataRequired()])
+    lastname = StringField('Last Name', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Save Changes')
+
+class ChangePasswordForm(FlaskForm):
+    current_password = PasswordField('Current Password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('new_password')])
+    submit = SubmitField('Change Password')
+
+
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index.index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.get_by_auth(form.email.data, form.password.data)
+        if user is None:
+            flash('Invalid email or password')
+            return redirect(url_for('users.login'))
+        login_user(user)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index.index')
+
+        return redirect(next_page)
+    return render_template('login.html', title='Sign In', form=form)
+
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -96,6 +108,40 @@ def logout():
     logout_user()
     return redirect(url_for('index.index'))
 
-@bp.route('/profile')
-def profile():
-    return
+@bp.route('/user_details', methods=['GET', 'POST'])
+@login_required
+def user_details():
+    user_details_form = UserDetailsForm(request.form)
+    password_form = ChangePasswordForm(request.form)
+    if request.method == 'POST':
+        if 'user_details' in request.form and user_details_form.validate_on_submit():
+            try:
+                success = User.update_user_details(
+                    current_user.userkey,
+                    user_details_form.firstname.data,
+                    user_details_form.lastname.data,
+                    user_details_form.email.data
+                )
+                if success:
+                    flash('Your account details have been updated.', 'success')
+                else:
+                    flash('An error occurred while updating your details.', 'error')
+            except Exception as e:
+                flash(str(e), 'error')
+            return redirect(url_for('users.user_details'))
+
+        elif 'change_password' in request.form and password_form.validate_on_submit():
+            try:
+                user = User.get(current_user.userkey)
+                if user and User.check_password(current_user.userkey, password_form.current_password.data):
+                    if User.update_password(current_user.userkey, password_form.new_password.data):
+                        flash('Your password has been changed.', 'success')
+                    else:
+                        flash('Your password has not been changed.', 'error')
+                else:
+                    flash('Current password is incorrect.', 'error')
+            except Exception as e:
+                flash(str(e), 'error')
+            return redirect(url_for('users.user_details'))
+
+    return render_template('user_details.html', user_details_form=user_details_form, password_form=password_form)
