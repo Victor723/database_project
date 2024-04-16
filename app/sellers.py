@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, jsonify
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user
 from flask_wtf import FlaskForm
@@ -62,7 +62,21 @@ def seller_product_details(s_sellerkey, p_productkey):
     product_info = ProductSeller.get_product_info(s_sellerkey, p_productkey)
     print(product_info)
     # Render the template with the product information
-    return render_template('seller_product_details.html', product_info=product_info)
+    return render_template('seller_product_details.html', product_info=product_info, seller_key=s_sellerkey)
+
+
+@bp.route('/seller/<s_sellerkey>/<p_productkey>/delete', methods=['GET','POST'])
+def delete_product(s_sellerkey, p_productkey):
+    # Attempt to delete the product
+    message = ProductSeller.delete_product(s_sellerkey, p_productkey)
+
+    # Check if the product was successfully deleted
+    if "successfully" in message:
+        # Product was successfully deleted
+        return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
+    else:
+        # Product deletion failed
+        return jsonify({'message': message}), 500
 
 
 @bp.route('/seller/<s_sellerkey>/order', methods=['GET', 'POST'])

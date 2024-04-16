@@ -82,3 +82,73 @@ class ProductSeller():
 
         # Return None if no product information is found
         return None
+    
+
+    @staticmethod
+    def delete_product(sellerkey, productkey):
+        row = app.db.execute(
+            """
+            SELECT ps_sellerkey, ps_productkey
+            FROM ProductSeller
+            WHERE ps_productkey = :productkey AND ps_sellerkey = :sellerkey
+            """,
+            productkey=productkey, sellerkey=sellerkey
+        )
+
+        if row:
+            # Check if this product has only one seller
+            count = app.db.execute(
+                """
+                SELECT COUNT(*)
+                FROM ProductSeller
+                WHERE ps_productkey = :productkey
+                """,
+                productkey=productkey
+            )
+            sellers_count = count[0][0]
+
+            if sellers_count == 1:
+                # Delete the product from both ProductSeller and Product tables
+                app.db.execute(
+                    """
+                    DELETE FROM ProductSeller
+                    WHERE ps_productkey = :productkey AND ps_sellerkey = :sellerkey
+                    """,
+                    productkey=productkey, sellerkey=sellerkey
+                )
+                app.db.execute(
+                    """
+                    DELETE FROM Product
+                    WHERE p_productkey = :productkey
+                    """,
+                    productkey=productkey
+                )
+                message = "Product deleted successfully."
+            else:
+                # Delete the product from ProductSeller table only
+                app.db.execute(
+                    """
+                    DELETE FROM ProductSeller
+                    WHERE ps_productkey = :productkey AND ps_sellerkey = :sellerkey
+                    """,
+                    productkey=productkey, sellerkey=sellerkey
+                )
+                message = "Product deleted successfully."
+        else:
+            message = "This product doesn't exist."
+        return message
+
+
+    @staticmethod
+    def get_sellerkey_by_productkey(productkey):
+        row = app.db.execute("""
+            SELECT ps_sellerkey
+            FROM ProductSeller
+            WHERE ps_productkey = :productkey
+            """,
+            productkey=productkey)
+        
+        # Extract seller keys from the query result
+        sellerkeys = [sellerkey[0] for sellerkey in row]
+        
+        return sellerkeys

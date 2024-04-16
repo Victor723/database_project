@@ -1,34 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="main-content">
-    <h1>Product Details</h1>
-    {% if product_info %}
-    <div class="product-details">
-        <div>
-            {% if product_info %}
-            <strong>Product Key:</strong> {{ product_info.productkey }}<br>
-            <strong>Product Name:</strong> {{ product_info.productname }}<br>
-            <strong>Price:</strong> {{ product_info.price }}<br>
-            <strong>Description:</strong> {{ product_info.description }}<br>
-            <strong>Category:</strong> {{ product_info.category }}<br>
-            <strong>Quantity:</strong> {{ product_info.quantity }}<br>
-            <strong>Discount:</strong> {{ product_info.discount }}<br>
-            <strong>Create Time:</strong> {{ product_info.createtime }}<br>
-            {% else %}
-            <p>Product doesn't exit</p>
-            {% endif %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/product_detail.css') }}">
+    {% include "seller_navigation.html" %}
+    <div class="main-content">
+        <h1>Product Details</h1>
+        {% if product_info %}
+        <div class="product-details">
+            <div>
+                {% if product_info %}
+                <strong>Product Key:</strong> {{ product_info.productkey }}<br>
+                <strong>Product Name:</strong> {{ product_info.productname }}<br>
+                <strong>Price:</strong> {{ product_info.price }}<br>
+                <strong>Description:</strong> {{ product_info.description }}<br>
+                <strong>Category:</strong> {{ product_info.category }}<br>
+                <strong>Quantity:</strong> {{ product_info.quantity }}<br>
+                <strong>Discount:</strong> {{ product_info.discount }}<br>
+                <strong>Create Time:</strong> {{ product_info.createtime }}<br>
+                {% else %}
+                <p>Product doesn't exit</p>
+                {% endif %}
+            </div>
+            <div>
+                {% if product_info.imageurl %}
+                <img src="{{ product_info.imageurl }}" alt="{{ product_info.productname }}">
+                {% else %}
+                <p>No image available</p>
+                {% endif %}
+            </div>
         </div>
-        <div>
-            {% if product_info.imageurl %}
-            <img src="{{ product_info.imageurl }}" alt="{{ product_info.productname }}">
-            {% else %}
-            <p>No image available</p>
-            {% endif %}
-        </div>
+        {% else %}
+        <p>No product information available</p>
+        {% endif %}
     </div>
-    {% else %}
-    <p>No product information available</p>
-    {% endif %}
-</div>
 {% endblock %}
