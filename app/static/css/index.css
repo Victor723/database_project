@@ -1,0 +1,54 @@
+
+div#formContainer {
+display: flex;
+flex-direction: column; /* Stack forms vertically */
+align-items: start; /* Align forms to the start of the container */
+gap: 20px; /* Adds space between each form */
+}
+
+form {
+display: flex;
+flex-direction: column; /* Stack form elements vertically */
+gap: 10px; /* Adds space between form elements */
+}
+
+form#showAllForm, form#topKForm {
+width: 100%;
+}
+
+.filter-form {
+width: auto;
+}
+
+.filter-form select, .filter-form button {
+margin: 5px 0; /* Adds a bit of margin around the select and button for spacing */
+}
+
+input[type="number"], select, button {
+padding: 8px 12px;
+max-width: 200px; 
+border: 1px solid #ccc;
+border-radius: 4px;
+margin: 4px 0;
+}
+
+button {
+padding: 8px 20px; 
+max-width: 200px; 
+background-color: #1c4168;
+color: white;
+cursor: pointer;
+}
+
+button:hover {
+background-color: #062b52;
+}
+
+label {
+display: block; /* Ensures labels are on their own line */
+margin-bottom: 5px; /* Adds space below the label */
+}
+
+input[type="number"] {
+width: 100%; /* Ensures input fields take up the full width of their parent container */
+}

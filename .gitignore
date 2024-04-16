@@ -6,3 +6,5 @@ poetry.lock
 
 .flaskenv
 temp_backup
+db/data/*.csv
+db/generated/*.csv

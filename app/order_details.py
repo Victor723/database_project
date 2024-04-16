@@ -1,7 +1,6 @@
 from flask import render_template, request
 from flask_login import current_user
 import datetime
-from flask import jsonify
 from .models.user import User
 
 from flask import Blueprint

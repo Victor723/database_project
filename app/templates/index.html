@@ -1,18 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+
 {% extends "base.html" %}
 
 {% block content %}
 
 <br><br>
 
-<div>
+<div id="formContainer">
+  <!-- <form action="/" method="post" id="showAllForm">
+    <button type="submit" name="action" value="showAll">Show All Products</button>
+  </form> -->
+
   <form method="post" id="topKForm">
-    <label for="topK">Enter value for k:</label>
+    <label for="topK">Enter number of product to display:</label>
     <input type="number" id="topK" name="topK" min="1" value="">
-    <button type="submit">Show Top K</button>
+    <button type="submit">Sort by Price</button>
+  </form>
+
+  <form action="/" method="get" class="filter-form">
+    <select name="category" id="categorySelect">
+        <option value="">All Categories</option>
+        {% for category in categories %}
+        <option value="{{ category.catkey }}">{{ category.catname }}</option>
+        {% endfor %}
+    </select>
+    <!-- Confirm button on the right -->
+    <button type="submit">Filter by Category</button>
   </form>
 </div>
 
-
+<br><br>
 
 <h2>Products for sale:</h2>
 <table class='table table-hover table-bordered container'>
@@ -20,6 +42,7 @@
     <tr>
       <th scope="col">Product ID</th>
       <th scope="col">Product Name</th>
+      <th scope="col">Category</th>
       <th scope="col">Price</th>
     </tr>
   </thead>
@@ -27,7 +50,8 @@
     {% for product in avail_products%}
       <tr>
         <th scope="row">{{product.p_productkey}}</th>
-        <td>{{product.p_productname}}</td>
+        <td><a href="/product/{{ product.p_productkey }}">{{product.p_productname}}</td>
+        <td>{{product.p_catname}}</td>
         <td>{{product.p_price}}</td>
       </tr>
     {% endfor %}
@@ -51,30 +75,20 @@
       localStorage.setItem('topKValue', topKValue);
     });
   });
+
+ 
+  document.addEventListener('DOMContentLoaded', (event) => {
+      // Retrieve the current URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const category = urlParams.get('category'); // Get the category parameter from the URL
+
+      if (category) {
+          // If there's a category selected, set it as the selected value in the dropdown
+          document.getElementById('categorySelect').value = category;
+      }
+  });
+
   </script>
-<!-- {% if current_user.is_authenticated %}
-<h2>Your recent purchases:</h2>
-<table class='table table-hover table-bordered container'>
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">Purchase ID</th>
-      <th scope="col">Product Name</th>
-      <th scope="col">Price</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for purchase in purchase_history%}
-      <tr>
-        <th scope="row">{{purchase.id}}</th>
-        <td>{{purchase.pid}}</td>
-        <td>{{purchase.time_purchased}}</td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<p><a href="{{ url_for('users.login') }}">Log in</a> to see your purchase history!</p>
-{% endif %} 
--->
+
 
 {% endblock %}
