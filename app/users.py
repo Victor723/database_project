@@ -144,3 +144,8 @@ def user_details():
             return redirect(url_for('users.user_details'))
 
     return render_template('user_details.html', user_details_form=user_details_form, password_form=password_form)
+
+@bp.route('/user_profile', methods=['GET', 'POST'])
+@login_required
+def user_profile():
+    return render_template('user_profile.html')

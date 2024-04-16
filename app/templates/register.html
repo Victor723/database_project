@@ -29,18 +29,21 @@
   </p>
   <p>
     {{ form.password.label }}<br/>
-    {{ form.password(size=32) }}<br/>
+    {{ form.password(size=32, id='password') }}
+    <button type="button" onclick="togglePasswordVisibility()">Show/Hide</button><br/>
     {% for error in form.password.errors %}
     <span style="color: red;">[{{ error }}]</span>
     {% endfor %}
   </p>
   <p>
     {{ form.password2.label }}<br/>
-    {{ form.password2(size=32) }}<br/>
+    {{ form.password2(size=32, id='password2') }}
+    <button type="button" onclick="togglePasswordVisibility2()">Show/Hide</button><br/>
     {% for error in form.password2.errors %}
     <span style="color: red;">[{{ error }}]</span>
     {% endfor %}
   </p>
+  
   <!-- Additional fields for registration -->
   <p>
     {{ form.companyname.label }}<br/>
@@ -93,6 +96,27 @@
   </p>
   <p>{{ form.submit() }}</p>
 </form>
+
+
+<script>
+  function togglePasswordVisibility() {
+    var passwordInput = document.getElementById('password');
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+    } else {
+      passwordInput.type = 'password';
+    }
+  }
+  function togglePasswordVisibility2() {
+    var passwordInput = document.getElementById('password2');
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+    } else {
+      passwordInput.type = 'password';
+    }
+  }
+  </script>
+
 
 {% endblock %}
 

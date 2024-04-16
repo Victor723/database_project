@@ -1,9 +1,128 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
 
+<style>
+    .profile-page {
+        display: flex;
+        flex-direction: row;
+        gap: 2rem; /* This adds spacing between the sidebar and the profile content */
+    }
 
+    .sidebar {
+        flex: 0 0 250px;
+        padding: 20px;
+        background-color: #f5f5f5;
+    }
 
+    .nav-link {
+        padding: 10px;
+        color: #333;
+        text-decoration: none;
+        display: block;
+        margin: 5px 0;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
 
+    .nav-link:hover,
+    .nav-link.active {
+        background-color: #e7e7e7;
+    }
+
+    .btn-switch {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-top: 20px;
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-switch:hover {
+        background-color: #0056b3;
+    }
+
+    .profile-content {
+        flex: 1;
+        padding: 20px;
+    }
+
+    .profile-container {
+    background-color: #fff; /* White background */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* A subtle shadow */
+    padding: 20px; /* Space inside the box */
+    margin: 20px; /* Space outside the box */
+    }
+
+    .profile-header {
+    border-bottom: 1px solid #eee; /* A light line to separate the header */
+    padding-bottom: 20px; /* Space below the header */
+    margin-bottom: 20px; /* Space below the header before the next content starts */
+    }
+
+    .info-label {
+    display: inline-block; /* Change from flexbox to inline for label */
+    width: 150px; /* Give it a fixed width */
+    margin-right: 10px; /* Spacing between label and value */
+    color: #888; /* A lighter color for labels */
+    font-weight: normal;
+    }
+
+    .info-value {
+    display: inline-block; /* Allow the value to be inline with the label */
+    }
+</style>
+
+<div class="profile-page">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <nav class="nav flex-column">
+            <a class="nav-link active" href="{{ url_for('users.user_profile') }}">Dashboard</a>
+            <a class="nav-link" href="{{ url_for('users.user_details') }}">Account Details</a>
+            <span class="nav-link disabled">Order History</span>
+            <span class="nav-link disabled">Track Order</span>
+            <span class="nav-link disabled">Address</span>
+            <span class="nav-link disabled">My Review</span>
+            <span class="nav-link disabled">Wallet</span>
+        </nav>
+        <button type="button" class="btn-switch">Switch to seller</button>
+    </aside>
+
+    <!-- Profile Content -->
+    <div class="profile-container">
+        <div class="profile-header">
+            <!-- <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Profile Picture"> -->
+            <h2>{{ current_user.firstname }} {{ current_user.lastname }}</h2>
+            <p>{{ current_user.email }}</p>
+        </div>
+        <div class="profile-info">
+            <div class="info-row">
+                <label class="info-label">Company Name:</label>
+                <span class="info-value">{{ current_user.companyname }}</span>
+            </div>
+            <div class="info-row">
+                <label class="info-label">Address:</label>
+                <span class="info-value">
+                    {{ current_user.streetaddress }},
+                    {{ current_user.city }},
+                    {{ current_user.stateregion }},
+                    {{ current_user.zipcode }},
+                    {{ current_user.country }}
+                </span>
+            </div>
+            <div class="info-row">
+                <label class="info-label">Phone Number:</label>
+                <span class="info-value">{{ current_user.phonenumber }}</span>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
