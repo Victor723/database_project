@@ -3,10 +3,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_order.css') }}">
     {% include "seller_navigation.html" %}
     <div class="main-content">
         <h1>Orders</h1>
-        <table>
+        <table class="order-table">
             <thead>
                 <tr>
                     <th>Order ID</th>
@@ -30,5 +32,18 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <!-- Pagination controls -->
+        <div class="pagination">
+            <span>Page {{ current_page }} of {{ total_pages }}</span>
+            <a href="?page=1">First</a>
+            {% if current_page > 1 %}
+                <a href="?page={{ current_page - 1 }}">Previous</a>
+            {% endif %}
+            {% if current_page < total_pages %}
+                <a href="?page={{ current_page + 1 }}">Next</a>
+            {% endif %}
+            <a href="?page={{ total_pages }}">Last</a>
+        </div>
     </div>
 {% endblock %}
