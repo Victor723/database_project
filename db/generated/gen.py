@@ -3,6 +3,8 @@ import random
 from faker import Faker
 from werkzeug.security import generate_password_hash
 from datetime import datetime
+import itertools
+
 fake = Faker()
 Faker.seed(0)
 
@@ -13,7 +15,7 @@ num_product_carts = 200
 
 num_sellers = 50 
 num_categories = 50
-num_lineitems = 200
+num_lineitems = 5
 num_orders = 200
 num_product_reviews = 50
 num_seller_reviews = 50
@@ -119,56 +121,70 @@ def gen_product_sellers(num_product_sellers, valid_product_ids, valid_seller_ids
 # Generate Orders
 def gen_orders(num_orders, valid_user_ids):
     valid_order_ids = []
+    order_dates = {}  # Dictionary to store order keys and their creation dates
+
     writer, file = get_csv_writer('Orders.csv')
     writer.writerow(['o_orderkey', 'o_userkey', 'o_totalprice', 'o_ordercreatedate', 'o_fulfillmentdate'])
     
-    for oid in range(num_orders):
+    for oid in range(1, num_orders + 1):
         o_userkey = random.choice(valid_user_ids)
         o_totalprice = round(random.uniform(20.0, 2000.0), 2)
-        
-        # Generate a date object for order created date
         o_ordercreatedate = fake.date_between(start_date='-1y', end_date='today')
-        
-        # Format it as a string for the CSV
         o_ordercreatedate_str = o_ordercreatedate.strftime('%Y-%m-%d')
         
-        # Decide randomly whether to generate a fulfillment date
+        # Store the order date in the dictionary using order ID as the key
+        order_dates[oid] = o_ordercreatedate
+
         if random.choice([True, False]):
-            # Ensure o_ordercreatedate is a date object before passing to fake.date_between_dates
             o_fulfillmentdate = fake.date_between_dates(date_start=o_ordercreatedate, date_end=datetime.now())
             o_fulfillmentdate_str = o_fulfillmentdate.strftime('%Y-%m-%d')
         else:
-            o_fulfillmentdate_str = '\\N'  # Use '\\N' which PostgreSQL recognizes as NULL
+            o_fulfillmentdate_str = '\\N'  # For CSV compatibility with NULL values
+
         valid_order_ids.append(oid)
         writer.writerow([oid, o_userkey, o_totalprice, o_ordercreatedate_str, o_fulfillmentdate_str])
     
     close_file(file)
-    return valid_order_ids
+    print("Generated Orders and captured their creation dates.")
+
+    return valid_order_ids, order_dates
 
 def gen_seller_reviews(num_seller_reviews, valid_seller_ids, valid_user_ids):
     writer, file = get_csv_writer('SellerReviews.csv')
     writer.writerow(['sr_sellerkey', 'sr_userkey', 'sr_sellername', 'sr_reviewdate', 'sr_review', 'sr_rating'])
+    
+    # Generate unique pair combinations of seller IDs and user IDs
+    unique_pairs = set(itertools.product(valid_seller_ids, valid_user_ids))
+    
     for _ in range(num_seller_reviews):
-        sr_sellerkey = random.choice(valid_seller_ids)
-        sr_userkey = random.choice(valid_user_ids)
-        sr_sellername = fake.company()  # Assuming the seller's name is a company name
+        if not unique_pairs:
+            break  # Stop if there are no more unique pairs to assign
+        sr_sellerkey, sr_userkey = unique_pairs.pop()
+        sr_sellername = fake.company()
         sr_reviewdate = fake.date_between(start_date='-1y', end_date='today')
         sr_review = fake.text(max_nb_chars=200)
-        sr_rating = round(random.uniform(1, 5), 1)  # Ratings between 1 and 5
+        sr_rating = round(random.uniform(1, 5), 1)
         writer.writerow([sr_sellerkey, sr_userkey, sr_sellername, sr_reviewdate, sr_review, sr_rating])
+    
     close_file(file)
 
 def gen_product_reviews(num_product_reviews, valid_product_ids, valid_user_ids):
     writer, file = get_csv_writer('ProductReviews.csv')
     writer.writerow(['pr_productkey', 'pr_userkey', 'pr_productname', 'pr_reviewdate', 'pr_review', 'pr_rating'])
+    
+    # Generate unique pair combinations of product IDs and user IDs
+    unique_pairs = set(itertools.product(valid_product_ids, valid_user_ids))
+    
     for _ in range(num_product_reviews):
-        pr_productkey = random.choice(valid_product_ids)
-        pr_userkey = random.choice(valid_user_ids)
-        pr_productname = fake.word()  # Using a random word for product name
+        if not unique_pairs:
+            break  # Stop if there are no more unique pairs to assign
+        pr_productkey, pr_userkey = unique_pairs.pop()
+        pr_productname = fake.word()
         pr_reviewdate = fake.date_between(start_date='-1y', end_date='today')
         pr_review = fake.text(max_nb_chars=200)
-        pr_rating = round(random.uniform(1, 5), 1)  # Ratings between 1 and 5
+        pr_rating = round(random.uniform(1, 5), 1)
         writer.writerow([pr_productkey, pr_userkey, pr_productname, pr_reviewdate, pr_review, pr_rating])
+    
     close_file(file)
 
 def gen_cart(num_carts, valid_user_ids):
@@ -195,32 +211,33 @@ def gen_productcart(num_product_carts, valid_cart_ids, valid_product_seller_pair
         writer.writerow([i, pc_cartkey, pc_productkey, pc_sellerkey, pc_savequantity, pc_incartquantity])  # None is for the auto-generated pc_prodcartkey
     close_file(file)
 
-def gen_lineitems(num_lineitems, valid_order_ids, valid_product_seller_pairs):
+def gen_lineitems(num_lineitems, available_oids, available_product_seller_pairs, order_dates):
     writer, file = get_csv_writer('LineItems.csv')
     writer.writerow(['l_linenumber', 'l_orderkey', 'l_productkey', 'l_sellerkey', 'l_quantity', 'l_originalprice', 'l_fulfillmentdate', 'l_discount', 'l_tax'])
     print('Generating line items...', end=' ', flush=True)
-    for line_item_id in range(1, num_lineitems + 1):
-        order_key = random.choice(valid_order_ids)  # Randomly pick a valid order ID
-        product_key, seller_key = random.choice(valid_product_seller_pairs)  # Randomly pick a valid product-seller pair
-        quantity = random.randint(1, 10)  # Generate a random quantity between 1 and 10
-        original_price = round(random.uniform(5, 200), 2)  # Random original price between $5 and $200
-        discount = round(random.uniform(0, original_price * 0.5), 2)  # Discount up to 50% of the original price
-        tax = round(original_price * 0.1, 2)  # Tax is assumed to be 10% of the original price
-        
-        # Simulating a possible fulfillment date that makes sense relative to the order date:
-        # Assuming the order date is stored and accessible, we will simulate it here.
-        # Normally you'd fetch this from your database or order data structure.
-        order_date_simulation = fake.date_between(start_date='-1y', end_date='today')
-        fulfillment_date = fake.date_between(start_date=order_date_simulation, end_date='today') if random.choice([True, False]) else None
-        
-        writer.writerow([line_item_id, order_key, product_key, seller_key, quantity, original_price, fulfillment_date, discount, tax])
+    
+    for order_key in available_oids:
+        for line_item_id in range(1, num_lineitems+1):
+            product_key, seller_key = random.choice(available_product_seller_pairs)  # Randomly pick a valid product-seller pair
+            quantity = random.randint(1, 10)  # Generate a random quantity between 1 and 10
+            original_price = round(random.uniform(5, 200), 2)  # Random original price between $5 and $200
+            discount = round(random.uniform(0, original_price * 0.5), 2)  # Discount up to 50% of the original price
+            tax = round(original_price * 0.1, 2)  # Tax is assumed to be 10% of the original price
 
-        if line_item_id % 10 == 0:
-            print(f'{line_item_id}', end=' ', flush=True)  # Output progress for every 10 items processed.
+            # Fetch the order date from the dictionary using the order_key
+            order_date = order_dates.get(order_key)
+            
+            # Simulate fulfillment date
+            if random.choice([True, False]) and order_date:
+                o_fulfillmentdate = fake.date_between_dates(date_start=order_date, date_end=datetime.now())
+                o_fulfillmentdate_str = o_fulfillmentdate.strftime('%Y-%m-%d')
+            else:
+                o_fulfillmentdate_str = '\\N'  # Use '\\N' which PostgreSQL recognizes as NULL
+
+            writer.writerow([line_item_id, order_key, product_key, seller_key, quantity, original_price, o_fulfillmentdate_str, discount, tax])
 
     close_file(file)
-    print(' Line items generated.')
-
+    print('Line item generation completed.')
 
 available_uids = gen_users(num_users)
 # print(available_uids)  
@@ -228,10 +245,10 @@ available_catids = gen_categories(num_categories)
 available_pids = gen_products(num_products, available_catids)
 available_sellerids = gen_sellers(num_sellers, available_uids)
 available_product_seller_pairs = gen_product_sellers(num_product_sellers, available_pids, available_sellerids)
-available_oids = gen_orders(num_orders, available_uids)
+available_oids, order_dates = gen_orders(num_orders, available_uids)
 available_seller_reviews = gen_seller_reviews(num_seller_reviews, available_sellerids, available_uids)
 available_product_reviews = gen_product_reviews(num_product_reviews, available_pids, available_uids)
 available_cart_ids = gen_cart(num_carts, available_uids)
 gen_productcart(num_product_carts, available_cart_ids, available_product_seller_pairs)
-gen_lineitems(num_lineitems, available_oids, available_product_seller_pairs)
+gen_lineitems(num_lineitems, available_oids, available_product_seller_pairs, order_dates)
 
