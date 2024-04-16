@@ -99,11 +99,17 @@
 <body>
   <div class="sidenav">
     {% block msg %}
-      <h1 style="color:aliceblue">Welcome to CompSci 316 Mini Amazon!</h1>
+      <a href="{{ url_for('index.index') }}" style="display: flex; align-items: center; color: aliceblue; text-decoration: none;">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Mini Amazon Logo" style="width: 50px; height: auto; margin-right: 10px;">
+        <h1 style="color:aliceblue"> Mini Amazon by FiveGuys </h1>
+      </a>
       <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
         {% if current_user.is_authenticated %}
-          Hello {{current_user.firstname}}! <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
-        {% else %}
+          Hello {{current_user.firstname}}! 
+          <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
+          <a href="{{ url_for('users.profile') }}" type="button" class="btn btn-light">Log in</a>
+          <a href="{{ url_for('cart') }}" type="button" class="btn btn-light">Log in</a>
+          {% else %} <!-- not logged in yet -->
           <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
         {% endif %}
       </div>

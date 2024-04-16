@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- 
+<div>
+  <h2>Products details: </h2>
+  <table class='table table-hover table-bordered container'>
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Product ID</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Description</th>
+            <th scope="col">Image</th>
+            <th scope="col">Category</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">{{product_details.p_productkey}}</th>
+            <td>{{product_details.p_productname}}</td>
+            <td>{{product_details.p_price}}</td>
+            <td>{{product_details.p_description}}</td>
+            <td>{{product_details.p_imageurl}}</td>
+            <td>{{cat_name}}</td>
+
+        </tr>
+    </tbody>
+  </table> -->
+
+
+<div class="container mt-4">
+<h2>Product Details:</h2>
+<div class="product-detail">
+    <div><strong>Product ID:</strong> {{ product_details.p_productkey }}</div>
+    <div><strong>Product Name:</strong> {{ product_details.p_productname }}</div>
+    <div><strong>Image:</strong> 
+        {% if product_details.p_imageurl %}
+            <img src="{{ product_details.p_imageurl }}" alt="{{ product_details.p_productname }}" style="max-width: 200px;">
+        {% else %}
+            No Image Available
+        {% endif %}
+    </div>
+    <div><strong>Price:</strong> {{ product_details.p_price }}</div>
+    <div><strong>Description:</strong> {{ product_details.p_description }}</div>
+    <div><strong>Category:</strong> {{ product_details.p_catname }}</div>
+</div>
+</div>
+
+{% include "product_review.html"}
+
+{% endblock %}

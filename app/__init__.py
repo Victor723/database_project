@@ -33,4 +33,7 @@ def create_app():
     from .order_history import bp as order_history_bp
     app.register_blueprint(order_history_bp)
 
+    from .product_details import bp as product_details_bp
+    app.register_blueprint(product_details_bp)
+
     return app
