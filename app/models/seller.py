@@ -109,7 +109,7 @@ class Seller():
 
 
     @staticmethod
-    def get_order_info(id):
+    def get_order_info(sellerkey, limit, offset):
         rows = app.db.execute("""
             SELECT l.l_orderkey, p.p_productname, o.o_ordercreatedate, 
                 CONCAT(u.u_firstname, ' ', u.u_lastname) AS customer_name, 
