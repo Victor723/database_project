@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_navigation.css') }}">
     {% include "seller_navigation.html" %}
     <div class="main-content">
         <h1>Welcome, Seller {{ seller_name }}</h1>

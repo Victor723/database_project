@@ -107,7 +107,9 @@
         {% if current_user.is_authenticated %}
           Hello {{current_user.firstname}}! 
           <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
-          {% else %} <!-- not logged in yet -->
+          <a href="{{ url_for('users.user_details') }}" type="button" class="btn btn-light">Profile</a>
+          <a href="{{ url_for('cart') }}" type="button" class="btn btn-light">Log in</a>
+        {% else %} <!-- not logged in yet -->
           <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
         {% endif %}
       </div>
