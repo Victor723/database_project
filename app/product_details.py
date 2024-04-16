@@ -18,7 +18,7 @@ def product_details(product_id):
     # for test
     
     user_key = current_user.userkey
-    
+
 
     # had_review = ProductReview.get(user_key, product_id)
     # # bought = Order.get()
