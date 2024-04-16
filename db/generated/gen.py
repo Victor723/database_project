@@ -19,8 +19,10 @@ num_product_reviews = 50
 num_seller_reviews = 50
 num_product_sellers = 500
 
+path_prefix = './db/data/'
+
 def get_csv_writer(filename):
-    f = open(filename, 'w', newline='', encoding='utf-8')
+    f = open(path_prefix+filename, 'w', newline='', encoding='utf-8')
     writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, escapechar=None)
     return writer, f
 
@@ -31,7 +33,7 @@ def close_file(f):
 # Generate Users
 def gen_users(num_users):
     valid_user_ids = []
-    with open('Users.csv', 'w', newline='', encoding='utf-8') as f:
+    with open(path_prefix+'Users.csv', 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f, dialect='unix')
         writer.writerow(['u_userkey', 'u_email', 'u_firstname', 'u_lastname', 'u_password', 'u_balance', 'u_companyname', 'u_streetaddress', 'u_city', 'u_stateregion', 'u_zipcode', 'u_country', 'u_phonenumber'])
         for uid in range(1, num_users + 1):
