@@ -111,16 +111,16 @@ def logout():
 @bp.route('/user_details', methods=['GET', 'POST'])
 @login_required
 def user_details():
-    user_details_form = UserDetailsForm(request.form)
-    password_form = ChangePasswordForm(request.form)
+    user_details_form = UserDetailsForm()
+    password_form = ChangePasswordForm()
     if request.method == 'POST':
-        if 'user_details' in request.form and user_details_form.validate_on_submit():
+        if user_details_form.validate_on_submit():
             try:
                 success = User.update_user_details(
                     current_user.userkey,
+                    user_details_form.email.data,
                     user_details_form.firstname.data,
-                    user_details_form.lastname.data,
-                    user_details_form.email.data
+                    user_details_form.lastname.data
                 )
                 if success:
                     flash('Your account details have been updated.', 'success')
@@ -130,7 +130,7 @@ def user_details():
                 flash(str(e), 'error')
             return redirect(url_for('users.user_details'))
 
-        elif 'change_password' in request.form and password_form.validate_on_submit():
+        elif password_form.validate_on_submit():
             try:
                 if User.check_password(current_user.userkey, password_form.current_password.data):
                     if User.update_password(current_user.userkey, password_form.new_password.data):
