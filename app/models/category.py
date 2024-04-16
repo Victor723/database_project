@@ -15,3 +15,11 @@ WHERE cat_catkey = :catkey
 ''',
                               catkey=catkey)
         return row[0][0] if row else None
+
+    @staticmethod
+    def get_all():
+        rows = app.db.execute('''
+SELECT cat_catkey, cat_catname
+FROM Category
+''')
+        return [Category(*row) for row in rows]

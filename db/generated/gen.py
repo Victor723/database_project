@@ -65,7 +65,7 @@ def gen_products(num_products):
             p_imageurl = fake.image_url()  # Generate a fake image URL
             p_catkey = fake.random_int(min=0, max=num_categories - 1)
             #p_link = fake.url()  # Generate a fake URL for the product
-            writer.writerow([pid, name, price, p_description, p_imageurl, p_catkey, p_link])
+            writer.writerow([pid, name, price, p_description, p_imageurl, p_catkey])
         print(f'\n{num_products} generated.')
 
 def gen_carts(num_carts):
@@ -75,6 +75,7 @@ def gen_carts(num_carts):
             writer.writerow([cart_id, cart_id])
 
 def gen_categories(num_categories):
+    valid_cats = set()
     with open('Categories.csv', 'w') as f:
         writer = get_csv_writer(f)
         print('Categories...', end=' ', flush=True)
@@ -268,8 +269,8 @@ gen_line_items(num_lineitems, num_orders, valid_pairs)
 
 gen_users(num_users)
 gen_sellers(num_sellers)
-gen_products(num_products)
 gen_categories(num_categories)
+gen_products(num_products)
 gen_carts(num_carts)
 
 gen_orders(num_orders, num_users)

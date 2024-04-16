@@ -13,11 +13,12 @@ bp = Blueprint('product_details', __name__)
 @bp.route('/product/<int:product_id>')
 def product_details(product_id):
     product_details = Product.get_prod_details(product_id)
+    # add review session
 
-    catkey = product_details.p_catkey
-    catname = Category.get_catname(catkey)
-
-
+    had_review = ProductReview.get()
+    bought = Order.get()
+    can_add_review = not had_review & bought
     return render_template('product.html',
                         product_details=product_details,
-                        cat_name = catname)
+                        
+                        can_add_review=can_add_review)

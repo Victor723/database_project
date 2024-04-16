@@ -44,8 +44,10 @@
     </div>
     <div><strong>Price:</strong> {{ product_details.p_price }}</div>
     <div><strong>Description:</strong> {{ product_details.p_description }}</div>
-    <div><strong>Category:</strong> {{ cat_name }}</div>
+    <div><strong>Category:</strong> {{ product_details.p_catname }}</div>
 </div>
 </div>
+
+{% include "product_review.html"}
 
 {% endblock %}
