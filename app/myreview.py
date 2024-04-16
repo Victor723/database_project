@@ -5,6 +5,7 @@ import datetime
 from .models.productreview import ProductReview
 from .models.sellerreview import SellerReview
 from .models.product import Product
+from .models.seller import Seller
 
 from flask import Blueprint
 bp = Blueprint('myreview', __name__)
@@ -71,8 +72,12 @@ def edit_seller_review(sr_userkey, sr_sellerkey):
 def new_product_review(pr_userkey, pr_productkey):
     review = ProductReview.get(pr_userkey, pr_productkey)
     if review == None:
+        new_review = request.form['userInput']
+        new_rating = int(request.form['userRating'])
+        new_date = datetime.datetime.now()
         product_name = Product.get(pr_userkey).p_productname
-        return render_template('edit_productreview.html', review=review, pr_userkey=pr_userkey, pr_productkey=pr_productkey)
+        ProductReview.new_product_review(pr_productkey, pr_userkey, product_name, new_date, new_review, new_rating)
+        return redirect(url_for('myreview.get_myreview', u_userkey=pr_userkey))
     else:
         # Handle the case where the review does not exist
         return redirect(url_for('myreview.get_myreview', u_userkey=pr_userkey))
@@ -80,8 +85,14 @@ def new_product_review(pr_userkey, pr_productkey):
 @bp.route('/new_seller_review/<sr_userkey>/<sr_sellerkey>', methods=['POST'])
 def new_seller_review(sr_userkey, sr_sellerkey):
     review = SellerReview.get(sr_userkey, sr_sellerkey)
-    if review:
-        return render_template('edit_sellerreview.html', review=review, sr_userkey=sr_userkey, sr_sellerkey=sr_sellerkey)
+    if review == None:
+        new_review = request.form['userInput']
+        new_rating = int(request.form['userRating'])
+        new_date = datetime.datetime.now()
+        seller_name = Seller.get_seller_information(sr_sellerkey).first_name
+        SellerReview.new_seller_review(sr_sellerkey, sr_userkey, seller_name, new_date, new_review, new_rating)
+        flash('Review successfully updated.', 'success')
+        return redirect(url_for('myreview.get_myreview', u_userkey=sr_userkey))
     else:
         # Handle the case where the review does not exist
         return redirect(url_for('myreview.get_myreview', u_userkey=sr_userkey))
