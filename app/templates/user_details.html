@@ -2,6 +2,16 @@
 
 {% block content %}
 <div class="container mt-3">
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} mt-4">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
     <div class="row">
         <div class="col-12">
@@ -25,15 +35,6 @@
                         {{ user_details_form.email(class="form-control", placeholder=current_user.email) }}
                     </div>
 
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} mt-4">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
 
                     <div class="text-right">
                         {{ user_details_form.submit(class="btn btn-primary") }}
@@ -59,15 +60,6 @@
                         {{ password_form.confirm_password(class="form-control") }}
                     </div>
 
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} mt-4">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
 
                     <div class="text-right">
                         {{ password_form.submit(class="btn btn-primary") }}
