@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} mt-4">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+    <div class="row">
+        <div class="col-12">
+            <!-- Account Settings Form -->
+            <form method="post">
+                {{ user_details_form.hidden_tag() }}
+                <div class="account-settings mb-3">
+                    <h2 class="h3 mb-3 font-weight-normal">Account Setting</h2>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            {{ user_details_form.firstname.label(class="form-label") }}
+                            {{ user_details_form.firstname(class="form-control", placeholder=current_user.firstname) }}
+                        </div>
+                        <div class="form-group col-md-6">
+                            {{ user_details_form.lastname.label(class="form-label") }}
+                            {{ user_details_form.lastname(class="form-control", placeholder=current_user.lastname) }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ user_details_form.email.label(class="form-label") }}
+                        {{ user_details_form.email(class="form-control", placeholder=current_user.email) }}
+                    </div>
+
+                    <!-- <p>
+                        {% with messages = get_flashed_messages() %}
+                          {% if messages %}
+                          <ul class="flashed-messages">
+                            {% for message in messages %}
+                            <li>{{ message }}</li>
+                            {% endfor %}
+                          </ul>
+                          {% endif %}
+                        {% endwith %}
+                      </p> -->
+
+                    <div class="text-right">
+                        {{ user_details_form.submit(class="btn btn-primary") }}
+                    </div>
+
+                </div>
+
+                <!-- <p>
+                    {% with messages = get_flashed_messages() %}
+                      {% if messages %}
+                      <ul class="flashed-messages">
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                      </ul>
+                      {% endif %}
+                    {% endwith %}
+                  </p> -->
+            </form>
+
+            <!-- Change Password Form -->
+            <form method="post">
+                {{ password_form.hidden_tag() }}
+                <div class="change-password">
+                    <h2 class="h3 mb-3 font-weight-normal">Change Password</h2>
+                    <div class="form-group">
+                        {{ password_form.current_password.label(class="form-label") }}
+                        {{ password_form.current_password(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ password_form.new_password.label(class="form-label") }}
+                        {{ password_form.new_password(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ password_form.confirm_password.label(class="form-label") }}
+                        {{ password_form.confirm_password(class="form-control") }}
+                    </div>
+                    <div class="text-right">
+                        {{ password_form.submit(class="btn btn-primary") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
