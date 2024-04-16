@@ -15,8 +15,7 @@ SELECT pg_catalog.setval('public.product_p_productkey_seq', (SELECT MAX(p_produc
 \COPY Cart FROM 'Carts.csv' WITH (FORMAT csv, DELIMITER ',', NULL '', HEADER);
 SELECT pg_catalog.setval('public.cart_c_cartkey_seq',
                          (SELECT MAX(c_cartkey)+1 FROM Cart),
-                         false);
-                         
+                         false);                     
 
 \COPY ProductCart FROM 'ProductCarts.csv' WITH (FORMAT csv, DELIMITER ',', NULL '', HEADER);
 SELECT pg_catalog.setval('public.productcart_pc_prodcartkey_seq',
