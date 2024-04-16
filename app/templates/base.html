@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<br>
 <head>
   <title>Mini Amazon</title>
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -107,8 +107,7 @@
         {% if current_user.is_authenticated %}
           Hello {{current_user.firstname}}! 
           <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
-          <a href="{{ url_for('users.profile') }}" type="button" class="btn btn-light">Log in</a>
-          <a href="{{ url_for('cart') }}" type="button" class="btn btn-light">Log in</a>
+          <!-- Deleted shopping cart and user profile !!!!!-->
           {% else %} <!-- not logged in yet -->
           <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
         {% endif %}

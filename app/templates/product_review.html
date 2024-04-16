@@ -9,7 +9,7 @@
 
     <!-- Popup Form, initially hidden -->
     <div class="popup-container" style="display: none;" id="newProductPopup">
-        <form class="inputForm" action="{{ url_for('myreview.new_product_review', pr_userkey=review.pr_userkey, pr_productkey=review.pr_productkey) }}" method="POST">
+        <form class="inputForm" action="{{ url_for('myreview.new_product_review', pr_userkey=user_key, pr_productkey=product_details.p_productkey) }}" method="POST">
             <label>Enter New Product Review:</label>
             <input type="text" id="userInput" name="userInput" required>
 

@@ -14,9 +14,16 @@ bp = Blueprint('product_details', __name__)
 def product_details(product_id):
     product_details = Product.get_prod_details(product_id)
     # add review session
-    # had_review = ProductReview.get()
-    # bought = Order.get()
-    # can_add_review = not had_review & bought
+    product_reviews = ProductReview.get_product_reviews(product_id)
+    # for test
+    
+    user_key = current_user.userkey
+    
 
+    # had_review = ProductReview.get(user_key, product_id)
+    # # bought = Order.get()
+    # can_add_review = not had_review # & bought
     return render_template('product.html',
-                        product_details=product_details)
+                        product_details=product_details,
+                        product_reviews = product_reviews,
+                        user_key = user_key)
