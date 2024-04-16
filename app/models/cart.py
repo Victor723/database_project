@@ -65,6 +65,23 @@ WHERE c.c_userkey = :c_userkey
         ''',
                                 c_userkey=c_userkey)
         return rows if rows else None
+    
+    @staticmethod
+    def get_incart_total_cost_by_c_userkey(c_userkey):
+        query = '''
+        SELECT SUM(ps.ps_price * pc.pc_incartquantity) AS total_cost
+        FROM Cart c
+        JOIN ProductCart pc ON c.c_cartkey = pc.pc_cartkey
+        JOIN ProductSeller ps ON pc.pc_productkey = ps.ps_productkey AND pc.pc_sellerkey = ps.ps_sellerkey
+        WHERE c.c_userkey = :c_userkey
+        GROUP BY c.c_userkey
+        '''
+        result_list = app.db.execute(query, c_userkey=c_userkey)
+        # Since result is a list, we take the first element (which is the tuple) and then take the first item from it.
+        total_cost = round(result_list[0][0], 2) if result_list else 0.00
+        # Return the total cost.
+        return total_cost
+
 
     @staticmethod
     def get_cartkey_by_user(c_userkey):
@@ -97,3 +114,23 @@ WHERE c.c_userkey = :c_userkey
         except Exception as e:
             print(f"Failed to add or update cart item: {e}")
             return None
+        
+    @staticmethod
+    def update_incart_quantity(c_userkey, product_key, seller_key, new_quantity):
+        result = app.db.execute('''
+        UPDATE ProductCart
+        SET pc_incartquantity = :new_quantity
+        FROM Cart
+        WHERE ProductCart.pc_productkey = :product_key
+        AND ProductCart.pc_sellerkey = :seller_key
+        AND ProductCart.pc_cartkey = Cart.c_cartkey
+        AND Cart.c_userkey = :c_userkey
+        RETURNING pc_incartquantity
+        ''',
+        {
+            'c_userkey': c_userkey,
+            'product_key': product_key,
+            'seller_key': seller_key,
+            'new_quantity': new_quantity
+        })
+        return result.fetchone() if result else None

@@ -75,11 +75,13 @@ def new_product_review(pr_userkey, pr_productkey):
         new_review = request.form['userInput']
         new_rating = int(request.form['userRating'])
         new_date = datetime.datetime.now()
-        product_name = Product.get(pr_userkey).p_productname
+        product_name = Product.get_prod_details(pr_userkey).p_productname
         ProductReview.new_product_review(pr_productkey, pr_userkey, product_name, new_date, new_review, new_rating)
-        return redirect(url_for('myreview.get_myreview', u_userkey=pr_userkey))
+        flash('Review successfully added.', 'success')
+        return redirect(url_for('product_details.product_details', product_id=pr_productkey))
     else:
         # Handle the case where the review does not exist
+        flash('Review already exists.', 'fail')
         return redirect(url_for('myreview.get_myreview', u_userkey=pr_userkey))
     
 @bp.route('/new_seller_review/<sr_userkey>/<sr_sellerkey>', methods=['POST'])

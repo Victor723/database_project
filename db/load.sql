@@ -28,7 +28,7 @@ SELECT pg_catalog.setval('public.orders_o_orderkey_seq',
                          (SELECT MAX(o_orderkey)+1 FROM Orders),
                          false);
 
-\COPY Lineitem FROM 'LineItems.csv' WITH (FORMAT csv, DELIMITER ',', NULL '', HEADER);
+\COPY Lineitem FROM 'LineItems.csv' WITH (FORMAT csv, DELIMITER ',', NULL '\N', HEADER);
 
 \COPY ProductReview FROM 'ProductReviews.csv' WITH (FORMAT csv, DELIMITER ',', NULL '', HEADER);
 
