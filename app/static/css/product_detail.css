@@ -1,0 +1,27 @@
+/* product_details.css */
+
+.main-content h1 {
+    margin-left: 20%;
+    margin-bottom: 20px;
+}
+
+/* Product Details */
+.product-details {
+    display: flex; /* Use flexbox to align items */
+    justify-content: space-between; /* Space items evenly */
+    margin-left: 280px; /* Adjust margin to leave space for the navigation */
+}
+
+.product-details > div {
+    flex: 0 0 48%; /* Adjust width of detail containers */
+    padding: 20px; /* Add padding to space out the details */
+    border: 1px solid #ddd; /* Add border for better visual separation */
+    margin-bottom: 30px;
+}
+
+.product-details img {
+    max-width: 100%; /* Ensure image fits within container */
+    height: auto; /* Maintain aspect ratio */
+    display: block;
+    margin: 20px auto; /* Center image */
+}

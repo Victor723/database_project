@@ -1,13 +1,12 @@
-/* seller_inventory.css */
-
+/* seller_order.css */
 
 .main-content h1 {
     margin-left: 20%;
     margin-bottom: 20px;
 }
 
-/* Style for the table with class 'inventory-table' */
-.inventory-table {
+/* Style for the table with class 'order-table' */
+.order-table {
     width: 75%;
     margin-left: 20%;
     border-collapse: collapse;
@@ -15,7 +14,7 @@
 }
 
 /* Style for table header */
-.inventory-table thead th {
+.order-table thead th {
     background-color: #f2f2f2;
     border: 1px solid #ddd;
     padding: 8px;
@@ -23,13 +22,13 @@
 }
 
 /* Style for table body */
-.inventory-table tbody td {
+.order-table tbody td {
     border: 1px solid #ddd;
     padding: 8px;
 }
 
 /* Alternate row background color */
-.inventory-table tbody tr:nth-child(even) {
+.order-table tbody tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
@@ -53,25 +52,4 @@
 
 .pagination a:hover {
     background-color: #f2f2f2;
-}
-
-/* Style for the confirmation message box */
-.confirmation-box {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000; /* Ensure it's on top of other elements */
-}
-
-.confirmation-box .message {
-    text-align: center;
-}
-
-.confirmation-box button {
-    margin: 0 10px;
 }

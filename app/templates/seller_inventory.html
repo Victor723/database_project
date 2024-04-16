@@ -15,10 +15,11 @@
                     <th>Price</th>
                     <th>Discount</th>
                     <th>Create Time</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                {% for product in product_info %}
+                {% for product in productseller_info %}
                 <tr>
                     <td>{{ product.productkey }}</td>
                     <td>{{ product.productname }}</td>
@@ -26,6 +27,12 @@
                     <td>{{ product.price }}</td>
                     <td>{{ product.discount }}</td>
                     <td>{{ product.createtime }}</td>
+                    <td>
+                        <!-- Button for delete action -->
+                        <button class="btn btn-danger" onclick="confirmDelete('{{ seller_key }}', '{{ product.productkey }}')">Delete</button>
+                        <!-- Button for redirecting to product details -->
+                        <a href="{{ url_for('sellers.seller_product_details', s_sellerkey=seller_key, p_productkey=product.productkey) }}" class="btn btn-primary">Details</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -44,4 +51,55 @@
             <a href="?page={{ total_pages }}">Last</a>
         </div>
     </div>
+
+    <!-- Confirmation message box -->
+    <div id="confirmation-box" class="confirmation-box" style="display: none;">
+        <div class="message">
+            <p>Are you sure you want to delete this product?</p>
+            <button onclick="deleteProduct()">Yes</button>
+            <button onclick="closeConfirmation()">No</button>
+        </div>
+    </div>
+
+    <script>
+        function confirmDelete(sellerKey, productKey) {
+            // Show the confirmation message box
+            document.getElementById('confirmation-box').style.display = 'block';
+            // Pass seller key and product key to delete function
+            window.sellerKey = sellerKey;
+            window.productKey = productKey;
+        }
+
+        function closeConfirmation() {
+            // Close the confirmation message box
+            document.getElementById('confirmation-box').style.display = 'none';
+        }
+
+        function deleteProduct() {
+            // Make a POST request to delete the product
+            fetch(`/seller/${window.sellerKey}/${window.productKey}/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Product was successfully deleted
+                    closeConfirmation(); // Close the confirmation message box
+                    alert('Product deleted successfully'); // Show success message
+                    // Reload the inventory page to reflect changes
+                    window.location.reload();
+                } else {
+                    // Product deletion failed
+                    alert('Failed to delete product');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to delete product'); // Show error message
+            });
+        }
+    </script>
+
 {% endblock %}
