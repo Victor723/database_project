@@ -10,7 +10,6 @@ CREATE TABLE Product (
     p_description TEXT NOT NULL,
     p_imageurl VARCHAR(255),
     p_catkey BIGINT NOT NULL,
-    p_link TEXT,
     FOREIGN KEY (p_catkey) REFERENCES Category(cat_catkey)
 );
 
@@ -63,28 +62,24 @@ CREATE TABLE ProductReview (
     pr_productkey BIGINT NOT NULL,
     pr_userkey BIGINT NOT NULL,
     pr_productname VARCHAR(255) NOT NULL,
-    pr_orderkey BIGINT NOT NULL,
     pr_reviewdate DATE NOT NULL,
     pr_review TEXT NOT NULL,
     pr_rating DECIMAL(2,1) NOT NULL,
     PRIMARY KEY (pr_productkey, pr_userkey),
     FOREIGN KEY(pr_productkey) REFERENCES Product(p_productkey),
-    FOREIGN KEY(pr_userkey) REFERENCES Users(u_userkey),
-    FOREIGN KEY (pr_orderkey) REFERENCES Orders(o_orderkey)
+    FOREIGN KEY(pr_userkey) REFERENCES Users(u_userkey)
 );
 
 CREATE TABLE SellerReview (
     sr_sellerkey BIGINT NOT NULL,
     sr_userkey BIGINT NOT NULL,
     sr_sellername VARCHAR(255) NOT NULL,
-    sr_orderkey BIGINT NOT NULL,
     sr_reviewdate DATE NOT NULL,
     sr_review TEXT NOT NULL,
     sr_rating DECIMAL(2,1) NOT NULL,
     PRIMARY KEY (sr_sellerkey, sr_userkey),
     FOREIGN KEY(sr_sellerkey) REFERENCES Seller(s_sellerkey),
-    FOREIGN KEY(sr_userkey) REFERENCES Users(u_userkey),
-    FOREIGN KEY (sr_orderkey) REFERENCES Orders(o_orderkey)
+    FOREIGN KEY(sr_userkey) REFERENCES Users(u_userkey)
 );
 
 CREATE TABLE Cart (

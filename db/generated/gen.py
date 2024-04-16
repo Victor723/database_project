@@ -68,7 +68,7 @@ def gen_categories(num_categories):
 def gen_products(num_products, valid_category_ids):
     valid_product_ids = []
     writer, file = get_csv_writer('Products.csv')
-    writer.writerow(['p_productkey', 'p_productname', 'p_price', 'p_description', 'p_imageurl', 'p_catkey', 'p_link'])
+    writer.writerow(['p_productkey', 'p_productname', 'p_price', 'p_description', 'p_imageurl', 'p_catkey'])
     for pid in range(1, num_products + 1):
         valid_product_ids.append(pid)
         p_name = fake.word()
@@ -76,8 +76,7 @@ def gen_products(num_products, valid_category_ids):
         p_description = fake.text(max_nb_chars=200)
         p_imageurl = fake.image_url()
         p_catkey = random.choice(valid_category_ids)
-        p_link = fake.url()
-        writer.writerow([pid, p_name, p_price, p_description, p_imageurl, p_catkey, p_link])
+        writer.writerow([pid, p_name, p_price, p_description, p_imageurl, p_catkey])
     close_file(file)
     return valid_product_ids
 
@@ -144,32 +143,30 @@ def gen_orders(num_orders, valid_user_ids):
     close_file(file)
     return valid_order_ids
 
-def gen_seller_reviews(num_seller_reviews, valid_seller_ids, valid_user_ids, valid_order_ids):
+def gen_seller_reviews(num_seller_reviews, valid_seller_ids, valid_user_ids):
     writer, file = get_csv_writer('SellerReviews.csv')
-    writer.writerow(['sr_sellerkey', 'sr_userkey', 'sr_sellername', 'sr_orderkey', 'sr_reviewdate', 'sr_review', 'sr_rating'])
+    writer.writerow(['sr_sellerkey', 'sr_userkey', 'sr_sellername', 'sr_reviewdate', 'sr_review', 'sr_rating'])
     for _ in range(num_seller_reviews):
         sr_sellerkey = random.choice(valid_seller_ids)
         sr_userkey = random.choice(valid_user_ids)
         sr_sellername = fake.company()  # Assuming the seller's name is a company name
-        sr_orderkey = random.choice(valid_order_ids)
         sr_reviewdate = fake.date_between(start_date='-1y', end_date='today')
         sr_review = fake.text(max_nb_chars=200)
         sr_rating = round(random.uniform(1, 5), 1)  # Ratings between 1 and 5
-        writer.writerow([sr_sellerkey, sr_userkey, sr_sellername, sr_orderkey, sr_reviewdate, sr_review, sr_rating])
+        writer.writerow([sr_sellerkey, sr_userkey, sr_sellername, sr_reviewdate, sr_review, sr_rating])
     close_file(file)
 
-def gen_product_reviews(num_product_reviews, valid_product_ids, valid_user_ids, valid_order_ids):
+def gen_product_reviews(num_product_reviews, valid_product_ids, valid_user_ids):
     writer, file = get_csv_writer('ProductReviews.csv')
-    writer.writerow(['pr_productkey', 'pr_userkey', 'pr_productname', 'pr_orderkey', 'pr_reviewdate', 'pr_review', 'pr_rating'])
+    writer.writerow(['pr_productkey', 'pr_userkey', 'pr_productname', 'pr_reviewdate', 'pr_review', 'pr_rating'])
     for _ in range(num_product_reviews):
         pr_productkey = random.choice(valid_product_ids)
         pr_userkey = random.choice(valid_user_ids)
         pr_productname = fake.word()  # Using a random word for product name
-        pr_orderkey = random.choice(valid_order_ids)
         pr_reviewdate = fake.date_between(start_date='-1y', end_date='today')
         pr_review = fake.text(max_nb_chars=200)
         pr_rating = round(random.uniform(1, 5), 1)  # Ratings between 1 and 5
-        writer.writerow([pr_productkey, pr_userkey, pr_productname, pr_orderkey, pr_reviewdate, pr_review, pr_rating])
+        writer.writerow([pr_productkey, pr_userkey, pr_productname, pr_reviewdate, pr_review, pr_rating])
     close_file(file)
 
 def gen_cart(num_carts, valid_user_ids):
@@ -230,8 +227,8 @@ available_pids = gen_products(num_products, available_catids)
 available_sellerids = gen_sellers(num_sellers, available_uids)
 available_product_seller_pairs = gen_product_sellers(num_product_sellers, available_pids, available_sellerids)
 available_oids = gen_orders(num_orders, available_uids)
-available_seller_reviews = gen_seller_reviews(num_seller_reviews, available_sellerids, available_uids, available_oids)
-available_product_reviews = gen_product_reviews(num_product_reviews, available_pids, available_uids, available_oids)
+available_seller_reviews = gen_seller_reviews(num_seller_reviews, available_sellerids, available_uids)
+available_product_reviews = gen_product_reviews(num_product_reviews, available_pids, available_uids)
 available_cart_ids = gen_cart(num_carts, available_uids)
 gen_productcart(num_product_carts, available_cart_ids, available_product_seller_pairs)
 gen_lineitems(num_lineitems, available_oids, available_product_seller_pairs)
