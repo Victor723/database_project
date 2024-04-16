@@ -132,8 +132,7 @@ def user_details():
 
         elif 'change_password' in request.form and password_form.validate_on_submit():
             try:
-                user = User.get(current_user.userkey)
-                if user and User.check_password(current_user.userkey, password_form.current_password.data):
+                if User.check_password(current_user.userkey, password_form.current_password.data):
                     if User.update_password(current_user.userkey, password_form.new_password.data):
                         flash('Your password has been changed.', 'success')
                     else:
