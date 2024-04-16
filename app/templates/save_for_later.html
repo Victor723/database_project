@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+{# {% if current_user.is_authenticated %} #}
+<div class="container mt-3">
+    <div class="row">
+        <!-- Cart Items Column -->
+        <div class="col-md-8">
+            {% if saved_items %}
+                <h2 class="mb-4 duke-blue">Save for Later Cart</h2>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr class="duke-blue-bg white-text">
+                                <th scope="col">Product</th>
+                                <th scope="col">Seller</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in saved_items %}
+                            <tr>
+                                <td>{{ item.p_productname }}</td>
+                                <td>{{ item.u_firstname ~ ' ' ~ item.u_lastname }}</td>
+                                <td>${{ "%.2f"|format(item.ps_price) }}</td>
+                                <td>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" value="{{ item.savequantity  }}" min="1">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-secondary" type="button">Update</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary" type="button">Move to Cart</button>
+                                   <!-- 'Remove' Button with a Red Color -->
+                                    <button class="btn btn-danger" type="button">Remove</button>
+
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">No items in the cart.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    <a href="{{ url_for('cart.save_for_later', u_userkey=session['user_id']) }}" class="btn btn-secondary btn-block">
+                        Go to Shopping cart
+                    </a>
+                </div>
+            {% else %}
+                <h2 class="text-center mt-5">Your Save for Later Cart is empty.</h2>
+            {% endif %}
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+
+ {# {% else %} #}
+    <!-- <p>You must be logged in to view this page.</p> -->
+    <!-- <a href="{{ url_for('users.login') }}" class="btn btn-primary">Login</a> -->
+ {# {% endif %} #}

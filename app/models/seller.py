@@ -49,7 +49,67 @@ class Seller():
 
 
     @staticmethod
-    def get_order_info(sellerkey, limit=10, offset=0):
+    def get_product_info(id, limit=10, offset=0):
+        rows = app.db.execute("""
+            SELECT ps.ps_productkey, p.p_productname, ps.ps_quantity, ps.ps_price, ps.ps_discount, ps.ps_createtime
+            FROM ProductSeller ps
+            INNER JOIN Product p ON ps.ps_productkey = p.p_productkey
+            WHERE ps.ps_sellerkey = :id
+            LIMIT :limit OFFSET :offset
+            """,
+            id=id, limit=limit, offset=offset)
+        
+        products = []
+        for row in rows:
+            product_info = {
+                'productkey': row[0],
+                'productname': row[1],
+                'quantity': row[2],
+                'price': row[3],
+                'discount': row[4],
+                'createtime': row[5]
+            }
+            products.append(product_info)      
+        return products
+
+    @staticmethod
+    def get_total_product_count(id):
+        row = app.db.execute("""
+            SELECT COUNT(*)
+            FROM ProductSeller
+            WHERE ps_sellerkey = :id
+            """,
+            id=id)
+        
+        if row:
+        # Extract count from the first row of the result list
+            total_count = row[0][0] if row[0] else 0
+            return total_count
+
+        # Return 0 if there are no rows or if the first row is empty
+        return 0
+
+
+    @staticmethod
+    def get_total_product_count(id):
+        row = app.db.execute("""
+            SELECT COUNT(*)
+            FROM ProductSeller
+            WHERE ps_sellerkey = :id
+            """,
+            id=id)
+        
+        if row:
+        # Extract count from the first row of the result list
+            total_count = row[0][0] if row[0] else 0
+            return total_count
+
+        # Return 0 if there are no rows or if the first row is empty
+        return 0
+
+
+    @staticmethod
+    def get_order_info(id):
         rows = app.db.execute("""
             SELECT l.l_orderkey, p.p_productname, o.o_ordercreatedate, 
                 CONCAT(u.u_firstname, ' ', u.u_lastname) AS customer_name, 
