@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash
-from flask_login import current_user
+from flask_login import current_user, login_required
 import datetime
 
 from .models.productreview import ProductReview
@@ -11,8 +11,10 @@ from flask import Blueprint
 bp = Blueprint('myreview', __name__)
 
 
-@bp.route('/<u_userkey>/myreview', methods=['GET'])
-def get_myreview(u_userkey):
+@bp.route('/myreview', methods=['GET'])
+@login_required
+def get_myreview():
+    u_userkey = current_user.userkey
     productreviews = ProductReview.get_user_reviews(u_userkey)
     sellerreviews = SellerReview.get_user_reviews(u_userkey)
     # display all reviews written by the user
