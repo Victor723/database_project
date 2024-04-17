@@ -48,17 +48,18 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- Button to go to Save for Later page -->
-                <div class="mt-3">
-                    <a href="{{ url_for('cart.save_for_later', u_userkey=session['user_id']) }}" class="btn btn-secondary btn-block">
-                        Go to Save for Later
-                    </a>
-                </div>
-
+                
 
             {% else %}
                 <h2 class="text-center mt-5">Your Shopping Cart is empty.</h2>
             {% endif %}
+            <!-- Button to go to Save for Later page -->
+            <div class="mt-3">
+                <a href="{{ url_for('cart.save_for_later') }}" class="btn btn-secondary btn-block">
+                    Go to Save for Later
+                </a>
+            </div>
+
         </div>
         
         <!-- Cart Summary Column -->

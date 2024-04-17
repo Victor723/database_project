@@ -27,7 +27,7 @@
                                 <td>${{ "%.2f"|format(item.ps_price) }}</td>
                                 <td>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" value="{{ item.savequantity  }}" min="1">
+                                        <input type="number" class="form-control" value="{{ item.savequantity}}" min="1">
                                         <div class="input-group-append">
                                             <button class="btn btn-secondary" type="button">Update</button>
                                         </div>
@@ -47,17 +47,17 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                </div>
-                <div class="mt-3">
-                    <a href="{{ url_for('cart.save_for_later', u_userkey=session['user_id']) }}" class="btn btn-secondary btn-block">
-                        Go to Shopping cart
-                    </a>
-                </div>
+                
             {% else %}
                 <h2 class="text-center mt-5">Your Save for Later Cart is empty.</h2>
             {% endif %}
         </div>
-        
+    </div>
+    <div class="mt-3">
+        <a href="{{ url_for('cart.shopping_cart') }}" class="btn btn-secondary btn-block">
+            Go to Shopping cart
+        </a>
+    </div>
     </div>
 </div>
 {% endblock %}
