@@ -89,7 +89,7 @@
             <span class="nav-link disabled">Order History</span>
             <span class="nav-link disabled">Track Order</span>
             <span class="nav-link disabled">Address</span>
-            <span class="nav-link disabled">My Review</span>
+            <a class="nav-link" href="{{ url_for('myreview.get_myreview') }}">My Review</a>
             <span class="nav-link disabled">Wallet</span>
         </nav>
         <button type="button" class="btn-switch">Switch to seller</button>
