@@ -86,8 +86,8 @@
         <nav class="nav flex-column">
             <a class="nav-link active" href="{{ url_for('users.user_profile') }}">Dashboard</a>
             <a class="nav-link" href="{{ url_for('users.user_details') }}">Account Details</a>
-            <span class="nav-link disabled">Order History</span>
-            <span class="nav-link disabled">Track Order</span>
+            <a class="nav-link" href="{{ url_for('orders.show_orders') }}">Order History</a>
+            <a class="nav-link" href="{{ url_for('cart.shopping_cart') }}">Shopping Cart</a>
             <span class="nav-link disabled">Address</span>
             <span class="nav-link disabled">My Review</span>
             <span class="nav-link disabled">Wallet</span>
