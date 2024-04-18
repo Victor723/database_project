@@ -1,34 +1,81 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+  .login-container {
+  max-width: 400px;
+  margin: auto;
+  padding-top: 50px;
+}
 
-<h1>Register</h1>
+.login-form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,.05);
+}
 
-<form action="" method="post">
+.login-form h1 {
+  text-align: center;
+  color: #333;
+}
+
+.login-form .form-control {
+  border-radius: 20px; 
+  padding: 25px; 
+  font-size: 16px; 
+}
+
+.login-form .form-group {
+  margin-bottom: 15px;
+}
+
+.login-form .btn {
+  width: 100%;
+  border-radius: 20px;
+  padding: 10px; 
+  font-size: 18px; 
+}
+
+/* Adjust colors, hover effects, etc., as per the design */
+.login-form .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+</style>
+
+
+<div class="login-container">
+
+
+
+
+<form class="login-form" action="" method="post">
+  <h1>Create account</h1>
   {{ form.hidden_tag() }}
   <p>
-    {{ form.firstname.label }}<br/>
+    {{ form.firstname.label }}<span style="color: red;">*</span><br/>
     {{ form.firstname(size=32) }}<br/>
     {% for error in form.firstname.errors %}
     <span style="color: red;">[{{ error }}]</span>
     {% endfor %}
   </p>
   <p>
-    {{ form.lastname.label }}<br/>
+    {{ form.lastname.label }}<span style="color: red;">*</span><br/>
     {{ form.lastname(size=32) }}<br/>
     {% for error in form.lastname.errors %}
     <span style="color: red;">[{{ error }}]</span>
     {% endfor %}
   </p>
   <p>
-    {{ form.email.label }}<br/>
-    {{ form.email(size=64) }}<br/>
+    {{ form.email.label }}<span style="color: red;">*</span><br/>
+    {{ form.email(size=32) }}<br/>
     {% for error in form.email.errors %}
     <span style="color: red;">[{{ error }}]</span>
     {% endfor %}
   </p>
   <p>
-    {{ form.password.label }}<br/>
+    {{ form.password.label }}<span style="color: red;">*</span><br/>
     {{ form.password(size=32, id='password') }}
     <button type="button" onclick="togglePasswordVisibility()">Show/Hide</button><br/>
     {% for error in form.password.errors %}
@@ -36,7 +83,7 @@
     {% endfor %}
   </p>
   <p>
-    {{ form.password2.label }}<br/>
+    {{ form.password2.label }}<span style="color: red;">*</span><br/>
     {{ form.password2(size=32, id='password2') }}
     <button type="button" onclick="togglePasswordVisibility2()">Show/Hide</button><br/>
     {% for error in form.password2.errors %}
@@ -96,7 +143,7 @@
   </p>
   <p>{{ form.submit() }}</p>
 </form>
-
+</div>
 
 <script>
   function togglePasswordVisibility() {
