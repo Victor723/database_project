@@ -1,31 +1,30 @@
-<!-- seller_review.html -->
-
-{% extends "base.html" %}
-
 {% block content %}
-    {% include "seller_navigation.html" %}
-    <h1>Seller Review</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Custom Name</th>
-                <th>Custom ID</th>
-                <th>Review Date</th>
-                <th>Review</th>
-                <th>Rating</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for review in seller_review %}
-            <tr>
-                <td>{{ review.user_name }}</td>
-                <td>{{ review.user_key }}</td>
-                <td>{{ review.date }}</td>
-                <td>{{ review.review }}</td>
-                <td>{{ review.rating }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+
+<!-- Display All Seller Reviews in a Table -->
+{% if seller_reviews %}
+<h2>Seller Reviews</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Review Date</th>
+      <th>Review</th>
+      <th>Rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for review in seller_reviews %}
+      <tr>
+        <td>{{ review.sr_reviewdate }}</td>
+        <td>{{ review.sr_review }}</td>
+        <td>{{ review.sr_rating }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<h2>Please log in to view reviews.</h2>
+<!-- You can add a login link or button here -->
+<!-- <a href="/login" class="btn btn-primary">Login</a> -->
+{% endif %}
+
 {% endblock %}

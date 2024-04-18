@@ -48,17 +48,18 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- Button to go to Save for Later page -->
-                <div class="mt-3">
-                    <a href="http://127.0.0.1:8080/{{ u_userkey }}/save-for-later" class="btn btn-secondary btn-block">
-                        Go to Save for Later
-                    </a>
-                </div>
-
+                
 
             {% else %}
                 <h2 class="text-center mt-5">Your Shopping Cart is empty.</h2>
             {% endif %}
+            <!-- Button to go to Save for Later page -->
+            <div class="mt-3">
+                <a href="{{ url_for('cart.save_for_later') }}" class="btn btn-secondary btn-block">
+                    Go to Save for Later
+                </a>
+            </div>
+
         </div>
         
         <!-- Cart Summary Column -->
@@ -66,13 +67,13 @@
             {% if cart_items %}
                 <div class="card mb-3">
                     <div class="card-header">Cart Summary</div>
-                    <div class=card-body black-text">
-                        <p class="card-text">Subtotal: ${{ subtotal }}</p>
-                        <p class="card-text">Shipping: ${{ shipping }}</p>
-                        <p class="card-text">Discount: ${{ discount }}</p>
-                        <p class="card-text">Tax: ${{ tax }}</p>
-                        <h4 class="card-title">Total: ${{ total }}</h4>
-                        <button class="btn btn-primary btn-block" type="button">Proceed to Checkout</button>
+                    <div class="card-body black-text">
+                        <p class="card-text">Subtotal: ${{ total_cost }}</p>
+                        <p class="card-text">Shipping: ${{ 0 }}</p>
+                        <p class="card-text">Discount: ${{ 0 }}</p>
+                        <p class="card-text">Tax: ${{ 0 }}</p>
+                        <h4 class="card-title">Total: ${{ total_cost }}</h4>
+                        <button class="btn btn-primary btn-block" type="button">Checkout</button>
                     </div>
                 </div>
                 <div class="card">
