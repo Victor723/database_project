@@ -4,9 +4,10 @@ from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from datetime import date
 
 from .models.user import User
-
+from .models.seller import Seller
 
 from flask import Blueprint
 bp = Blueprint('users', __name__)
@@ -28,7 +29,7 @@ class RegistrationForm(FlaskForm):
     companyname = StringField('Company Name')
     streetaddress = StringField('Street Address')
     city = StringField('City')
-    stateregion = StringField('State/Region')
+    stateregion = StringField('State / Region')
     zipcode = StringField('Zipcode')
     country = StringField('Country')
     phonenumber = StringField('Phone Number')
@@ -37,11 +38,16 @@ class RegistrationForm(FlaskForm):
     #     Regexp(regex=r'^\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$',
     #            message='Invalid US phone number. Format must be XXX-XXX-XXXX with or without the country code.')
     # ])
-    submit = SubmitField('Register')
+    submit_user = SubmitField('Sign up')
+    submit_seller = SubmitField('Sign up as a seller')
 
     def validate_email(self, email):
         if User.email_exists(email.data):
             raise ValidationError('Already a user with this email.')
+        
+    def validate_companyname(self, field):
+        if 'submit_seller' in request.form and not field.data:
+            raise ValidationError('Company name is required for sellers.')
 
     # def validate_phonenumber(form, field):
     #     # Strip all non-numeric characters for the length check
@@ -87,8 +93,8 @@ def register():
         return redirect(url_for('index.index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        # Call the register method with all the form fields
-        if User.register(form.email.data,
+        account_type = 'seller' if form.submit_seller.data else 'user'
+        user = User.register(form.email.data,
                          form.password.data,
                          form.firstname.data,
                          form.lastname.data,
@@ -98,8 +104,18 @@ def register():
                          form.stateregion.data,
                          form.zipcode.data,
                          form.country.data,
-                         form.phonenumber.data): 
-            flash('Congratulations, you are now a registered user!')
+                         form.phonenumber.data)
+        if user: 
+            if account_type == 'seller':
+                registration_date = date.today()
+                # if Seller.register(user.userkey, user.companyname, registration_date):
+                if True: # use true since Seller.register(user.userkey, user.companyname, registration_date) is not yet implemented
+                    flash('Congratulations, you are now registered!')
+                else:
+                    return render_template('register.html', title='Register', form=form)
+            else:
+                flash('Congratulations, you are now registered!')
+
             return redirect(url_for('users.login'))
     return render_template('register.html', title='Register', form=form)
 
