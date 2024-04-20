@@ -82,6 +82,11 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('index.index'))
     form = RegistrationForm()
+    # Set country choices dynamically from the REST Countries API
+    form.country.choices = get_country_choices()
+    # Sort the choices alphabetically by country name
+    form.country.choices.sort(key=lambda choice: choice[1])
+
     if form.validate_on_submit():
         account_type = 'seller' if form.submit_seller.data else 'user'
         user = User.register(form.email.data,
@@ -186,29 +191,29 @@ class ChangeAddressForm(FlaskForm):
     companyname = StringField('Company Name', validators=[])
     streetaddress = StringField('Street Address', validators=[])
     country = StringField('Country', validators=[])
-    regionstate = StringField('Region / State', validators=[])
+    stateregion = StringField('Region / State', validators=[])
     city = StringField('City', validators=[])
     zipcode = StringField('Zip Code', validators=[])
     phonenumber = StringField('Phone Number', validators=[])
     submit = SubmitField('Save Changes')
 
+def get_country_choices():
+    url = "https://restcountries.com/v3.1/all"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        countries = response.json()
+        # Extract country names and codes; you can adjust the fields as needed
+        country_choices = [(country['cca2'], country['name']['common']) for country in countries if 'cca2' in country and 'name' in country]
+        return country_choices
+    except requests.RequestException as e:
+        print(f"Error fetching countries: {e}")
+        return []  # Return an empty list in case of error
+        
+
 @bp.route('/user_address', methods=['GET', 'POST'])
 @login_required
 def user_address():
-
-    def get_country_choices():
-        url = "https://restcountries.com/v3.1/all"
-        try:
-            response = requests.get(url)
-            response.raise_for_status()  # Raise an exception for HTTP errors
-            countries = response.json()
-            # Extract country names and codes; you can adjust the fields as needed
-            country_choices = [(country['cca2'], country['name']['common']) for country in countries if 'cca2' in country and 'name' in country]
-            return country_choices
-        except requests.RequestException as e:
-            print(f"Error fetching countries: {e}")
-            return []  # Return an empty list in case of error
-    
     form = ChangeAddressForm()
     # Set country choices dynamically from the REST Countries API
     form.country.choices = get_country_choices()
@@ -220,7 +225,7 @@ def user_address():
             form.companyname if form.companyname.data else None,
             form.streetaddress if form.streetaddress.data else None,
             form.country if form.country.data else None,
-            form.regionstate if form.regionstate.data else None,
+            form.stateregion if form.stateregion.data else None,
             form.city if form.city.data else None,
             form.zipcode if form.zipcode.data else None,
             form.phonenumber if form.phonenumber.data else None,
@@ -232,7 +237,7 @@ def user_address():
                     form.companyname.data,
                     form.streetaddress.data,
                     form.country.data,
-                    form.regionstate.data,
+                    form.stateregion.data,
                     form.city.data,
                     form.zipcode.data,
                     form.phonenumber.data
