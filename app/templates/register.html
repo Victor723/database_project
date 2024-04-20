@@ -240,7 +240,7 @@
       <span style="color: red;">[{{ error }}]</span>
       {% endfor %}
     </div>
-    
+
 
     <div class="form-group">
       {{ form.streetaddress.label }}
@@ -252,44 +252,38 @@
       {% endfor %}
     </div>
 
-    <div class="form-group">
-      {{ form.city.label }}
-      <div class="input-group">
-        {{ form.city(class_="form-control", placeholder="") }}
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        {{ form.city.label(class="form-label") }}
+        <div class="input-group">
+          {{ form.city(class="form-control", placeholder=current_user.city) }}
+        </div>
       </div>
-      {% for error in form.city.errors %}
-      <span style="color: red;">[{{ error }}]</span>
-      {% endfor %}
+      <div class="form-group col-md-6">
+        {{ form.zipcode.label(class="form-label") }}
+        <div class="input-group">
+          {{ form.zipcode(class="form-control", placeholder=current_user.zipcode) }}
+        </div>
+      </div>
     </div>
 
-    <div class="form-group">
-      {{ form.stateregion.label }}
-      <div class="input-group">
-        {{ form.stateregion(class_="form-control", placeholder="") }}
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        {{ form.stateregion.label(class="form-label") }}
+        <div class="input-group">
+          {{ form.stateregion(class="form-control", placeholder=current_user.stateregion) }}
+        </div>
       </div>
-      {% for error in form.stateregion.errors %}
-      <span style="color: red;">[{{ error }}]</span>
-      {% endfor %}
-    </div>
-
-    <div class="form-group">
-      {{ form.zipcode.label }}
-      <div class="input-group">
-        {{ form.zipcode(class_="form-control", placeholder="") }}
+      <div class="form-group col-md-6">
+        {{ form.country.label(class="form-label") }}
+        <div class="input-group">
+          <select class="form-control" id="{{ form.country.id }}" name="{{ form.country.name }}">
+            {% for code, name in form.country.choices %}
+            <option value="{{ code }}" {% if current_user.country==code %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
       </div>
-      {% for error in form.zipcode.errors %}
-      <span style="color: red;">[{{ error }}]</span>
-      {% endfor %}
-    </div>
-
-    <div class="form-group">
-      {{ form.country.label }}
-      <div class="input-group">
-        {{ form.country(class_="form-control", placeholder="") }}
-      </div>
-      {% for error in form.country.errors %}
-      <span style="color: red;">[{{ error }}]</span>
-      {% endfor %}
     </div>
 
     <div class="form-group" style="margin-bottom: 40px;">
@@ -308,14 +302,14 @@
 </div>
 
 <script>
-function togglePasswordVisibility(passwordFieldId) {
-  var passwordInput = document.getElementById(passwordFieldId);
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-  } else {
-    passwordInput.type = 'password';
+  function togglePasswordVisibility(passwordFieldId) {
+    var passwordInput = document.getElementById(passwordFieldId);
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+    } else {
+      passwordInput.type = 'password';
+    }
   }
-}
 </script>
 
 
