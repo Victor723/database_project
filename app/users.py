@@ -136,8 +136,6 @@ class ChangePasswordForm(FlaskForm):
 def user_details():
     user_details_form = UserDetailsForm()
     password_form = ChangePasswordForm()
-    # is_seller = Seller.is_seller(current_user.userkey)
-    is_seller = True
     if request.method == 'POST':
         if 'submit_details' in request.form:
             fields_to_validate = [
@@ -174,15 +172,13 @@ def user_details():
                 flash(str(e), 'error')
             return redirect(url_for('users.user_details'))
 
-    return render_template('user_details.html', user_details_form=user_details_form, password_form=password_form, is_seller=is_seller)
+    return render_template('user_details.html', user_details_form=user_details_form, password_form=password_form)
 
 
 @bp.route('/user_profile', methods=['GET', 'POST'])
 @login_required
 def user_profile():
-    # is_seller = Seller.is_seller(current_user.userkey)
-    is_seller = True
-    return render_template('user_profile.html', is_seller=is_seller)
+    return render_template('user_profile.html')
 
 
 
@@ -213,8 +209,6 @@ def user_address():
             print(f"Error fetching countries: {e}")
             return []  # Return an empty list in case of error
     
-        # is_seller = Seller.is_seller(current_user.userkey)
-    is_seller = True
     form = ChangeAddressForm()
     # Set country choices dynamically from the REST Countries API
     form.country.choices = get_country_choices()
@@ -250,12 +244,18 @@ def user_address():
             except Exception as e:
                 flash(str(e), 'error')
             return redirect(url_for('users.user_address'))
-    return render_template('user_address.html', form=form, is_seller=is_seller)
+    return render_template('user_address.html', form=form)
 
 
-@bp.route('/user_balance', methods=['GET', 'POST'])
-@login_required
-def user_balance():
+# @bp.route('/user_balance', methods=['GET', 'POST'])
+# @login_required
+# def user_balance():
+#     return render_template('user_address.html', form=form)
+
+@bp.app_context_processor
+def inject_user_status():
+    if not current_user.is_authenticated:
+        return {'is_seller': False}
     # is_seller = Seller.is_seller(current_user.userkey)
     is_seller = True
-    return render_template('user_address.html', form=form, is_seller=is_seller)
+    return dict(is_seller=is_seller)

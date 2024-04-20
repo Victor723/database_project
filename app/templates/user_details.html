@@ -226,21 +226,9 @@
 
 <div class="profile-page">
     <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-        <nav class="nav flex-column">
-            <a class="nav-link " href="{{ url_for('users.user_profile') }}">Dashboard</a>
-            <a class="nav-link active" href="{{ url_for('users.user_details') }}">Account Details</a>
-            <a class="nav-link" href="{{ url_for('orders.show_orders') }}">Order History</a>
-            <span class="nav-link disabled">Track Order</span>
-            <a class="nav-link" href="{{ url_for('cart.shopping_cart') }}">Shopping Cart</a>
-            <a class="nav-link " href="{{ url_for('users.user_address') }}">Address</a>
-            <a class="nav-link" href="{{ url_for('myreview.get_myreview') }}">My Review</a>
-            <span class="nav-link disabled">Wallet</span>
-        </nav>
-        {% if is_seller %}
-        <button type="button" class="btn-switch">Switch to seller</button>
-        {% endif %}
-    </aside>
+    {% with active_page='details', is_seller=is_seller %}
+    {% include '_user_sidebar.html' %}
+    {% endwith %}
 
     <div class="profile-container">
         <form method="post">
