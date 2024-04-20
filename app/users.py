@@ -20,6 +20,26 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Sign In')
 
 
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index.index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.get_by_auth(form.email.data, form.password.data)
+        if user is None:
+            flash('Invalid email or password')
+            return redirect(url_for('users.login'))
+        login_user(user)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index.index')
+
+        return redirect(next_page)
+    return render_template('login.html', title='Sign In', form=form)
+
+
+
 class RegistrationForm(FlaskForm):
     firstname = StringField('First Name', validators=[DataRequired()])
     lastname = StringField('Last Name', validators=[DataRequired()])
@@ -56,37 +76,6 @@ class RegistrationForm(FlaskForm):
     #         raise ValidationError('Phone number must be 10 or 11 digits long.')
 
 
-class UserDetailsForm(FlaskForm):
-    firstname = StringField('First Name', validators=[DataRequired()])
-    lastname = StringField('Last Name', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    submit = SubmitField('Save Changes')
-
-class ChangePasswordForm(FlaskForm):
-    current_password = PasswordField('Current Password', validators=[DataRequired()])
-    new_password = PasswordField('New Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('new_password')])
-    submit = SubmitField('Change Password')
-
-
-@bp.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('index.index'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.get_by_auth(form.email.data, form.password.data)
-        if user is None:
-            flash('Invalid email or password')
-            return redirect(url_for('users.login'))
-        login_user(user)
-        next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index.index')
-
-        return redirect(next_page)
-    return render_template('login.html', title='Sign In', form=form)
-
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -119,16 +108,35 @@ def register():
             return redirect(url_for('users.login'))
     return render_template('register.html', title='Register', form=form)
 
+
+
 @bp.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index.index'))
+
+
+
+class UserDetailsForm(FlaskForm):
+    firstname = StringField('First Name', validators=[DataRequired()])
+    lastname = StringField('Last Name', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Save Changes')
+
+class ChangePasswordForm(FlaskForm):
+    current_password = PasswordField('Current Password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('new_password')])
+    submit = SubmitField('Change Password')
+
 
 @bp.route('/user_details', methods=['GET', 'POST'])
 @login_required
 def user_details():
     user_details_form = UserDetailsForm()
     password_form = ChangePasswordForm()
+    # is_seller = Seller.is_seller(current_user.userkey)
+    is_seller = True
     if request.method == 'POST':
         if user_details_form.validate_on_submit():
             try:
@@ -159,9 +167,51 @@ def user_details():
                 flash(str(e), 'error')
             return redirect(url_for('users.user_details'))
 
-    return render_template('user_details.html', user_details_form=user_details_form, password_form=password_form)
+    return render_template('user_details.html', user_details_form=user_details_form, password_form=password_form, is_seller=is_seller)
+
 
 @bp.route('/user_profile', methods=['GET', 'POST'])
 @login_required
 def user_profile():
-    return render_template('user_profile.html')
+    # is_seller = Seller.is_seller(current_user.userkey)
+    is_seller = True
+    return render_template('user_profile.html', is_seller=is_seller)
+
+
+
+class ChangeAddressForm(FlaskForm):
+    companyname = StringField('Company Name', validators=[DataRequired()])
+    streetaddress = StringField('Street Address', validators=[DataRequired()])
+    country = StringField('Country', validators=[DataRequired()])
+    regionstate = StringField('Region / State', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    zipcode = StringField('Zip Code', validators=[DataRequired()])
+    phonenumber = StringField('Phone Number', validators=[DataRequired()])
+    submit = SubmitField('Save Changes')
+
+@bp.route('/user_address', methods=['GET', 'POST'])
+@login_required
+def user_address():
+        # is_seller = Seller.is_seller(current_user.userkey)
+    is_seller = True
+    form = ChangeAddressForm()
+    if form.validate_on_submit():
+        try:
+            success = User.update_address(
+                current_user.userkey,
+                form.companyname.data,
+                form.streetaddress.data,
+                form.country.data,
+                form.regionstate.data,
+                form.city.data,
+                form.zipcode.data,
+                form.phonenumber.data
+            )
+            if success:
+                flash('Your address have been updated.', 'success')
+            else:
+                flash('An error occurred while updating your address.', 'error')
+        except Exception as e:
+            flash(str(e), 'error')
+        return redirect(url_for('users.user_details'))
+    return render_template('user_address.html', form=form, is_seller=is_seller)
