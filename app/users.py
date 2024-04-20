@@ -2,6 +2,7 @@ from flask import render_template, redirect, url_for, flash, request
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
+import requests
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from datetime import date
@@ -118,16 +119,16 @@ def logout():
 
 
 class UserDetailsForm(FlaskForm):
-    firstname = StringField('First Name', validators=[DataRequired()])
-    lastname = StringField('Last Name', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    submit = SubmitField('Save Changes')
+    firstname = StringField('First Name', validators=[])
+    lastname = StringField('Last Name', validators=[])
+    email = StringField('Email', validators=[Email()])
+    submit_details = SubmitField('Save Changes')
 
 class ChangePasswordForm(FlaskForm):
     current_password = PasswordField('Current Password', validators=[DataRequired()])
     new_password = PasswordField('New Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('new_password')])
-    submit = SubmitField('Change Password')
+    submit_password = SubmitField('Save Password')
 
 
 @bp.route('/user_details', methods=['GET', 'POST'])
@@ -138,23 +139,29 @@ def user_details():
     # is_seller = Seller.is_seller(current_user.userkey)
     is_seller = True
     if request.method == 'POST':
-        if user_details_form.validate_on_submit():
-            try:
-                success = User.update_user_details(
-                    current_user.userkey,
-                    user_details_form.email.data,
-                    user_details_form.firstname.data,
-                    user_details_form.lastname.data
-                )
-                if success:
-                    flash('Your account details have been updated.', 'success')
-                else:
-                    flash('An error occurred while updating your details.', 'error')
-            except Exception as e:
-                flash(str(e), 'error')
-            return redirect(url_for('users.user_details'))
-
-        elif password_form.validate_on_submit():
+        if 'submit_details' in request.form:
+            fields_to_validate = [
+                user_details_form.firstname if user_details_form.firstname.data else None,
+                user_details_form.lastname if user_details_form.lastname.data else None,
+                user_details_form.email if user_details_form.email.data else None,
+            ]
+            if all(field.validate(user_details_form) if field else True for field in fields_to_validate):
+                try:
+                    success = User.update_user_details(
+                        current_user.userkey,
+                        user_details_form.email.data,
+                        user_details_form.firstname.data,
+                        user_details_form.lastname.data
+                    )
+                    if success:
+                        flash('Your account details have been updated.', 'success')
+                    else:
+                        flash('An error occurred while updating your details.', 'error')
+                except Exception as e:
+                    flash(str(e), 'error')
+                return redirect(url_for('users.user_details'))
+            
+        if 'submit_password' in request.form and password_form.validate_on_submit():
             try:
                 if User.check_password(current_user.userkey, password_form.current_password.data):
                     if User.update_password(current_user.userkey, password_form.new_password.data):
@@ -180,38 +187,75 @@ def user_profile():
 
 
 class ChangeAddressForm(FlaskForm):
-    companyname = StringField('Company Name', validators=[DataRequired()])
-    streetaddress = StringField('Street Address', validators=[DataRequired()])
-    country = StringField('Country', validators=[DataRequired()])
-    regionstate = StringField('Region / State', validators=[DataRequired()])
-    city = StringField('City', validators=[DataRequired()])
-    zipcode = StringField('Zip Code', validators=[DataRequired()])
-    phonenumber = StringField('Phone Number', validators=[DataRequired()])
+    companyname = StringField('Company Name', validators=[])
+    streetaddress = StringField('Street Address', validators=[])
+    country = StringField('Country', validators=[])
+    regionstate = StringField('Region / State', validators=[])
+    city = StringField('City', validators=[])
+    zipcode = StringField('Zip Code', validators=[])
+    phonenumber = StringField('Phone Number', validators=[])
     submit = SubmitField('Save Changes')
 
 @bp.route('/user_address', methods=['GET', 'POST'])
 @login_required
 def user_address():
+
+    def get_country_choices():
+        url = "https://restcountries.com/v3.1/all"
+        try:
+            response = requests.get(url)
+            response.raise_for_status()  # Raise an exception for HTTP errors
+            countries = response.json()
+            # Extract country names and codes; you can adjust the fields as needed
+            country_choices = [(country['cca2'], country['name']['common']) for country in countries if 'cca2' in country and 'name' in country]
+            return country_choices
+        except requests.RequestException as e:
+            print(f"Error fetching countries: {e}")
+            return []  # Return an empty list in case of error
+    
         # is_seller = Seller.is_seller(current_user.userkey)
     is_seller = True
     form = ChangeAddressForm()
-    if form.validate_on_submit():
-        try:
-            success = User.update_address(
-                current_user.userkey,
-                form.companyname.data,
-                form.streetaddress.data,
-                form.country.data,
-                form.regionstate.data,
-                form.city.data,
-                form.zipcode.data,
-                form.phonenumber.data
-            )
-            if success:
-                flash('Your address have been updated.', 'success')
-            else:
-                flash('An error occurred while updating your address.', 'error')
-        except Exception as e:
-            flash(str(e), 'error')
-        return redirect(url_for('users.user_details'))
+    # Set country choices dynamically from the REST Countries API
+    form.country.choices = get_country_choices()
+    # Sort the choices alphabetically by country name
+    form.country.choices.sort(key=lambda choice: choice[1])
+
+    if 'submit' in request.form:
+        fields_to_validate = [
+            form.companyname if form.companyname.data else None,
+            form.streetaddress if form.streetaddress.data else None,
+            form.country if form.country.data else None,
+            form.regionstate if form.regionstate.data else None,
+            form.city if form.city.data else None,
+            form.zipcode if form.zipcode.data else None,
+            form.phonenumber if form.phonenumber.data else None,
+        ]
+        if all(field.validate(form) if field else True for field in fields_to_validate):
+            try:
+                success = User.update_address(
+                    current_user.userkey,
+                    form.companyname.data,
+                    form.streetaddress.data,
+                    form.country.data,
+                    form.regionstate.data,
+                    form.city.data,
+                    form.zipcode.data,
+                    form.phonenumber.data
+                )
+                if success:
+                    flash('Your address have been updated.', 'success')
+                else:
+                    flash('An error occurred while updating your address.', 'error')
+            except Exception as e:
+                flash(str(e), 'error')
+            return redirect(url_for('users.user_address'))
+    return render_template('user_address.html', form=form, is_seller=is_seller)
+
+
+@bp.route('/user_balance', methods=['GET', 'POST'])
+@login_required
+def user_balance():
+    # is_seller = Seller.is_seller(current_user.userkey)
+    is_seller = True
     return render_template('user_address.html', form=form, is_seller=is_seller)

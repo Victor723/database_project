@@ -25,10 +25,7 @@ class User(UserMixin):
 
     def get_id(self):
         return str(self.userkey)
-    
-    def get_balance(self):
-        return self.balance
-    
+
     @staticmethod
     def get_balance(userkey):
         rows = app.db.execute("""
@@ -40,7 +37,6 @@ class User(UserMixin):
         return rows
     
         
-
     @staticmethod
     def get_by_auth(email, password):
         rows = app.db.execute("""
@@ -58,7 +54,6 @@ class User(UserMixin):
             # Since the password is the first element and not needed in the User constructor,
             # we skip the first element (password) and unpack the rest
             return User(*(rows[0][1:]))
-
 
 
     @staticmethod
@@ -141,20 +136,24 @@ class User(UserMixin):
         return rows
     
     @staticmethod
-    def update_user_details(userkey, email, firstname, lastname):
+    def update_user_details(userkey, email=None, firstname=None, lastname=None):
+        updates = {}
+        if email:
+            updates['u_email'] = email
+        if firstname:
+            updates['u_firstname'] = firstname
+        if lastname:
+            updates['u_lastname'] = lastname
+            
+        if updates:
+            query = """UPDATE Users SET """
+            query += ', '.join(f"{k} = :{k}" for k in updates.keys())
+            query += """ WHERE u_userkey = :userkey RETURNING u_userkey """
+
+        params = updates
+        params['userkey'] = userkey
         try:
-            rows = app.db.execute("""
-                UPDATE Users
-                SET u_email = :email,
-                    u_firstname = :firstname,
-                    u_lastname = :lastname
-                WHERE u_userkey = :userkey
-                RETURNING u_userkey
-                """,
-                userkey=userkey,
-                email=email,
-                firstname=firstname,
-                lastname=lastname)
+            rows = app.db.execute(query, **params)
             return rows[0][0] == userkey  # True if the update was successful
         except Exception as e:
             # handle exceptions appropriately and possibly log them.
@@ -206,28 +205,33 @@ class User(UserMixin):
 
 
     @staticmethod
-    def update_address(userkey, companyname, streetaddress, country, regionstate, city, zipcode, phonenumber):
+    def update_address(userkey, companyname=None, streetaddress=None, country=None, regionstate=None, city=None, zipcode=None, phonenumber=None):
+        updates = {}
+        if companyname:
+            updates['u_companyname'] = companyname
+        if streetaddress:
+            updates['u_streetaddress'] = streetaddress
+        if country:
+            updates['u_country'] = country
+        if regionstate:
+            updates['u_stateregion'] = regionstate
+        if city:
+            updates['u_city'] = city
+        if zipcode:
+            updates['u_zipcode'] = zipcode
+        if phonenumber:
+            updates['u_phonenumber'] = phonenumber
+
+        if updates:
+            query = """UPDATE Users SET """
+            query += ', '.join(f"{k} = :{k}" for k in updates.keys())
+            query += """ WHERE u_userkey = :userkey RETURNING u_userkey """
+
+        params = updates
+        params['userkey'] = userkey
+
         try:
-            rows = app.db.execute("""
-                UPDATE Users
-                SET u_companyname = :companyname,
-                    u_streetaddress = :streetaddress,
-                    u_country = :country
-                    u_stateregion = :regionstate,
-                    u_city = :city,
-                    u_zipcode = :zipcode,
-                    u_phonenumber = :phonenumber,
-                WHERE u_userkey = :userkey
-                RETURNING u_userkey
-                """,
-                userkey=userkey,
-                companyname=companyname,
-                streetaddress=streetaddress,
-                country=country,
-                regionstate=regionstate,
-                city=city,
-                zipcode=zipcode,
-                phonenumber=phonenumber)
+            rows = app.db.execute(query, **params)
             return rows[0][0] == userkey  # True if the update was successful
         except Exception as e:
             # handle exceptions appropriately and possibly log them.
