@@ -1,11 +1,87 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-3">
-    <div class="row">
-        <!-- Order History Column -->
-        <div class="col-12">
-            {% if orders %}
+<style>
+    .profile-page {
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+        /* This adds spacing between the sidebar and the profile content */
+    }
+
+    .sidebar {
+        flex: 0 0 250px;
+        height: 37vh;  /* Fixed height */
+        padding: 20px;
+        background-color: #f5f5f5;
+        overflow-y: auto;  /* Scrollable */
+    }
+
+    .profile-page {
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+        /* This adds spacing between the sidebar and the profile content */
+    }
+
+    .nav-link {
+        padding: 10px;
+        color: #333;
+        text-decoration: none;
+        display: block;
+        margin: 5px 0;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+        background-color: #e7e7e7;
+    }
+
+    .btn-switch {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-top: 20px;
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-switch:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="profile-page">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <nav class="nav flex-column">
+            <a class="nav-link " href="{{ url_for('users.user_profile') }}">Dashboard</a>
+            <a class="nav-link " href="{{ url_for('users.user_details') }}">Account Details</a>
+            <a class="nav-link active" href="{{ url_for('orders.show_orders') }}">Order History</a>
+            <span class="nav-link disabled">Track Order</span>
+            <a class="nav-link" href="{{ url_for('cart.shopping_cart') }}">Shopping Cart</a>
+            <a class="nav-link " href="{{ url_for('users.user_address') }}">Address</a>
+            <a class="nav-link" href="{{ url_for('myreview.get_myreview') }}">My Review</a>
+            <span class="nav-link disabled">Wallet</span>
+        </nav>
+        {% if is_seller %}
+        <button type="button" class="btn-switch">Switch to seller</button>
+        {% endif %}
+    </aside>
+
+    <div class="container mt-3">
+        <div class="row">
+            <!-- Order History Column -->
+            <div class="col-12">
+                {% if orders %}
                 <h2 class="mb-4 duke-blue">Order History</h2>
                 <div class="table-responsive">
                     <table class="table">
@@ -23,7 +99,8 @@
                             <tr>
                                 <td>{{ order.product_name }}</td>
                                 <td>{{ order.status }}</td>
-                                <td>{{ order.date.strftime('%b %d, %Y %H:%M') if order.date else 'Date not available' }}</td>
+                                <td>{{ order.date.strftime('%b %d, %Y %H:%M') if order.date else 'Date not available' }}
+                                </td>
 
                                 <td>${{ '%.2f'|format(order.total_price) }} ({{ order.items_count }} Items)</td>
                                 <td>
@@ -43,22 +120,25 @@
                 <nav>
                     <ul class="pagination">
                         {% if page > 1 %}
-                            <li class="page-item"><a href="{{ url_for('orders', page=page-1) }}" class="page-link">Previous</a></li>
+                        <li class="page-item"><a href="{{ url_for('orders', page=page-1) }}"
+                                class="page-link">Previous</a></li>
                         {% endif %}
-                        
+
                         {% for i in range(1, total_pages+1) %}
-                            <li class="page-item {% if i == page %}active{% endif %}"><a href="{{ url_for('orders', page=i) }}" class="page-link">{{ i }}</a></li>
+                        <li class="page-item {% if i == page %}active{% endif %}"><a
+                                href="{{ url_for('orders', page=i) }}" class="page-link">{{ i }}</a></li>
                         {% endfor %}
 
-                        {% if page < total_pages %}
-                            <li class="page-item"><a href="{{ url_for('orders', page=page+1) }}" class="page-link">Next</a></li>
-                        {% endif %}
+                        {% if page < total_pages %} <li class="page-item"><a href="{{ url_for('orders', page=page+1) }}"
+                                class="page-link">Next</a></li>
+                            {% endif %}
                     </ul>
                 </nav>
 
-            {% else %}
+                {% else %}
                 <h2 class="text-center mt-5">You have no order history.</h2>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

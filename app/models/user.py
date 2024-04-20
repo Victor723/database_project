@@ -203,3 +203,33 @@ class User(UserMixin):
             # Handle exceptions and possibly log them
             print(f"An error occurred: {e}")
             return False
+
+
+    @staticmethod
+    def update_address(userkey, companyname, streetaddress, country, regionstate, city, zipcode, phonenumber):
+        try:
+            rows = app.db.execute("""
+                UPDATE Users
+                SET u_companyname = :companyname,
+                    u_streetaddress = :streetaddress,
+                    u_country = :country
+                    u_stateregion = :regionstate,
+                    u_city = :city,
+                    u_zipcode = :zipcode,
+                    u_phonenumber = :phonenumber,
+                WHERE u_userkey = :userkey
+                RETURNING u_userkey
+                """,
+                userkey=userkey,
+                companyname=companyname,
+                streetaddress=streetaddress,
+                country=country,
+                regionstate=regionstate,
+                city=city,
+                zipcode=zipcode,
+                phonenumber=phonenumber)
+            return rows[0][0] == userkey  # True if the update was successful
+        except Exception as e:
+            # handle exceptions appropriately and possibly log them.
+            print(str(e))  # Replace with more robust error handling
+            return False
