@@ -256,38 +256,18 @@ class BecomeSellerForm(FlaskForm):
     next = HiddenField()
     submit = SubmitField('Continue')
 
-    def validate_companyname(self, field):
-        if field.data and not field.data.strip(): # if empty spaces are filled out in the field
-            raise ValidationError('Company name cannot be empty.')
-
 @bp.route('/become_a_seller', methods=['POST'])
 @login_required
 def become_a_seller():
     become_seller_form = BecomeSellerForm()
     if 'submit' in request.form:
-        if become_seller_form.validate_on_submit():
-            try:
-                User.update_address(userkey=current_user.userkey, companyname=become_seller_form.companyname.data)
-                # Seller.register(current_user.userkey, become_seller_form.company_name.data)
-                flash('You have successfully become a seller!', 'success')
-            except Exception as e:
-                flash(str(e), 'error')
-        else:
-            flash('Failed to register: company name cannot be empty.', 'error')
+        try:
+            User.update_address(userkey=current_user.userkey, companyname=become_seller_form.companyname.data)
+            # Seller.register(current_user.userkey, become_seller_form.company_name.data)
+            flash('You have successfully become a seller!', 'success')
+        except Exception as e:
+            flash(str(e), 'error')
     return redirect(become_seller_form.next.data)
-
-    # data = request.get_json()
-    # company_name = data.get('company_name', '').strip()
-    # if not company_name:
-    #     return jsonify({'error': 'Company name cannot be empty.'}), 400
-    # try:
-    #     User.update_address(current_user.userkey, companyname=company_name)
-    #     # Seller.register(current_user.userkey, company_name)
-    #     flash('You have successfully become a seller!', 'success')
-    #     return jsonify({}), 200
-    # except Exception as e:
-    #     flash('An error occurred while registering you as a seller.', 'error')
-    #     return jsonify({}), 500
     
 
 
@@ -296,6 +276,6 @@ def inject_user_status():
     if not current_user.is_authenticated:
         return {'is_seller': False}
     
-    return dict(is_seller = False,
+    return dict(is_seller = True,
         # is_seller=Seller.is_seller(current_user.userkey), 
         become_seller_form=BecomeSellerForm(obj=current_user))
