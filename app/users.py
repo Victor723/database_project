@@ -205,7 +205,7 @@ class ChangeAddressForm(FlaskForm):
     phonenumber = StringField('Phone Number', validators=[
         Optional(),
         Regexp(regex=r'^(?:\+?1\s*(?:[.-]\s*)?)?(?:(\(\s*\d{3}\s*\))|\d{3})\s*(?:[.-]\s*)?\d{3}\s*(?:[.-]\s*)?\d{4}$',
-            message='Invalid phone number. Format must be XXX-XXX-XXXX or +1 XXX-XXX-XXXX. "-" is optional')
+            message='Invalid phone number; Format must be XXX-XXX-XXXX or +1 XXX-XXX-XXXX; "-" is optional')
         ])
     submit = SubmitField('Save Changes')
 
