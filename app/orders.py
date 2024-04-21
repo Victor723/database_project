@@ -10,7 +10,7 @@ bp = Blueprint('orders', __name__)
 @bp.route('/orders/', methods=['GET', 'POST'])
 def show_orders():
     # is_seller = Seller.is_seller(current_user.userkey)
-    is_seller = True
+    is_seller = False
     userkey = current_user.userkey
     try:
         orders = Order.get_orders(userkey, 0) or []

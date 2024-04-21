@@ -265,5 +265,5 @@ def inject_user_status():
     if not current_user.is_authenticated:
         return {'is_seller': False}
     # is_seller = Seller.is_seller(current_user.userkey)
-    is_seller = True
+    is_seller = False
     return dict(is_seller=is_seller)

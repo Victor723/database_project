@@ -9,9 +9,11 @@
         <a class="nav-link {{ 'active' if active_page == 'address' }}" href="{{ url_for('users.user_address') }}">Address</a>
         <a class="nav-link {{ 'active' if active_page == 'review' }}" href="{{ url_for('myreview.get_myreview') }}">My Review</a>
         <a class="nav-link {{ 'active' if active_page == 'wallet' }}" href="{{ url_for('users.user_wallet') }}">Wallet</a>
-        <a class="nav-link" href="{{ url_for('users.logout') }}" onclick="return confirm('Are you sure you want to log out?');">Log Out</a>
+        <a class="nav-link" onclick="return confirm('You are logging out.');" href="{{ url_for('users.logout') }}" >Log Out</a>
     </nav>
     {% if is_seller %}
     <button type="button" class="btn-switch">Switch to seller</button>
+    {% else %}
+    <button type="button" class="btn-switch">Become a seller</button>
     {% endif %}
 </aside>
