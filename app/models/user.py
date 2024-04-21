@@ -111,29 +111,6 @@ class User(UserMixin):
             userkey=userkey)
         return User(*(rows[0])) if rows else None
 
-
-
-    @staticmethod
-    def get_order_history_by_id(userkey):
-        rows = app.db.execute("""
-            SELECT
-                O.o_orderkey AS Order_Key,
-                O.o_ordercreatedate AS Order_Date,
-                P.p_productkey AS Product_Key,
-                P.p_productname AS Product_Name,
-                L.l_quantity AS Quantity,
-                L.l_originalprice AS Original_Price
-            FROM
-                Orders O
-            JOIN Lineitem L ON O.o_orderkey = L.l_orderkey
-            JOIN Product P ON L.l_productkey = P.p_productkey
-            WHERE
-                O.o_userkey = :userkey
-            ORDER BY O.o_ordercreatedate;
-            """,
-            userkey=userkey)
-        # rows: list of tuples
-        return rows
     
     @staticmethod
     def update_user_details(userkey, email=None, firstname=None, lastname=None):
@@ -205,7 +182,7 @@ class User(UserMixin):
 
 
     @staticmethod
-    def update_address(userkey, companyname=None, streetaddress=None, country=None, regionstate=None, city=None, zipcode=None, phonenumber=None):
+    def update_address(userkey, companyname=None, streetaddress=None, country=None, stateregion=None, city=None, zipcode=None, phonenumber=None):
         updates = {}
         if companyname:
             updates['u_companyname'] = companyname
@@ -213,8 +190,8 @@ class User(UserMixin):
             updates['u_streetaddress'] = streetaddress
         if country:
             updates['u_country'] = country
-        if regionstate:
-            updates['u_stateregion'] = regionstate
+        if stateregion:
+            updates['u_stateregion'] = stateregion
         if city:
             updates['u_city'] = city
         if zipcode:
