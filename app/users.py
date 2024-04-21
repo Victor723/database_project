@@ -1,12 +1,11 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, jsonify
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
 import requests
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Regexp, Optional
 from datetime import date
-import re
 
 from .models.user import User
 from .models.seller import Seller
@@ -158,16 +157,13 @@ def user_details():
             if (user_details_form.email.data or user_details_form.firstname.data or user_details_form.lastname.data):
                 if user_details_form.validate_on_submit():
                     try:
-                        success = User.update_user_details(
+                        User.update_user_details(
                             current_user.userkey,
                             user_details_form.email.data,
                             user_details_form.firstname.data,
                             user_details_form.lastname.data
                         )
-                        if success:
-                            flash('Your account details have been updated.', 'success')
-                        else:
-                            flash('An error occurred while updating your details.', 'error')
+                        flash('Your account details have been updated.', 'success')
                     except Exception as e:
                         flash(str(e), 'error')
                     return redirect(url_for('users.user_details'))
@@ -175,10 +171,8 @@ def user_details():
         if 'submit_password' in request.form and password_form.validate_on_submit():
             try:
                 if User.check_password(current_user.userkey, password_form.current_password.data):
-                    if User.update_password(current_user.userkey, password_form.new_password.data):
-                        flash('Your password has been changed.', 'success')
-                    else:
-                        flash('Your password has not been changed.', 'error')
+                    User.update_password(current_user.userkey, password_form.new_password.data)
+                    flash('Your password has been changed.', 'success')
                 else:
                     flash('Current password is incorrect.', 'error')
             except Exception as e:
@@ -233,7 +227,7 @@ def user_address():
             form.phonenumber.data):
             if form.validate_on_submit():
                 try:
-                    success = User.update_address(
+                    User.update_address(
                         current_user.userkey,
                         form.companyname.data,
                         form.streetaddress.data,
@@ -243,10 +237,7 @@ def user_address():
                         form.zipcode.data,
                         form.phonenumber.data
                     )
-                    if success:
-                        flash('Your address have been updated.', 'success')
-                    else:
-                        flash('An error occurred while updating your address.', 'error')
+                    flash('Your address have been updated.', 'success')
                 except Exception as e:
                     flash(str(e), 'error')
                 return redirect(url_for('users.user_address'))
@@ -260,10 +251,51 @@ def user_wallet():
     return render_template('user_wallet.html')
 
 
+class BecomeSellerForm(FlaskForm):
+    companyname = StringField('Your company name:', validators=[DataRequired()])
+    next = HiddenField()
+    submit = SubmitField('Continue')
+
+    def validate_companyname(self, field):
+        if field.data and not field.data.strip(): # if empty spaces are filled out in the field
+            raise ValidationError('Company name cannot be empty.')
+
+@bp.route('/become_a_seller', methods=['POST'])
+@login_required
+def become_a_seller():
+    become_seller_form = BecomeSellerForm()
+    if 'submit' in request.form:
+        if become_seller_form.validate_on_submit():
+            try:
+                User.update_address(userkey=current_user.userkey, companyname=become_seller_form.companyname.data)
+                # Seller.register(current_user.userkey, become_seller_form.company_name.data)
+                flash('You have successfully become a seller!', 'success')
+            except Exception as e:
+                flash(str(e), 'error')
+        else:
+            flash('Failed to register: company name cannot be empty.', 'error')
+    return redirect(become_seller_form.next.data)
+
+    # data = request.get_json()
+    # company_name = data.get('company_name', '').strip()
+    # if not company_name:
+    #     return jsonify({'error': 'Company name cannot be empty.'}), 400
+    # try:
+    #     User.update_address(current_user.userkey, companyname=company_name)
+    #     # Seller.register(current_user.userkey, company_name)
+    #     flash('You have successfully become a seller!', 'success')
+    #     return jsonify({}), 200
+    # except Exception as e:
+    #     flash('An error occurred while registering you as a seller.', 'error')
+    #     return jsonify({}), 500
+    
+
+
 @bp.app_context_processor
 def inject_user_status():
     if not current_user.is_authenticated:
         return {'is_seller': False}
-    # is_seller = Seller.is_seller(current_user.userkey)
-    is_seller = False
-    return dict(is_seller=is_seller)
+    
+    return dict(is_seller = False,
+        # is_seller=Seller.is_seller(current_user.userkey), 
+        become_seller_form=BecomeSellerForm(obj=current_user))
