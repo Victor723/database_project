@@ -267,7 +267,7 @@
             <div class="change-password">
                 <h2 class="h3 mb-3 font-weight-normal">Change Password</h2>
                 <div class="form-group">
-                    {{ password_form.current_password.label }}
+                    {{ password_form.current_password.label }}<span style="color: red;">*</span><br />
                     <div class="input-group">
                         {{ password_form.current_password(class_="form-control password", placeholder="") }}
                         <div class="input-group-append">
@@ -282,7 +282,7 @@
                     {% endfor %}
                 </div>
                 <div class="form-group">
-                    {{ password_form.new_password.label }}
+                    {{ password_form.new_password.label }}<span style="color: red;">*</span><br />
                     <div class="input-group">
                         {{ password_form.new_password(class_="form-control password", placeholder="") }}
                         <div class="input-group-append">
@@ -297,7 +297,7 @@
                     {% endfor %}
                 </div>
                 <div class="form-group">
-                    {{ password_form.confirm_password.label }}
+                    {{ password_form.confirm_password.label }}<span style="color: red;">*</span><br />
                     <div class="input-group">
                         {{ password_form.confirm_password(class_="form-control password", placeholder="") }}
                         <div class="input-group-append">
