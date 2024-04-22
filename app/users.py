@@ -277,5 +277,15 @@ def inject_user_status():
         return {'is_seller': False}
     
     return dict(is_seller = True,
+                # is_seller = False,
         # is_seller=Seller.is_seller(current_user.userkey), 
         become_seller_form=BecomeSellerForm(obj=current_user))
+
+
+#     {% for orders in orders %}
+#     <p>
+#         {% for item in orders %}
+#             {{ item }}{% if not loop.last %}, {% endif %}
+#         {% endfor %}
+#     </p>
+# {% endfor %}
