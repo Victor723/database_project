@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
@@ -9,6 +9,7 @@ from datetime import date
 
 from .models.user import User
 from .models.seller import Seller
+from.models.order import Order
 
 from flask import Blueprint
 bp = Blueprint('users', __name__)
@@ -214,7 +215,6 @@ class ChangeAddressForm(FlaskForm):
 @login_required
 def user_address():
     form = ChangeAddressForm()
-    # Set country choices dynamically from the REST Countries API
     form.country.choices = get_country_choices()
 
     if 'submit' in request.form:

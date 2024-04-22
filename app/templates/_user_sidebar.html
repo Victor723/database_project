@@ -23,21 +23,29 @@
     <nav class="nav flex-column">
         <a class="nav-link {{ 'active' if active_page == 'dashboard' }}"
             href="{{ url_for('users.user_profile') }}">Dashboard</a>
+
         <a class="nav-link {{ 'active' if active_page == 'details' }}"
             href="{{ url_for('users.user_details') }}">Account Details</a>
-        <a class="nav-link {{ 'active' if active_page == 'orders' }}" href="{{ url_for('orders.show_orders') }}">Order
-            History</a>
+
+        <a class="nav-link {{ 'active' if active_page == 'orders' }}"
+            href="{{ url_for('orders.show_orders') }}">Order History</a>
+
         <span class="nav-link disabled">Track Order</span>
-        <a class="nav-link {{ 'active' if active_page == 'cart' }}" href="{{ url_for('cart.shopping_cart') }}">Shopping
-            Cart</a>
+
+        <a class="nav-link {{ 'active' if active_page == 'cart' }}"
+            href="{{ url_for('cart.shopping_cart') }}">Shopping Cart</a>
+
         <a class="nav-link {{ 'active' if active_page == 'address' }}"
             href="{{ url_for('users.user_address') }}">Address</a>
-        <a class="nav-link {{ 'active' if active_page == 'review' }}" href="{{ url_for('myreview.get_myreview') }}">My
-            Review</a>
+
+        <a class="nav-link {{ 'active' if active_page == 'review' }}" 
+            href="{{ url_for('myreview.get_myreview') }}">My Review</a>
+
         <a class="nav-link {{ 'active' if active_page == 'wallet' }}"
             href="{{ url_for('users.user_wallet') }}">Wallet</a>
-        <a class="nav-link" onclick="return confirm('You are logging out.');" href="{{ url_for('users.logout') }}">Log
-            Out</a>
+            
+        <a class="nav-link" onclick="return confirm('You are logging out.');" 
+            href="{{ url_for('users.logout') }}">Log Out</a>
     </nav>
 
     {% if is_seller %}
