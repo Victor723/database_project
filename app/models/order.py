@@ -30,41 +30,51 @@ class Order:
         '''
         try:
             rows = app.db.execute(query, {'o_userkey': o_userkey, 'offset': offset}).fetchall()
-            orders = [dict(row) for row in rows]
+            # rows = app.db.execute(query, 
+            #                       o_userkey = o_userkey, 
+            #                       offset = offset
+            #                       )
+
+            app.logger.info(f"type: {type(rows)}") #[2024-04-21 22:44:24,504] INFO in order: type: <class 'list'>
+            app.logger.info(f"type: {type(rows[0])}") #[2024-04-21 22:44:24,504] INFO in order: type: <class 'sqlalchemy.engine.row.Row'>
+            
+            # orders = [dict(row) for row in rows]
+            orders = [row for row in rows]
+            # orders = rows
             return orders
         except Exception as e:
             app.logger.error(f"Error fetching orders: {e}")
             return []
 
-    @staticmethod
-    def get_orders(o_userkey, offset=0):
-        query = '''
-            SELECT 
-                o.o_orderkey, 
-                array_agg(p.p_productname) as product_names,
-                o.o_totalprice as total_price, 
-                o.o_ordercreatedate,
-                COUNT(*) OVER() AS full_count
-            FROM 
-                Orders o
-                JOIN Lineitem l ON o.o_orderkey = l.l_orderkey
-                JOIN Product p ON l.l_productkey = p.p_productkey
-            WHERE 
-                o.o_userkey = :o_userkey
-            GROUP BY 
-                o.o_orderkey
-            ORDER BY 
-                o.o_ordercreatedate DESC
-            LIMIT 
-                10 OFFSET :offset;
-        '''
-        try:
-            rows = app.db.execute(query, {'o_userkey': o_userkey, 'offset': offset}).fetchall()
-            orders = [dict(row) for row in rows]
-            return orders
-        except Exception as e:
-            app.logger.error(f"Error fetching orders: {e}")
-            return []
+    # @staticmethod
+    # def get_orders(o_userkey, offset=0):
+    #     query = '''
+    #         SELECT 
+    #             o.o_orderkey, 
+    #             array_agg(p.p_productname) as product_names,
+    #             o.o_totalprice as total_price, 
+    #             o.o_ordercreatedate,
+    #             COUNT(*) OVER() AS full_count
+    #         FROM 
+    #             Orders o
+    #             JOIN Lineitem l ON o.o_orderkey = l.l_orderkey
+    #             JOIN Product p ON l.l_productkey = p.p_productkey
+    #         WHERE 
+    #             o.o_userkey = :o_userkey
+    #         GROUP BY 
+    #             o.o_orderkey
+    #         ORDER BY 
+    #             o.o_ordercreatedate DESC
+    #         LIMIT 
+    #             10 OFFSET :offset;
+    #     '''
+    #     try:
+    #         rows = app.db.execute(query, {'o_userkey': o_userkey, 'offset': offset}).fetchall()
+    #         orders = [dict(row) for row in rows]
+    #         return orders
+    #     except Exception as e:
+    #         app.logger.error(f"Error fetching orders: {e}")
+    #         return []
 
     @staticmethod
     def check_product(userkey, productkey):
@@ -77,7 +87,7 @@ class Order:
         );
         '''
         result = app.db.execute(query, {'userkey': userkey, 'productkey': productkey}).scalar()
-        return result;
+        return result
 
     @staticmethod
     def check_seller(userkey, sellerkey):
@@ -90,5 +100,5 @@ class Order:
         );
         '''
         result = app.db.execute(query, {'userkey': userkey, 'sellerkey': sellerkey}).scalar()
-        return result;
+        return result
     

@@ -3,6 +3,18 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        function validateCompanyForm() {
+            var companyName = document.getElementById('{{ become_seller_form.companyname.id }}').value;
+            var errorSpan = document.getElementById('companyNameError');
+            if (!companyName.trim()) {
+                errorSpan.textContent = 'Company name cannot be empty.';
+                return false;
+            }
+            errorSpan.textContent = ''; // Clear any existing error message
+            return true;
+        }
+    </script>
 </head>
 
 
@@ -11,110 +23,66 @@
     <nav class="nav flex-column">
         <a class="nav-link {{ 'active' if active_page == 'dashboard' }}"
             href="{{ url_for('users.user_profile') }}">Dashboard</a>
+
         <a class="nav-link {{ 'active' if active_page == 'details' }}"
             href="{{ url_for('users.user_details') }}">Account Details</a>
-        <a class="nav-link {{ 'active' if active_page == 'orders' }}" href="{{ url_for('orders.show_orders') }}">Order
-            History</a>
+
+        <a class="nav-link {{ 'active' if active_page == 'orders' }}"
+            href="{{ url_for('orders.show_orders') }}">Order History</a>
+
         <span class="nav-link disabled">Track Order</span>
-        <a class="nav-link {{ 'active' if active_page == 'cart' }}" href="{{ url_for('cart.shopping_cart') }}">Shopping
-            Cart</a>
+
+        <a class="nav-link {{ 'active' if active_page == 'cart' }}"
+            href="{{ url_for('cart.shopping_cart') }}">Shopping Cart</a>
+
         <a class="nav-link {{ 'active' if active_page == 'address' }}"
-            href="{{ url_for('users.user_address') }}">Address</a>
-        <a class="nav-link {{ 'active' if active_page == 'review' }}" href="{{ url_for('myreview.get_myreview') }}">My
-            Review</a>
+            href="{{ url_for('users.user_address') }}"> My Address</a>
+
+        <a class="nav-link {{ 'active' if active_page == 'review' }}" 
+            href="{{ url_for('myreview.get_myreview') }}">My Review</a>
+
         <a class="nav-link {{ 'active' if active_page == 'wallet' }}"
-            href="{{ url_for('users.user_wallet') }}">Wallet</a>
-        <a class="nav-link" onclick="return confirm('You are logging out.');" href="{{ url_for('users.logout') }}">Log
-            Out</a>
+            href="{{ url_for('users.user_balance') }}">Balance</a>
+
+        <a class="nav-link" onclick="return confirm('You are logging out.');" 
+            href="{{ url_for('users.logout') }}">Log Out</a>
     </nav>
+
     {% if is_seller %}
     <button type="button" class="btn-switch">Switch to seller</button>
+
     {% else %}
-    <!-- <button type="button" class="btn-switch">Become a seller</button> -->
     <!-- Modal Trigger -->
-    <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sellerModal">Become a Seller</button> -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sellerModal">Become a
+        seller</button>
 
     <!-- Modal -->
-    <!-- <div class="modal fade" id="sellerModal" tabindex="-1" role="dialog" aria-labelledby="sellerModalLabel"
+    <div class="modal fade" id="sellerModal" tabindex="-1" role="dialog" aria-labelledby="sellerModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="sellerModalLabel">Become a Seller</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="sellerForm">
-                        <div class="form-group">
-                            <label for="company-name" class="col-form-label">Enter a company name:</label>
-                            <input type="text" class="form-control" id="company-name" required>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="submitSellerForm()">Confirm</button>
-                </div>
+                <form method="POST" action="{{ url_for('users.become_a_seller') }}"
+                    onsubmit="return validateCompanyForm()">
+                    {{ become_seller_form.next(value=request.path) }}
+                    {{ become_seller_form.hidden_tag() }}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sellerModalLabel">Seller Info</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        {{ become_seller_form.companyname.label(class="col-form-label") }}
+                        {{ become_seller_form.companyname(class="form-control") }}
+                        <span class="text-danger" id="companyNameError"></span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        {{ become_seller_form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
             </div>
         </div>
-    </div> -->
-
-    <!-- Modal Trigger -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sellerModal">Become a seller</button>
-
-<!-- Modal -->
-<div class="modal fade" id="sellerModal" tabindex="-1" role="dialog" aria-labelledby="sellerModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <form method="POST" action="{{ url_for('users.become_a_seller') }}">
-                {{ become_seller_form.next(value=request.path) }}
-                {{ become_seller_form.hidden_tag() }}
-                <div class="modal-header">
-                    <h5 class="modal-title" id="sellerModalLabel">Seller info</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    {{ become_seller_form.companyname.label(class="col-form-label") }}
-                    {{ become_seller_form.companyname(class="form-control") }}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    {{ become_seller_form.submit(class="btn btn-primary") }}
-                    
-                </div>
-            </form>
-        </div>
     </div>
-</div>
     {% endif %}
 </aside>
-
-<script>
-//     function submitSellerForm() {
-//   var companyName = $('#company-name').val();
-//   if (companyName.trim() === '') {
-//     alert('Please enter a company name.');
-//     return;
-//   }
-//   // add the AJAX call to Flask backend.
-//   $.ajax({
-//     url: '/become_a_seller',
-//     method: 'POST',
-//     contentType: 'application/json',
-//     data: JSON.stringify({ company_name: companyName }),
-//     success: function(response) {
-//       // Handle success
-//       $('#sellerModal').modal('hide');
-//       window.location.reload(true);
-//     },
-//     error: function(error) {
-//       // Handle error
-//       alert(error);
-//     }
-//   });
-// }
-</script>

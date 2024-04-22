@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
@@ -9,6 +9,7 @@ from datetime import date
 
 from .models.user import User
 from .models.seller import Seller
+from.models.order import Order
 
 from flask import Blueprint
 bp = Blueprint('users', __name__)
@@ -214,7 +215,6 @@ class ChangeAddressForm(FlaskForm):
 @login_required
 def user_address():
     form = ChangeAddressForm()
-    # Set country choices dynamically from the REST Countries API
     form.country.choices = get_country_choices()
 
     if 'submit' in request.form:
@@ -245,10 +245,10 @@ def user_address():
 
 
 
-@bp.route('/user_wallet', methods=['GET', 'POST'])
+@bp.route('/user_balance', methods=['GET', 'POST'])
 @login_required
-def user_wallet():
-    return render_template('user_wallet.html')
+def user_balance():
+    return render_template('user_balance.html')
 
 
 class BecomeSellerForm(FlaskForm):
@@ -256,38 +256,18 @@ class BecomeSellerForm(FlaskForm):
     next = HiddenField()
     submit = SubmitField('Continue')
 
-    def validate_companyname(self, field):
-        if field.data and not field.data.strip(): # if empty spaces are filled out in the field
-            raise ValidationError('Company name cannot be empty.')
-
 @bp.route('/become_a_seller', methods=['POST'])
 @login_required
 def become_a_seller():
     become_seller_form = BecomeSellerForm()
     if 'submit' in request.form:
-        if become_seller_form.validate_on_submit():
-            try:
-                User.update_address(userkey=current_user.userkey, companyname=become_seller_form.companyname.data)
-                # Seller.register(current_user.userkey, become_seller_form.company_name.data)
-                flash('You have successfully become a seller!', 'success')
-            except Exception as e:
-                flash(str(e), 'error')
-        else:
-            flash('Failed to register: company name cannot be empty.', 'error')
+        try:
+            User.update_address(userkey=current_user.userkey, companyname=become_seller_form.companyname.data)
+            # Seller.register(current_user.userkey, become_seller_form.company_name.data)
+            flash('You have successfully become a seller!', 'success')
+        except Exception as e:
+            flash(str(e), 'error')
     return redirect(become_seller_form.next.data)
-
-    # data = request.get_json()
-    # company_name = data.get('company_name', '').strip()
-    # if not company_name:
-    #     return jsonify({'error': 'Company name cannot be empty.'}), 400
-    # try:
-    #     User.update_address(current_user.userkey, companyname=company_name)
-    #     # Seller.register(current_user.userkey, company_name)
-    #     flash('You have successfully become a seller!', 'success')
-    #     return jsonify({}), 200
-    # except Exception as e:
-    #     flash('An error occurred while registering you as a seller.', 'error')
-    #     return jsonify({}), 500
     
 
 
@@ -296,6 +276,16 @@ def inject_user_status():
     if not current_user.is_authenticated:
         return {'is_seller': False}
     
-    return dict(is_seller = False,
+    return dict(is_seller = True,
+                # is_seller = False,
         # is_seller=Seller.is_seller(current_user.userkey), 
         become_seller_form=BecomeSellerForm(obj=current_user))
+
+
+#     {% for orders in orders %}
+#     <p>
+#         {% for item in orders %}
+#             {{ item }}{% if not loop.last %}, {% endif %}
+#         {% endfor %}
+#     </p>
+# {% endfor %}
