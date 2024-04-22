@@ -245,10 +245,10 @@ def user_address():
 
 
 
-@bp.route('/user_wallet', methods=['GET', 'POST'])
+@bp.route('/user_balance', methods=['GET', 'POST'])
 @login_required
-def user_wallet():
-    return render_template('user_wallet.html')
+def user_balance():
+    return render_template('user_balance.html')
 
 
 class BecomeSellerForm(FlaskForm):
