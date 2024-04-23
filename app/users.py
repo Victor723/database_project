@@ -245,10 +245,43 @@ def user_address():
 
 
 
+class BalanceForm(FlaskForm):
+    amount = StringField('Amount', validators=[DataRequired()])
+    submit = SubmitField('Continue')
+
 @bp.route('/user_balance', methods=['GET', 'POST'])
 @login_required
 def user_balance():
-    return render_template('user_balance.html')
+    balance_add_form = BalanceForm()
+    balance_withdraw_form = BalanceForm()
+    return render_template('user_balance.html', balance_add_form=balance_add_form, balance_withdraw_form=balance_withdraw_form)
+
+
+@bp.route('/add_money', methods=['GET', 'POST'])
+@login_required
+def add_money():
+    balance_form = BalanceForm()
+    if 'submit' in request.form:
+        try:
+            new_balance = str(int(current_user.balance) + int(balance_form.amount.data))
+            User.update_balance(current_user.userkey, balance_form.amount.data, new_balance)
+        except Exception as e:
+            flash(str(e), 'error')
+    return redirect(url_for('users.user_balance'))
+
+
+@bp.route('/withdraw_money', methods=['GET', 'POST'])
+@login_required
+def withdraw_money():
+    balance_form = BalanceForm()
+    if 'submit' in request.form:
+        try:
+            new_balance = str(int(current_user.balance) - int(balance_form.amount.data))
+            User.update_balance(current_user.userkey, -int(balance_form.amount.data), new_balance)
+        except Exception as e:
+            flash(str(e), 'error')
+    return redirect(url_for('users.user_balance'))
+
 
 
 class BecomeSellerForm(FlaskForm):
@@ -276,8 +309,7 @@ def inject_user_status():
     if not current_user.is_authenticated:
         return {'is_seller': False}
     
-    return dict(is_seller = True,
-                # is_seller = False,
+    return dict(is_seller = False,
         # is_seller=Seller.is_seller(current_user.userkey), 
         become_seller_form=BecomeSellerForm(obj=current_user))
 
