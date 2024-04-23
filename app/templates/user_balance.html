@@ -27,9 +27,10 @@
                     aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
-                            <form method="POST" action="{{ url_for('users.add_money') }}"
-                                onsubmit="return validateAmountAddForm()">
-                                {{ balance_add_form.hidden_tag() }}
+                            <form method="POST" action="{{ url_for('users.manage_user_balance') }}"
+                                onsubmit="return validateAmountForm('addAmountId','amountAddError')">
+                                {{ form.action(value='add') }}
+                                {{ form.hidden_tag() }}
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="addModalLabel">Add Money</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -37,31 +38,34 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    {{ balance_add_form.amount.label(class="col-form-label") }}
-                                    {{ balance_add_form.amount(class="form-control", placeholder="Enter an amount you want to add:") }}
-                                    <span class="text-danger" id="amountError"></span>
+                                    {{ form.amount.label(class="col-form-label") }}
+                                    {{ form.amount(class="form-control", id='addAmountId', placeholder="Enter an amount you want to add:") }}
+                                    <span class="text-danger" id="amountAddError"></span>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    {{ balance_add_form.submit(class="btn btn-primary") }}
+                                    {{ form.submit(class="btn btn-primary") }}
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
+                
 
 
-<!-- Add money Modal Trigger -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#withdrawModal">Withdraw</button>
+                <!-- Add money Modal Trigger -->
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#withdrawModal">Withdraw</button>
 
                 <!-- Add money Modal -->
-                <div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog" aria-labelledby="withdrawModalLabel"
-                    aria-hidden="true">
+                <div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog"
+                    aria-labelledby="withdrawModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
-                            <form method="POST" action="{{ url_for('users.withdraw_money') }}"
-                                onsubmit="return validateAmountWithdrawForm()">
-                                {{ balance_withdraw_form.hidden_tag() }}
+                            <form method="POST" action="{{ url_for('users.manage_user_balance') }}"
+                                onsubmit="return validateAmountForm('withdrawAmountId','amountWithdrawError')">
+                                {{ form.action(value='withdraw') }}
+                                {{ form.hidden_tag() }}
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="withdrawModalLabel">Withdraw</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -69,46 +73,45 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    {{ balance_withdraw_form.amount.label(class="col-form-label") }}
-                                    {{ balance_withdraw_form.amount(class="form-control", placeholder="Enter an amount you want to withdraw:") }}
-                                    <span class="text-danger" id="amountError"></span>
+                                    {{ form.amount.label(class="col-form-label") }}
+                                    {{ form.amount(class="form-control", id='withdrawAmountId', placeholder="Enter an amount you want to withdraw:") }}
+                                    <span class="text-danger" id="amountWithdrawError"></span>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    {{ balance_withdraw_form.submit(class="btn btn-primary") }}
+                                    {{ form.submit(class="btn btn-primary") }}
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
-
-
-
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    function validateAmountAddForm() {
-        var amount_add = document.getElementById('{{ balance_add_form.amount.id }}').value;
-        var errorSpan = document.getElementById('amountError');
-        if (!amount_add.trim()) {
+    function validateAmountForm(inputId, errorId) {
+        var amount = document.getElementById(inputId).value;
+        var errorSpan = document.getElementById(errorId);
+        // Regex to allow up to two decimal places
+        var regex = /^\d+(\.\d{0,2})?$/; 
+
+        // Check if the input is empty
+        if (!amount.trim()) {
             errorSpan.textContent = 'Amount cannot be empty.';
             return false;
         }
-        errorSpan.textContent = ''; // Clear any existing error message
-        return true;
-    }
-    function validateAmountWithdrawForm() {
-        var amount_withdraw = document.getElementById('{{ balance_withdraw_form.amount.id }}').value;
-        var errorSpan = document.getElementById('amountError');
-        if (!amount_withdraw.trim()) {
-            errorSpan.textContent = 'Amount cannot be empty.';
+        // Check if the input is not numeric
+        if (!regex.test(amount)) {
+            errorSpan.textContent = 'Please enter a valid numeric amount.';
             return false;
         }
-        errorSpan.textContent = ''; // Clear any existing error message
+        // Clear the error message if input passes the checks
+        errorSpan.textContent = '';
         return true;
     }
 </script>
+
+
 {% endblock %}
