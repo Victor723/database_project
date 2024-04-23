@@ -10,8 +10,105 @@
     {% endwith %}
 
     <div class="profile-container">
+        <div class="wallet-balance">
+            <div class="balance-info">
+                <i class="fi fi-ts-wallet"></i>
+                <span>${{ current_user.balance }}</span>
+                <p>My Wallet Balance</p>
+            </div>
 
+            <div class="balance-actions">
+                <!-- Add money Modal Trigger -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add
+                    Money</button>
+
+                <!-- Add money Modal -->
+                <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <form method="POST" action="{{ url_for('users.add_money') }}"
+                                onsubmit="return validateAmountAddForm()">
+                                {{ balance_add_form.hidden_tag() }}
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addModalLabel">Add Money</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ balance_add_form.amount.label(class="col-form-label") }}
+                                    {{ balance_add_form.amount(class="form-control", placeholder="Enter an amount you want to add:") }}
+                                    <span class="text-danger" id="amountError"></span>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    {{ balance_add_form.submit(class="btn btn-primary") }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+<!-- Add money Modal Trigger -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#withdrawModal">Withdraw</button>
+
+                <!-- Add money Modal -->
+                <div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog" aria-labelledby="withdrawModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <form method="POST" action="{{ url_for('users.withdraw_money') }}"
+                                onsubmit="return validateAmountWithdrawForm()">
+                                {{ balance_withdraw_form.hidden_tag() }}
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="withdrawModalLabel">Withdraw</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ balance_withdraw_form.amount.label(class="col-form-label") }}
+                                    {{ balance_withdraw_form.amount(class="form-control", placeholder="Enter an amount you want to withdraw:") }}
+                                    <span class="text-danger" id="amountError"></span>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    {{ balance_withdraw_form.submit(class="btn btn-primary") }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
     </div>
 </div>
 
+<script>
+    function validateAmountAddForm() {
+        var amount_add = document.getElementById('{{ balance_add_form.amount.id }}').value;
+        var errorSpan = document.getElementById('amountError');
+        if (!amount_add.trim()) {
+            errorSpan.textContent = 'Amount cannot be empty.';
+            return false;
+        }
+        errorSpan.textContent = ''; // Clear any existing error message
+        return true;
+    }
+    function validateAmountWithdrawForm() {
+        var amount_withdraw = document.getElementById('{{ balance_withdraw_form.amount.id }}').value;
+        var errorSpan = document.getElementById('amountError');
+        if (!amount_withdraw.trim()) {
+            errorSpan.textContent = 'Amount cannot be empty.';
+            return false;
+        }
+        errorSpan.textContent = ''; // Clear any existing error message
+        return true;
+    }
+</script>
 {% endblock %}
