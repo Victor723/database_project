@@ -42,7 +42,7 @@
             href="{{ url_for('myreview.get_myreview') }}">My Review</a>
 
         <a class="nav-link {{ 'active' if active_page == 'wallet' }}"
-            href="{{ url_for('users.user_balance') }}">Balance</a>
+            href="{{ url_for('users.manage_user_balance') }}">Balance</a>
 
         <a class="nav-link" onclick="return confirm('You are logging out.');" 
             href="{{ url_for('users.logout') }}">Log Out</a>

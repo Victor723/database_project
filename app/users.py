@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, current_app
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
@@ -6,6 +6,7 @@ import requests
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Regexp, Optional
 from datetime import date
+from decimal import Decimal
 
 from .models.user import User
 from .models.seller import Seller
@@ -247,40 +248,30 @@ def user_address():
 
 class BalanceForm(FlaskForm):
     amount = StringField('Amount', validators=[DataRequired()])
+    action = HiddenField()
     submit = SubmitField('Continue')
+
 
 @bp.route('/user_balance', methods=['GET', 'POST'])
 @login_required
-def user_balance():
-    balance_add_form = BalanceForm()
-    balance_withdraw_form = BalanceForm()
-    return render_template('user_balance.html', balance_add_form=balance_add_form, balance_withdraw_form=balance_withdraw_form)
-
-
-@bp.route('/add_money', methods=['GET', 'POST'])
-@login_required
-def add_money():
-    balance_form = BalanceForm()
-    if 'submit' in request.form:
+def manage_user_balance():
+    form = BalanceForm()
+    if form.validate_on_submit():
+        action = form.action.data
+        amount = Decimal(form.amount.data)
+        if action == 'withdraw':
+            if current_user.balance < amount:
+                flash('Insufficient funds', 'error')
+                return redirect(url_for('users.manage_user_balance'))
+            amount = -amount
+        new_balance = current_user.balance + amount
         try:
-            new_balance = str(int(current_user.balance) + int(balance_form.amount.data))
-            User.update_balance(current_user.userkey, balance_form.amount.data, new_balance)
+            User.update_balance(current_user.userkey, amount, new_balance)
+            flash('Balance updated successfully', 'success')
         except Exception as e:
             flash(str(e), 'error')
-    return redirect(url_for('users.user_balance'))
-
-
-@bp.route('/withdraw_money', methods=['GET', 'POST'])
-@login_required
-def withdraw_money():
-    balance_form = BalanceForm()
-    if 'submit' in request.form:
-        try:
-            new_balance = str(int(current_user.balance) - int(balance_form.amount.data))
-            User.update_balance(current_user.userkey, -int(balance_form.amount.data), new_balance)
-        except Exception as e:
-            flash(str(e), 'error')
-    return redirect(url_for('users.user_balance'))
+        return redirect(url_for('users.manage_user_balance'))
+    return render_template('user_balance.html', form=form)
 
 
 
