@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request, current_ap
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
-import requests
+import requests, os, uuid
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Regexp, Optional
 from datetime import date
@@ -165,7 +165,7 @@ def user_details():
                             user_details_form.firstname.data,
                             user_details_form.lastname.data
                         )
-                        flash('Your account details have been updated.', 'success')
+                        # flash('Your account details have been updated.', 'success')
                     except Exception as e:
                         flash(str(e), 'error')
                     return redirect(url_for('users.user_details'))
@@ -187,7 +187,7 @@ def user_details():
 @bp.route('/user_profile', methods=['GET', 'POST'])
 @login_required
 def user_profile():
-    return render_template('user_profile.html')
+    return render_template('user_profile.html',current_user=current_user)
 
 
 
@@ -238,7 +238,7 @@ def user_address():
                         form.zipcode.data,
                         form.phonenumber.data
                     )
-                    flash('Your address have been updated.', 'success')
+                    # flash('Your address have been updated.', 'success')
                 except Exception as e:
                     flash(str(e), 'error')
                 return redirect(url_for('users.user_address'))
@@ -267,7 +267,7 @@ def manage_user_balance():
         new_balance = current_user.balance + amount
         try:
             User.update_balance(current_user.userkey, amount, new_balance)
-            flash('Balance updated successfully', 'success')
+            # flash('Balance updated successfully', 'success')
         except Exception as e:
             flash(str(e), 'error')
         return redirect(url_for('users.manage_user_balance'))
@@ -293,6 +293,35 @@ def become_a_seller():
             flash(str(e), 'error')
     return redirect(become_seller_form.next.data)
     
+
+
+@bp.route('/upload_profile_image', methods=['POST'])
+@login_required
+def upload_profile_image():
+
+    def allowed_file(filename):
+        # Check the file extension to ensure it's within the allowed types
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
+
+    def get_extension(filename):
+        # Extract the file extension
+        return '.' + filename.rsplit('.', 1)[1].lower()
+
+    file = request.files['profile_image']
+    if file and allowed_file(file.filename):  # Make sure the file exists and is of an allowed type
+        unique_id = uuid.uuid4().hex  # Generates a random UUID
+        filename = f"user_profile_pic_{current_user.userkey}_{unique_id}{get_extension(file.filename)}"
+        filepath = os.path.join(current_app.root_path, 'static', 'img', filename)
+        file.save(filepath)
+        try:
+            User.update_imageurl(current_user.userkey, 'img/'+filename)
+        except Exception as e:
+            flash(str(e), 'error')
+    return redirect(url_for('users.user_profile'))
+
+
+
 
 
 @bp.app_context_processor

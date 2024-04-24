@@ -8,7 +8,8 @@ from .. import login
 class User(UserMixin):
 
     def __init__(self, userkey, email, firstname, lastname, balance, companyname, 
-                 streetaddress, city, stateregion, zipcode, country, phonenumber):
+                 streetaddress, city, stateregion, zipcode, country, phonenumber,
+                 imageurl):
         self.userkey = userkey
         self.email = email
         self.firstname = firstname
@@ -21,6 +22,7 @@ class User(UserMixin):
         self.zipcode = zipcode
         self.country = country
         self.phonenumber = phonenumber
+        self.imageurl = imageurl
 
 
     def get_id(self):
@@ -47,7 +49,7 @@ class User(UserMixin):
         try:
             rows = app.db.execute("""
                 SELECT u_password, u_userkey, u_email, u_firstname, u_lastname, u_balance, u_companyname, 
-                    u_streetaddress, u_city, u_stateregion, u_zipcode, u_country, u_phonenumber
+                    u_streetaddress, u_city, u_stateregion, u_zipcode, u_country, u_phonenumber, u_imageurl
                 FROM Users
                 WHERE u_email = :email
                 """,
@@ -88,13 +90,13 @@ class User(UserMixin):
         try:
             rows = app.db.execute("""
                 INSERT INTO Users(u_email, u_password, u_firstname, u_lastname,
-                                u_companyname, u_streetaddress, u_city, 
-                                u_stateregion, u_zipcode, u_country, u_phonenumber)
+                    u_companyname, u_streetaddress, u_city, 
+                    u_stateregion, u_zipcode, u_country, u_phonenumber)
                 VALUES(:email, :password, :firstname, :lastname,
                     :companyname, :streetaddress, :city, 
                     :stateregion, :zipcode, :country, :phonenumber)
                 RETURNING u_userkey
-                """,
+                    """,
                 email=email,
                 password=generate_password_hash(password),
                 firstname=firstname, 
@@ -120,7 +122,8 @@ class User(UserMixin):
         try:
             rows = app.db.execute("""
                 SELECT u_userkey, u_email, u_firstname, u_lastname, u_balance, u_companyname, 
-                    u_streetaddress, u_city, u_stateregion, u_zipcode, u_country, u_phonenumber
+                    u_streetaddress, u_city, u_stateregion, u_zipcode, u_country, u_phonenumber,
+                    u_imageurl
                 FROM Users
                 WHERE u_userkey = :userkey
                 """,
@@ -162,7 +165,8 @@ class User(UserMixin):
                 SELECT u_password
                 FROM Users
                 WHERE u_userkey = :userkey
-            """, userkey=userkey)
+                """, 
+                userkey=userkey)
             
             if not rows:
                 app.logger.error(f"User not found or no password set for user")
@@ -183,9 +187,9 @@ class User(UserMixin):
                 SET u_password = :new_password_hash
                 WHERE u_userkey = :userkey
                 RETURNING u_userkey
-            """,
-            userkey=userkey,
-            new_password_hash=generate_password_hash(new_plain_password))
+                """,
+                userkey=userkey,
+                new_password_hash=generate_password_hash(new_plain_password))
             
             return rows and rows[0][0] == userkey
         except Exception as e:
@@ -237,10 +241,28 @@ class User(UserMixin):
                 WHERE u_userkey = :userkey
                 RETURNING u_userkey, u_balance
                 """,
-            userkey=userkey,
-            amount=amount)
+                userkey=userkey,
+                amount=amount)
             app.logger.info(f"updated balance by {amount} to {newbalance}") 
             return rows[0][0] == userkey and rows[0][1] == newbalance # true if userkey match and u_balance = new balance
+        except Exception as e:
+            app.logger.error(f"An error occurred: {e}") 
+            return False
+        
+    
+    @staticmethod
+    def update_imageurl(userkey, newurl):
+        try:
+            rows = app.db.execute("""
+                UPDATE Users
+                SET u_imageurl = :newurl
+                WHERE u_userkey = :userkey
+                RETURNING u_userkey
+                """,
+                userkey=userkey,
+                newurl=newurl)
+            app.logger.info(f"updated image url for user {userkey}") 
+            return rows[0][0] == userkey
         except Exception as e:
             app.logger.error(f"An error occurred: {e}") 
             return False

@@ -26,7 +26,8 @@ CREATE TABLE Users (
     u_stateregion VARCHAR(100),
     u_zipcode VARCHAR(20),
     u_country VARCHAR(100),
-    u_phonenumber VARCHAR(20)
+    u_phonenumber VARCHAR(20),
+    u_imageurl VARCHAR(255) DEFAULT 'img/user_profile_default.jpg'
 );
 
 CREATE TABLE Seller (

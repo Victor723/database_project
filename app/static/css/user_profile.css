@@ -9,7 +9,7 @@
     flex: 0 0 250px;
     height: 37vh;
     /* Fixed height */
-    padding: 20px;
+    padding: 30px;
     background-color: #f5f5f5;
 }
 
@@ -77,6 +77,7 @@
     height: 100px; /* Ensure the image is a circle if desired */
     border-radius: 50%; /* Makes the image circular */
     margin-right: 20px; /* Space between the image and the user info */
+    cursor: pointer; /* Indicates the image can be clicked */
 }
 
 .profile-header .user-info {
