@@ -21,6 +21,7 @@ def get_myreview():
     return render_template('my_review.html', my_products_reviews = productreviews, my_seller_reviews = sellerreviews)#, my_top5_reviews = top5_reviews)
 
 @bp.route('/delete_product_review/<pr_userkey>/<pr_productkey>', methods=['POST'])
+@login_required
 def delete_product_review(pr_userkey, pr_productkey):
     # Assuming a method exists to delete the review based on both keys
     review = ProductReview.get(pr_userkey, pr_productkey)
@@ -31,6 +32,7 @@ def delete_product_review(pr_userkey, pr_productkey):
     return redirect(url_for('myreview.get_myreview', u_userkey=pr_userkey))
 
 @bp.route('/delete_seller_review/<sr_userkey>/<sr_sellerkey>', methods=['POST'])
+@login_required
 def delete_seller_review(sr_userkey, sr_sellerkey):
     # Assuming a method exists to delete the review based on both keys
     review = SellerReview.get(sr_userkey, sr_sellerkey)
@@ -41,6 +43,7 @@ def delete_seller_review(sr_userkey, sr_sellerkey):
     return redirect(url_for('myreview.get_myreview', u_userkey=sr_userkey))
 
 @bp.route('/edit_product_review/<pr_userkey>/<pr_productkey>', methods=['POST'])
+@login_required
 def edit_product_review(pr_userkey, pr_productkey):
     review = ProductReview.get(pr_userkey, pr_productkey)
     if review:
@@ -56,6 +59,7 @@ def edit_product_review(pr_userkey, pr_productkey):
         return redirect(url_for('myreview.get_myreview', u_userkey=pr_userkey))
     
 @bp.route('/edit_seller_review/<sr_userkey>/<sr_sellerkey>', methods=['POST'])
+@login_required
 def edit_seller_review(sr_userkey, sr_sellerkey):
     review = SellerReview.get(sr_userkey, sr_sellerkey)
     if review:
@@ -71,6 +75,7 @@ def edit_seller_review(sr_userkey, sr_sellerkey):
         return redirect(url_for('myreview.get_myreview', u_userkey=sr_userkey))
 
 @bp.route('/new_product_review/<pr_userkey>/<pr_productkey>', methods=['POST'])
+@login_required
 def new_product_review(pr_userkey, pr_productkey):
     review = ProductReview.get(pr_userkey, pr_productkey)
     if review == None:
@@ -87,6 +92,7 @@ def new_product_review(pr_userkey, pr_productkey):
         return redirect(url_for('myreview.get_myreview', u_userkey=pr_userkey))
     
 @bp.route('/new_seller_review/<sr_userkey>/<sr_sellerkey>', methods=['POST'])
+@login_required
 def new_seller_review(sr_userkey, sr_sellerkey):
     review = SellerReview.get(sr_userkey, sr_sellerkey)
     if review == None:

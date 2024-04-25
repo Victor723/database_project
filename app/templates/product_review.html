@@ -1,8 +1,8 @@
 {% block content %}
 
-{% if current_user %}
   <!-- Display All Product Reviews in a Table -->
   {% if product_reviews %}
+    {% if current_user.is_authenticated %}
     <!-- Add a New Review -->
     <button class="openPopup" onClick = "newProductReview(this)">New Review</button>
 
@@ -24,10 +24,14 @@
             <button type="submit" onsubmit="handleSubmit(event, 'newProductPopup')" class="submitBtn">Submit</button>
         </form>
     </div>
-
+    {% else %}
+    <h2>Please log in to create reviews.</h2>
+    <!-- <a href="/login" class="btn btn-primary">Login</a> -->
+    {% endif %}
     <table class="table">
       <thead>
         <tr>
+          <th>Reviewer</th>
           <th>Review Date</th>
           <th>Review</th>
           <th>Rating</th>
@@ -36,6 +40,7 @@
       <tbody>
         {% for review in product_reviews %}
           <tr>
+            <td>{{ review.pr_userkey }}</td>
             <td>{{ review.pr_reviewdate }}</td>
             <td>{{ review.pr_review }}</td>
             <td>{{ review.pr_rating }}</td>
@@ -45,11 +50,6 @@
     </table>
   {% endif %}
 
-{% else %}
-  <h2>Please log in to view reviews.</h2>
-  <!-- You can add a login link or button here -->
-  <!-- <a href="/login" class="btn btn-primary">Login</a> -->
-{% endif %}
 
 <script>
   window.newProductReview = function(element) {

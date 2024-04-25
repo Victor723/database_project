@@ -104,10 +104,10 @@ def seller_order(s_sellerkey):
 
 
 
-@bp.route('/seller/<s_sellerkey>/review', methods=['GET', 'POST'])
+@bp.route('/seller/<s_sellerkey>/review', methods=['GET'])
 def seller_review(s_sellerkey):
-    seller_review = Seller.get_seller_review(s_sellerkey)
-    return render_template('seller_review.html', seller_key=s_sellerkey, seller_review=seller_review)
+    seller_reviews = Seller.get_seller_review(s_sellerkey)
+    return render_template('seller_review.html', seller_key=s_sellerkey, seller_reviews=seller_reviews)
 
 
 @bp.route('/seller/<s_sellerkey>/profile', methods=['GET', 'POST'])

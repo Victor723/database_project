@@ -1,4 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}Seller Review{% endblock %}
+
 {% block content %}
+    {% include "seller_navigation.html" %}
 
 <!-- Display All Seller Reviews in a Table -->
 {% if seller_reviews %}
@@ -6,6 +11,7 @@
 <table class="table">
   <thead>
     <tr>
+      <th>Reviewer</th>
       <th>Review Date</th>
       <th>Review</th>
       <th>Rating</th>
@@ -14,6 +20,7 @@
   <tbody>
     {% for review in seller_reviews %}
       <tr>
+        <td>{{ review.sr_userkey }}</td>
         <td>{{ review.sr_reviewdate }}</td>
         <td>{{ review.sr_review }}</td>
         <td>{{ review.sr_rating }}</td>
