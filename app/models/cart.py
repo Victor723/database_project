@@ -95,25 +95,38 @@ WHERE c.c_userkey = :c_userkey
 
     @staticmethod
     def add_to_cart(c_userkey, ps_productkey, ps_sellerkey, quantity):
+        print("Executing add_to_cart")
         cartkey = Cart.get_cartkey_by_user(c_userkey)
         if not cartkey:
-            print("No cart found for this user.")
-            return None
-        
-        insert_command = '''
-        INSERT INTO ProductCart (pc_cartkey, pc_productkey, pc_sellerkey, pc_savequantity, pc_incartquantity)
-        VALUES (%s, %s, %s, 0, %s)
-        ON CONFLICT (pc_cartkey, pc_productkey, pc_sellerkey) 
-        DO UPDATE SET pc_incartquantity = ProductCart.pc_incartquantity + EXCLUDED.pc_incartquantity;
-        '''
+            print("No cart found for this user, creating new cart.")
+            result = app.db.execute('''
+            INSERT INTO Cart (c_userkey)
+            VALUES (:c_userkey)
+            RETURNING c_cartkey
+            ''', c_userkey=c_userkey)
+            cartkey = result[0][0]
+            print(f"New cartkey: {cartkey}")
 
-        try:
-            rows = app.db.execute(insert_command, (cartkey, ps_productkey, ps_sellerkey, 0, quantity))
-            app.db.commit() 
-            return rows if rows else None
-        except Exception as e:
-            print(f"Failed to add or update cart item: {e}")
-            return None
+        # Check if the item already exists in the cart
+        res = app.db.execute('''
+        SELECT pc_incartquantity FROM ProductCart
+        WHERE pc_cartkey = :cartkey AND pc_productkey = :productkey AND pc_sellerkey = :sellerkey
+        ''', cartkey=cartkey, productkey=ps_productkey, sellerkey=ps_sellerkey)
+        existing = res[0] if res else None
+        if existing:
+            # Update the existing quantity
+            new_quantity = existing[0] + quantity
+            result=app.db.execute('''
+            UPDATE ProductCart SET pc_incartquantity = :new_quantity
+            WHERE pc_cartkey = :cartkey AND pc_productkey = :productkey AND pc_sellerkey = :sellerkey
+            ''', new_quantity=new_quantity, cartkey=cartkey, productkey=ps_productkey, sellerkey=ps_sellerkey)
+        else:
+            # Insert a new item into the cart
+            result=app.db.execute('''
+            INSERT INTO ProductCart (pc_cartkey, pc_productkey, pc_sellerkey, pc_savequantity, pc_incartquantity)
+            VALUES (:cartkey, :productkey, :sellerkey, 0, :incartquantity)
+            ''', cartkey=cartkey, productkey=ps_productkey, sellerkey=ps_sellerkey, incartquantity=quantity)
+        return result
         
     @staticmethod
     def update_incart_quantity(c_userkey, product_key, seller_key, new_quantity):
