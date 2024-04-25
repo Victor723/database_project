@@ -42,6 +42,7 @@
     <tr>
       <th scope="col">Product ID</th>
       <th scope="col">Product Name</th>
+      <th scope="col">Image</th>
       <th scope="col">Category</th>
       <th scope="col">Price</th>
     </tr>
@@ -51,6 +52,11 @@
       <tr>
         <th scope="row">{{product.p_productkey}}</th>
         <td><a href="/product/{{ product.p_productkey }}">{{product.p_productname}}</td>
+        {% if product.p_imageurl %}
+          <td><img src="{{ product.p_imageurl }}" alt="{{ product.p_productname }}" class="img-fluid"></td>
+        {% else %}
+          <td><p>No Image Available</p></td>
+        {% endif %}
         <td>{{product.p_catname}}</td>
         <td>{{product.p_price}}</td>
       </tr>

@@ -86,7 +86,7 @@ WHERE c.c_userkey = :c_userkey
     @staticmethod
     def get_cartkey_by_user(c_userkey):
         rows = app.db.execute('''
-        SELECT c_cartkey,
+        SELECT c_cartkey
         FROM Cart c
         WHERE c.c_userkey = :c_userkey
         ''',
