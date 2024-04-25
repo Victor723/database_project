@@ -35,6 +35,9 @@ class Order:
         except Exception as e:
             app.logger.error(f"Error fetching orders: {e}")
             return []
+        
+        # app.logger.info(f"type: {type(rows)}") #[2024-04-21 22:44:24,504] INFO in order: type: <class 'list'>
+        # app.logger.info(f"type: {type(rows[0])}") #[2024-04-21 22:44:24,504] INFO in order: type: <class 'sqlalchemy.engine.row.Row'>
 
     @staticmethod
     def get_orders(o_userkey, offset=0):
@@ -77,7 +80,7 @@ class Order:
         );
         '''
         result = app.db.execute(query, {'userkey': userkey, 'productkey': productkey}).scalar()
-        return result;
+        return result
 
     @staticmethod
     def check_seller(userkey, sellerkey):
@@ -90,5 +93,5 @@ class Order:
         );
         '''
         result = app.db.execute(query, {'userkey': userkey, 'sellerkey': sellerkey}).scalar()
-        return result;
+        return result
     

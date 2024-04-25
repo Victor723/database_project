@@ -103,14 +103,19 @@
         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Mini Amazon Logo" style="width: 50px; height: auto; margin-right: 10px;">
         <h1 style="color:aliceblue"> Mini Amazon by FiveGuys </h1>
       </a>
-      <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
+      <div style="color:aliceblue; text-align: right; margin-bottom: 25px">
         {% if current_user.is_authenticated %}
-          Hello {{current_user.firstname}}! 
-          <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
-          <a href="{{ url_for('users.user_profile') }}" type="button" class="btn btn-light">Profile</a>
-
+        <span style="font-size: 24px; margin-right: 10px;">Hello {{ current_user.firstname }}!</span>
+          <!-- <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a> --> 
+          <!-- <a href="{{ url_for('users.user_profile') }}" type="button" class="btn btn-light">Profile</a> -->
+          <a href="{{ url_for('users.user_profile') }}" class="icon-button">
+            <img src="{{ url_for('static', filename='img/user_large.png') }}" alt="User Icon" style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
+          </a>
         {% else %} <!-- not logged in yet -->
-          <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
+          <!-- <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a> -->
+          <a href="{{ url_for('users.login') }}" class="icon-button">
+            <img src="{{ url_for('static', filename='img/user_large.png') }}" alt="User Icon" style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
+          </a>
         {% endif %}
       </div>
     {% endblock %}

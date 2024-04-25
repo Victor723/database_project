@@ -31,7 +31,7 @@ def shopping_cart():
         else:
             flash('Error updating cart', 'error')
 
-        return redirect(url_for('.shopping_cart', u_userkey=user_id))
+        return redirect(url_for('.shopping_cart'))
 
     cart_products = Cart.get_incart_products_by_c_userkey(c_userkey = user_id) or []
     # Assuming that pc_incartquantity > 0 means the item is in the cart
