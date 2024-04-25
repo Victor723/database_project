@@ -2,10 +2,10 @@ from flask import render_template, redirect, url_for, flash, request, current_ap
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
-import requests
+import requests, os, uuid
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, HiddenField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Regexp, Optional
-from datetime import date
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 from .models.user import User
@@ -165,7 +165,7 @@ def user_details():
                             user_details_form.firstname.data,
                             user_details_form.lastname.data
                         )
-                        flash('Your account details have been updated.', 'success')
+                        # flash('Your account details have been updated.', 'success')
                     except Exception as e:
                         flash(str(e), 'error')
                     return redirect(url_for('users.user_details'))
@@ -187,7 +187,7 @@ def user_details():
 @bp.route('/user_profile', methods=['GET', 'POST'])
 @login_required
 def user_profile():
-    return render_template('user_profile.html')
+    return render_template('user_profile.html',current_user=current_user)
 
 
 
@@ -238,7 +238,7 @@ def user_address():
                         form.zipcode.data,
                         form.phonenumber.data
                     )
-                    flash('Your address have been updated.', 'success')
+                    # flash('Your address have been updated.', 'success')
                 except Exception as e:
                     flash(str(e), 'error')
                 return redirect(url_for('users.user_address'))
@@ -250,6 +250,68 @@ class BalanceForm(FlaskForm):
     amount = StringField('Amount', validators=[DataRequired()])
     action = HiddenField()
     submit = SubmitField('Continue')
+
+def fill_missing_months(monthly_expenditure):
+    # Start from one year ago up to the current month
+    start_date = datetime.now() - timedelta(days=365)
+    end_date = datetime.now()
+    
+    # Create a set of all months in the range
+    all_months = set()
+    current_date = start_date
+    while current_date <= end_date:
+        all_months.add((current_date.year, current_date.month))
+        current_date += timedelta(days=31)  # Move to the next month
+    
+    # Create a default dictionary with zero expenditure for each month
+    filled_expenditure = {(year, month): 0 for year, month in all_months}
+    
+    # Update the dictionary with actual expenditures
+    for year, month, amount in monthly_expenditure:
+        filled_expenditure[(int(year), int(month))] = float(amount)
+    
+    # Convert the dictionary back to a sorted list of tuples
+    sorted_filled_expenditure = sorted(filled_expenditure.items(), key=lambda x: x[0])
+    return [(year, month, amount) for ((year, month), amount) in sorted_filled_expenditure]
+
+def iso_year_start(iso_year):
+    "The gregorian calendar date of the first day of the given ISO year"
+    fourth_jan = datetime(iso_year, 1, 4)
+    delta = timedelta(fourth_jan.isoweekday()-1)
+    return fourth_jan - delta 
+
+def iso_to_gregorian(iso_year, iso_week, iso_day):
+    "Gregorian calendar date for the given ISO year, week and day"
+    year_start = iso_year_start(iso_year)
+    return year_start + timedelta(weeks=iso_week-1, days=iso_day-1)
+
+def fill_missing_weeks(weekly_expenditure):
+    # Determine the ISO year and week number for today and one year ago
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=365)
+    
+    start_iso_year, start_iso_week, _ = start_date.isocalendar()
+    end_iso_year, end_iso_week, _ = end_date.isocalendar()
+    
+    # Generate all weeks between start and end date
+    all_weeks = set()
+    current_iso_year, current_iso_week = start_iso_year, start_iso_week
+    while (current_iso_year, current_iso_week) <= (end_iso_year, end_iso_week):
+        all_weeks.add((current_iso_year, current_iso_week))
+        # Move to the next week
+        current_date = iso_to_gregorian(current_iso_year, current_iso_week, 7) + timedelta(days=1)
+        current_iso_year, current_iso_week, _ = current_date.isocalendar()
+    
+    # Create a default dictionary with zero expenditure for each week
+    filled_expenditure = {(year, week): 0 for year, week in all_weeks}
+    
+    # Update the dictionary with actual expenditures
+    for year, week, amount in weekly_expenditure:
+        filled_expenditure[(int(year), int(week))] = float(amount)
+    
+    # Convert the dictionary back to a sorted list of tuples
+    sorted_filled_expenditure = sorted(filled_expenditure.items(), key=lambda x: x[0])
+    return [(year, week, amount) for ((year, week), amount) in sorted_filled_expenditure]
 
 
 @bp.route('/user_balance', methods=['GET', 'POST'])
@@ -267,11 +329,28 @@ def manage_user_balance():
         new_balance = current_user.balance + amount
         try:
             User.update_balance(current_user.userkey, amount, new_balance)
-            flash('Balance updated successfully', 'success')
+            # flash('Balance updated successfully', 'success')
         except Exception as e:
             flash(str(e), 'error')
         return redirect(url_for('users.manage_user_balance'))
-    return render_template('user_balance.html', form=form)
+    
+    spending_summary = User.get_user_spending_summary(current_user.userkey, datetime.now() - timedelta(days=365), datetime.now())
+    spending_summary = [{'category': ele[0], 'amount': float(ele[1])} for ele in spending_summary]
+    spending_summary = sorted(spending_summary, key=lambda x: x['amount'], reverse=True)
+    total_spending, spending_summary = spending_summary[0], spending_summary[1:]
+    # current_app.logger.info(f"{total_spending}") 
+
+    weekly_expenditure = list(User.get_weekly_expenditure(current_user.userkey))
+    monthly_expenditure = list(User.get_monthly_expenditure(current_user.userkey))
+    filled_weekly_expenditure = fill_missing_weeks(weekly_expenditure)
+    filled_monthly_expenditure = fill_missing_months(monthly_expenditure)
+    # current_app.logger.info(f"{type(filled_monthly_expenditure[0][0])} {type(filled_monthly_expenditure[0][1])} {type(filled_monthly_expenditure[0][2])}") 
+    return render_template('user_balance.html', 
+                           form=form, 
+                           filled_monthly_expenditure=filled_monthly_expenditure,
+                           filled_weekly_expenditure=filled_weekly_expenditure,
+                           spending_summary=spending_summary,
+                           total_spending=total_spending)
 
 
 
@@ -295,6 +374,33 @@ def become_a_seller():
     
 
 
+@bp.route('/upload_profile_image', methods=['POST'])
+@login_required
+def upload_profile_image():
+
+    def allowed_file(filename):
+        # Check the file extension to ensure it's within the allowed types
+        return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
+
+    def get_extension(filename):
+        # Extract the file extension
+        return '.' + filename.rsplit('.', 1)[1].lower()
+
+    file = request.files['profile_image']
+    if file and allowed_file(file.filename):  # Make sure the file exists and is of an allowed type
+        unique_id = uuid.uuid4().hex  # Generates a random UUID
+        filename = f"user_profile_pic_{current_user.userkey}_{unique_id}{get_extension(file.filename)}"
+        filepath = os.path.join(current_app.root_path, 'static', 'img', filename)
+        file.save(filepath)
+        try:
+            User.update_imageurl(current_user.userkey, 'img/'+filename)
+        except Exception as e:
+            flash(str(e), 'error')
+    return redirect(url_for('users.user_profile'))
+
+
+
 @bp.app_context_processor
 def inject_user_status():
     if not current_user.is_authenticated:
@@ -304,11 +410,3 @@ def inject_user_status():
         # is_seller=Seller.is_seller(current_user.userkey), 
         become_seller_form=BecomeSellerForm(obj=current_user))
 
-
-#     {% for orders in orders %}
-#     <p>
-#         {% for item in orders %}
-#             {{ item }}{% if not loop.last %}, {% endif %}
-#         {% endfor %}
-#     </p>
-# {% endfor %}

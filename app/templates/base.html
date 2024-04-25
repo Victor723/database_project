@@ -109,12 +109,12 @@
           <!-- <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a> --> 
           <!-- <a href="{{ url_for('users.user_profile') }}" type="button" class="btn btn-light">Profile</a> -->
           <a href="{{ url_for('users.user_profile') }}" class="icon-button">
-            <img src="{{ url_for('static', filename='img/user_large.png') }}" alt="User Icon" style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
+            <img src="{{ url_for('static', filename='img/user_icon.png') }}" alt="User Icon" style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
           </a>
         {% else %} <!-- not logged in yet -->
           <!-- <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a> -->
           <a href="{{ url_for('users.login') }}" class="icon-button">
-            <img src="{{ url_for('static', filename='img/user_large.png') }}" alt="User Icon" style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
+            <img src="{{ url_for('static', filename='img/user_icon.png') }}" alt="User Icon" style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
           </a>
         {% endif %}
       </div>

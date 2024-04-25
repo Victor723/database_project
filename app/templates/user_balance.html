@@ -1,92 +1,128 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<style>
+    .total-spending {
+        font-size: 20px; /* Large font size for visibility */
+        color: #333; /* Dark color for readability */
+        text-align: center; /* Center-align the text */
+        margin-top: 20px; /* Space above the total spending display */
+    }
+</style>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/user_balance.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="profile-page">
     {% with active_page='wallet', is_seller=is_seller %}
     {% include '_user_sidebar.html' %}
     {% endwith %}
 
-    <div class="profile-container">
-        <div class="wallet-balance">
-            <div class="balance-info">
-                <i class="fi fi-ts-wallet"></i>
-                <span>${{ current_user.balance }}</span>
-                <p>My Wallet Balance</p>
-            </div>
+    <div class="main-content">
 
-            <div class="balance-actions">
-                <!-- Add money Modal Trigger -->
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add
-                    Money</button>
 
-                <!-- Add money Modal -->
-                <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <form method="POST" action="{{ url_for('users.manage_user_balance') }}"
-                                onsubmit="return validateAmountForm('addAmountId','amountAddError')">
-                                {{ form.action(value='add') }}
-                                {{ form.hidden_tag() }}
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="addModalLabel">Add Money</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    {{ form.amount.label(class="col-form-label") }}
-                                    {{ form.amount(class="form-control", id='addAmountId', placeholder="Enter an amount you want to add:") }}
-                                    <span class="text-danger" id="amountAddError"></span>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    {{ form.submit(class="btn btn-primary") }}
-                                </div>
-                            </form>
+        <div class="profile-container">
+
+            <div class="wallet-balance">
+
+                <div class="balance-info">
+                    <i class="fi fi-ts-wallet"></i>
+                    <span>${{ current_user.balance }}</span>
+                    <p>My Wallet Balance</p>
+                </div>
+
+                <div class="balance-actions">
+                    <!-- Add money Modal Trigger -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add
+                        Money</button>
+
+                    <!-- Add money Modal -->
+                    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <form method="POST" action="{{ url_for('users.manage_user_balance') }}"
+                                    onsubmit="return validateAmountForm('addAmountId','amountAddError')">
+                                    {{ form.action(value='add') }}
+                                    {{ form.hidden_tag() }}
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addModalLabel">Add Money</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ form.amount.label(class="col-form-label") }}
+                                        {{ form.amount(class="form-control", id='addAmountId', placeholder="Enter an amount you want to add:") }}
+                                        <span class="text-danger" id="amountAddError"></span>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        {{ form.submit(class="btn btn-primary") }}
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
+                    
 
+                    <!-- Add money Modal Trigger -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                        data-target="#withdrawModal">Withdraw</button>
 
-                <!-- Add money Modal Trigger -->
-                <button type="button" class="btn btn-primary" data-toggle="modal"
-                    data-target="#withdrawModal">Withdraw</button>
-
-                <!-- Add money Modal -->
-                <div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog"
-                    aria-labelledby="withdrawModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <form method="POST" action="{{ url_for('users.manage_user_balance') }}"
-                                onsubmit="return validateAmountForm('withdrawAmountId','amountWithdrawError')">
-                                {{ form.action(value='withdraw') }}
-                                {{ form.hidden_tag() }}
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="withdrawModalLabel">Withdraw</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    {{ form.amount.label(class="col-form-label") }}
-                                    {{ form.amount(class="form-control", id='withdrawAmountId', placeholder="Enter an amount you want to withdraw:") }}
-                                    <span class="text-danger" id="amountWithdrawError"></span>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    {{ form.submit(class="btn btn-primary") }}
-                                </div>
-                            </form>
+                    <!-- Add money Modal -->
+                    <div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog"
+                        aria-labelledby="withdrawModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <form method="POST" action="{{ url_for('users.manage_user_balance') }}"
+                                    onsubmit="return validateAmountForm('withdrawAmountId','amountWithdrawError')">
+                                    {{ form.action(value='withdraw') }}
+                                    {{ form.hidden_tag() }}
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="withdrawModalLabel">Withdraw</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ form.amount.label(class="col-form-label") }}
+                                        {{ form.amount(class="form-control", id='withdrawAmountId', placeholder="Enter an amount you want to withdraw:") }}
+                                        <span class="text-danger" id="amountWithdrawError"></span>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        {{ form.submit(class="btn btn-primary") }}
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+ 
+        <div class="profile-container">
+            <canvas id="expenditureChart"></canvas>
+        </div>
+
+        <div class="profile-container">
+
+            <h3>Select Date Range for Spending Data</h3>
+            <form id="dateRangeForm">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required>
+                
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" required>
+                
+                <button type="submit">Update Chart</button>
+            </form>
+
+            <canvas id="spendingPieChart"></canvas>
+            
+            <div id="totalSpendingDisplay" class="total-spending"></div>
+        </div>
+
     </div>
 </div>
 
@@ -111,6 +147,133 @@
         errorSpan.textContent = '';
         return true;
     }
+</script>
+
+
+<script>
+    var chartData = {
+        monthly: {
+            labels: {{ filled_monthly_expenditure|map(attribute='1')|list|tojson }},
+            datasetLabel: 'Monthly Expenditure',
+            data: {{ filled_monthly_expenditure|map(attribute='2')|list|tojson }},
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+        },
+        weekly: {
+            labels: {{ filled_weekly_expenditure|map(attribute='1')|list|tojson }},
+            datasetLabel: 'Weekly Expenditure',
+            data: {{ filled_weekly_expenditure|map(attribute='2')|list|tojson }},
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+        }
+    };
+
+    // Initialize the chart with the monthly data
+    var currentDatasetType = 'monthly';
+    var ctx = document.getElementById('expenditureChart').getContext('2d');
+    var expenditureChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: chartData[currentDatasetType].labels,
+            datasets: [{
+                label: chartData[currentDatasetType].datasetLabel,
+                data: chartData[currentDatasetType].data,
+                backgroundColor: chartData[currentDatasetType].backgroundColor,
+                borderColor: chartData[currentDatasetType].borderColor,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Month'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Expenditure ($)'
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    onClick: function(e, legendItem, legend) {
+                        // Toggle dataset type
+                        currentDatasetType = (currentDatasetType === 'monthly') ? 'weekly' : 'monthly';
+                        var newChartData = chartData[currentDatasetType];
+                        
+                        // Update the chart
+                        expenditureChart.data.labels = newChartData.labels;
+                        expenditureChart.data.datasets[0].label = newChartData.datasetLabel;
+                        expenditureChart.data.datasets[0].data = newChartData.data;
+                        expenditureChart.data.datasets[0].backgroundColor = newChartData.backgroundColor;
+                        expenditureChart.data.datasets[0].borderColor = newChartData.borderColor;
+
+                        // Update x-axis label based on the dataset type
+                        expenditureChart.options.scales.x.title.text = (currentDatasetType === 'monthly') ? 'Month' : 'Week';
+
+                        expenditureChart.update();
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly and weekly spending over the last year'
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+
+<!-- Script for Pie Chart -->
+<script>
+    var spendingSummary = {{ spending_summary | tojson }};
+    var total_spending = {{ total_spending | tojson }};
+    
+    var pieCtx = document.getElementById('spendingPieChart').getContext('2d');
+    var spendingPieChart = new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+            labels: spendingSummary.map(item => item.category),
+            datasets: [{
+                label: 'Spending by Category',
+                data: spendingSummary.map(item => item.amount),
+                backgroundColor: spendingSummary.map((_, index) => `hsl(${index * 360 / spendingSummary.length}, 80%, 60%, 0.75)`),
+                hoverOffset: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: $${context.raw.toFixed(2)}`;
+                        }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Spending Summary by Category',
+                    font: {
+                        size: 16
+                    }
+                }
+            }
+        }
+    });
+
+    // Update total spending display
+    var totalSpendingElement = document.getElementById('totalSpendingDisplay');
+    totalSpendingElement.textContent = `Total Spending: $${total_spending.amount.toFixed(2)}`;
 </script>
 
 

@@ -13,7 +13,7 @@
         <div class="order-status-container">
             <!-- Total Orders -->
             <div class="order-card total-orders">
-                <img src="{{ url_for('static', filename='img/order_rocket.png') }}" alt="Total Orders">
+                <img src="{{ url_for('static', filename='img/user_order_rocket.png') }}" alt="Total Orders">
                 <div class="text-group">
                     <div class="number">154</div>
                     <div class="label">Total Orders</div>
@@ -22,7 +22,7 @@
 
             <!-- Pending Orders -->
             <div class="order-card pending-orders">
-                <img src="{{ url_for('static', filename='img/user_note.png') }}" alt="Pending Orders">
+                <img src="{{ url_for('static', filename='img/user_order_note.png') }}" alt="Pending Orders">
                 <div class="text-group">
                     <div class="number">9</div>
                     <div class="label">Pending Orders</div>
@@ -31,7 +31,7 @@
 
             <!-- Completed Orders -->
             <div class="order-card completed-orders">
-                <img src="{{ url_for('static', filename='img/user_box.png') }}" alt="Completed Orders">
+                <img src="{{ url_for('static', filename='img/user_order_box.png') }}" alt="Completed Orders">
                 <div class="text-group">
                     <div class="number">146</div>
                     <div class="label">Completed Orders</div>
@@ -43,12 +43,19 @@
         <!-- Profile Content -->
         <div class="profile-container">
             <div class="profile-header">
-                <img src="{{ url_for('static', filename='img/user_profile_default.jpg') }}" alt="Profile Picture">
+
+                <form method="POST" action="{{ url_for('users.upload_profile_image') }}" enctype="multipart/form-data"
+                    style="display:none;">
+                    <input type="file" name="profile_image" id="profileImageInput" accept="image/*"
+                        onchange="this.form.submit()">
+                </form>
+                <img src="{{ url_for('static', filename=current_user.imageurl) }}" alt="Profile Picture"
+                    onclick="document.getElementById('profileImageInput').click();" style="cursor: pointer;">
+
                 <div class="user-info">
                     <h2>{{ current_user.firstname }} {{ current_user.lastname }}</h2>
                     <p>{{ current_user.email }}</p>
                 </div>
-
             </div>
             <div class="profile-info">
                 <div class="info-row">
