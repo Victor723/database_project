@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modify_product.css') }}">
+    {% include "seller_navigation.html" %}
+    <div class="main-content">
+        <h1>Modify Product</h1>
+        <form method="post" action="{{ url_for('sellers.modify_product', s_sellerkey=seller_key, p_productkey=product_key) }}">
+            <label for="product_key">Product Key:</label>
+            <input type="text" id="product_key" name="product_key" value="{{ product_info.productkey }}" disabled><br><br>
+            <label for="product_name">Product Name:</label>
+            <input type="text" id="product_name" name="product_name" value="{{ product_info.productname }}"><br><br>
+            <label for="product_imageurl">Image URL:</label>
+            <input type="text" id="product_imageurl" name="product_imageurl" value="{{ product_info.imageurl }}"><br><br>
+            <img src="{{ product_info.imageurl }}" alt="Product Image" class="url-image"><br><br>
+            <label for="product_price">Price:</label>
+            <input type="text" id="product_price" name="product_price" value="{{ product_info.price }}"><br><br>
+            <label for="product_description">Description:</label>
+            <textarea id="product_description" name="product_description">{{ product_info.description }}</textarea><br><br>
+            <label for="product_category">Category:</label>
+            <input type="text" id="product_category" name="product_category" value="{{ product_info.category }}"><br><br>
+            <label for="product_quantity">Quantity:</label>
+            <input type="text" id="product_quantity" name="product_quantity" value="{{ product_info.quantity }}"><br><br>
+            <label for="product_discount">Discount:</label>
+            <input type="text" id="product_discount" name="product_discount" value="{{ product_info.discount }}"><br><br>
+            <!-- Add input fields for other product attributes -->
+
+            <input type="submit" value="Save Changes">
+        </form>
+    </div>
+{% endblock %}

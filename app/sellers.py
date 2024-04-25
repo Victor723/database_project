@@ -4,9 +4,12 @@ from flask_login import login_user, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from flask import current_app as app
+from datetime import datetime
 
 from .models.seller import Seller
 from .models.productseller import ProductSeller
+from .models.product import Product
 
 
 from flask import Blueprint
@@ -60,7 +63,6 @@ def seller_inventory(s_sellerkey):
 def seller_product_details(s_sellerkey, p_productkey):
     # Get product information for the specified seller key and product key
     product_info = ProductSeller.get_product_info(s_sellerkey, p_productkey)
-    print(product_info)
     # Render the template with the product information
     return render_template('seller_product_details.html', product_info=product_info, seller_key=s_sellerkey)
 
@@ -77,6 +79,158 @@ def delete_product(s_sellerkey, p_productkey):
     else:
         # Product deletion failed
         return jsonify({'message': message}), 500
+
+
+@bp.route('/seller/<s_sellerkey>/<p_productkey>/modify', methods=['GET', 'POST'])
+def modify_product(s_sellerkey, p_productkey):
+    if request.method == 'POST':
+        # Retrieve form data
+        product_name = request.form['product_name']
+        product_price = request.form['product_price']
+        product_description = request.form['product_description']
+        product_imageurl = request.form['product_imageurl']
+        product_quantity = request.form['product_quantity']
+        product_discount = request.form['product_discount']
+        current_time = datetime.now()
+
+        # Update Product table
+        app.db.execute(
+            """
+            UPDATE Product
+            SET p_productname = :product_name,
+                p_price = :product_price,
+                p_description = :product_description,
+                p_imageurl = :product_imageurl
+            WHERE p_productkey = :product_key
+            """,
+            product_name=product_name,
+            product_key=p_productkey,
+            product_price=product_price,
+            product_description=product_description,
+            product_imageurl=product_imageurl
+        )
+
+        # Update ProductSeller table if necessary
+        app.db.execute(
+            """
+            UPDATE ProductSeller
+            SET ps_price = :product_price,
+                ps_quantity = :product_quantity,
+                ps_discount = :product_discount,
+                ps_createtime = :current_time
+            WHERE ps_productkey = :product_key AND ps_sellerkey = :seller_key
+            """,
+            product_price=product_price,
+            product_key=p_productkey,
+            seller_key=s_sellerkey,
+            product_quantity=product_quantity,
+            product_discount=product_discount,
+            current_time=current_time
+        )
+
+        # Redirect to inventory page after modification
+        return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
+    else:
+        # Retrieve product information for pre-filling the form
+        product_info = ProductSeller.get_product_info(s_sellerkey, p_productkey)
+        if product_info:
+            return render_template('modify_product.html', seller_key=s_sellerkey, product_key=p_productkey, product_info=product_info)
+        else:
+            flash('Product not found.', 'error')
+            return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
+
+
+@bp.route('/seller/<s_sellerkey>/add_product', methods=['GET', 'POST'])
+def add_product(s_sellerkey):
+    if request.method == 'POST':
+        search_query = request.form.get('search_query')
+        search_results = Product.search_products_by_name(search_query)
+        return render_template('search_results.html', seller_key=s_sellerkey, search_results=search_results, search_query=search_query)
+    else:
+        return render_template('add_product.html', seller_key=s_sellerkey)
+
+
+@bp.route('/seller/<s_sellerkey>/add_product/<p_productkey>', methods=['GET', 'POST'])
+def add_exit_product(s_sellerkey, p_productkey):
+    if request.method == 'POST':
+        # Retrieve form data
+        product_price = request.form['product_price']
+        product_quantity = request.form['product_quantity']
+        product_discount = request.form['product_discount']
+        current_time = datetime.now()
+
+        # Check if the product already exists for this seller
+        existing_product = ProductSeller.get_product_info(s_sellerkey, p_productkey)
+        if existing_product:
+            flash("You have already added this product.", 'error')
+            return redirect(url_for('sellers.add_product', s_sellerkey=s_sellerkey))
+        else:
+           # Insert product seller information into the ProductSeller table
+            app.db.execute(
+                """
+                INSERT INTO ProductSeller (ps_productkey, ps_sellerkey, ps_quantity, ps_price, ps_discount, ps_createtime)
+                VALUES (:product_key, :seller_key, :quantity, :price, :discount, :createtime)
+                """,
+                product_key=p_productkey,
+                seller_key=s_sellerkey,
+                quantity=product_quantity,
+                price=product_price,
+                discount=product_discount,
+                createtime=current_time
+            )
+
+            flash("Product added successfully.", 'success')
+            return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
+    else:
+        # Render the template for adding product information
+        product_info = Product.get_prod_details(p_productkey)
+        return render_template('add_exit_product.html', seller_key=s_sellerkey, product_info=product_info)
+        
+
+
+
+    #     product_key = Product.find_max_productkey() + 1
+    #     product_price = request.form['product_price']
+    #     product_description = request.form['product_description']
+    #     product_imageurl = request.form['product_imageurl']
+    #     product_quantity = request.form['product_quantity']
+    #     product_discount = request.form['product_discount']
+    #     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+    #     # Insert new product into Product table
+    #     app.db.execute(
+    #         """
+    #         INSERT INTO Product (p_productkey, p_productname, p_price, p_description, p_imageurl, p_catkey)
+    #         VALUES (:product_key, :product_name, :product_price, :product_description, :product_imageurl, 1)
+    #         """,
+    #         product_key=product_key,
+    #         product_name=product_name,
+    #         product_price=product_price,
+    #         product_description=product_description,
+    #         product_imageurl=product_imageurl
+    #     )
+
+    #     # Insert new product into ProductSeller table
+    #     app.db.execute(
+    #         """
+    #         INSERT INTO ProductSeller (ps_productkey, ps_sellerkey, ps_quantity, ps_price, ps_discount, ps_createtime)
+    #         VALUES (:product_key, :seller_key, :product_quantity, :product_price, :product_discount, :current_time)
+    #         """,
+    #         product_key=product_key,
+    #         seller_key=s_sellerkey,
+    #         product_quantity=product_quantity,
+    #         product_price=product_price,
+    #         product_discount=product_discount,
+    #         current_time=current_time
+    #     )
+
+    #     # Redirect to inventory page after adding product
+    #     return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
+    # else:
+    #     # Render the add product form
+    #     return render_template('add_product.html', seller_key=s_sellerkey)
+
 
 
 @bp.route('/seller/<s_sellerkey>/order', methods=['GET', 'POST'])
@@ -103,7 +257,6 @@ def seller_order(s_sellerkey):
     return render_template('seller_order.html', seller_key=s_sellerkey, order_info=order_info, current_page=page, total_pages=total_pages)
 
 
-
 @bp.route('/seller/<s_sellerkey>/review', methods=['GET', 'POST'])
 def seller_review(s_sellerkey):
     seller_review = Seller.get_seller_review(s_sellerkey)
@@ -114,4 +267,5 @@ def seller_review(s_sellerkey):
 def seller_profile(s_sellerkey):
     seller_profile = Seller.get_seller_information(s_sellerkey)
     return render_template('seller_profile.html', seller_key=s_sellerkey, seller_profile=seller_profile)
+
 
