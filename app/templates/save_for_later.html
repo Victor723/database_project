@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-{# {% if current_user.is_authenticated %} #}
 <div class="container mt-3">
     <div class="row">
         <!-- Cart Items Column -->
@@ -54,15 +53,10 @@
         </div>
     </div>
     <div class="mt-3">
-        <a href="{{ url_for('cart.shopping_cart') }}" class="btn btn-secondary btn-block">
+        <a href="{{url_for('cart.shopping_cart') }}" class="btn btn-secondary btn-block">
             Go to Shopping cart
         </a>
     </div>
     </div>
 </div>
 {% endblock %}
-
- {# {% else %} #}
-    <!-- <p>You must be logged in to view this page.</p> -->
-    <!-- <a href="{{ url_for('users.login') }}" class="btn btn-primary">Login</a> -->
- {# {% endif %} #}
