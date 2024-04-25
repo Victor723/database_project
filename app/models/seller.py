@@ -172,3 +172,26 @@ class Seller():
                 'rating': row[4]
             })
         return seller_review
+
+
+    @staticmethod
+    def find_max_sellerkey():
+        row = app.db.execute('''
+            SELECT MAX(s_sellerkey)
+            FROM Seller
+        ''')
+        return row[0][0] if row is not None else None
+
+
+    @staticmethod
+    def register(sellerkey, userkey, companyname, registrationdate):
+        app.db.execute(
+            """
+            INSERT INTO Seller (s_sellerkey, s_userkey, s_companyname, s_registrationdate)
+            VALUES (:sellerkey, :userkey, :companyname, :registrationdate)
+            """,
+            sellerkey=sellerkey,
+            userkey=userkey,
+            companyname=companyname,
+            registrationdate=registrationdate
+        )

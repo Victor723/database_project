@@ -48,10 +48,8 @@
             href="{{ url_for('users.logout') }}">Log Out</a>
     </nav>
 
-    {% if is_seller %}
-    <button type="button" class="btn-switch">Switch to seller</button>
+    <a href="{{ url_for('users.switch_to_seller') }}" class="switch-btn">Switch to seller</a>
 
-    {% else %}
     <!-- Modal Trigger -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sellerModal">Become a
         seller</button>
@@ -84,5 +82,5 @@
             </div>
         </div>
     </div>
-    {% endif %}
+
 </aside>

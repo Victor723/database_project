@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from werkzeug.urls import url_parse
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
@@ -15,14 +15,9 @@ from .models.product import Product
 from flask import Blueprint
 bp = Blueprint('sellers', __name__)
 
-@bp.route('/seller/login/<u_userkey>', methods=['GET', 'POST'])
-def seller_login(u_userkey):
-    # Fetch the user's name and corresponding seller key
-    seller_key = Seller.get_sellerkey(u_userkey)
-    return "login", 400
-
 
 @bp.route('/seller/<s_sellerkey>', methods=['GET', 'POST'])
+@login_required
 def seller_homepage(s_sellerkey):
     user_info = Seller.get_seller_information(s_sellerkey)
     # Check if user_info is not empty and contains user's name
@@ -36,6 +31,7 @@ def seller_homepage(s_sellerkey):
 
 
 @bp.route('/seller/<s_sellerkey>/inventory', methods=['GET', 'POST'])
+@login_required
 def seller_inventory(s_sellerkey):
     # Get the current page from the query parameters or default to page 1
     page = int(request.args.get('page', 1))
@@ -60,6 +56,7 @@ def seller_inventory(s_sellerkey):
 
 
 @bp.route('/seller/<s_sellerkey>/<p_productkey>/details', methods=['GET', 'POST'])
+@login_required
 def seller_product_details(s_sellerkey, p_productkey):
     # Get product information for the specified seller key and product key
     product_info = ProductSeller.get_product_info(s_sellerkey, p_productkey)

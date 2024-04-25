@@ -280,19 +280,40 @@ class BecomeSellerForm(FlaskForm):
     next = HiddenField()
     submit = SubmitField('Continue')
 
+
 @bp.route('/become_a_seller', methods=['POST'])
 @login_required
 def become_a_seller():
     become_seller_form = BecomeSellerForm()
+    userkey = current_user.userkey
+    sellerkey = Seller.get_sellerkey(userkey)
     if 'submit' in request.form:
-        try:
-            User.update_address(userkey=current_user.userkey, companyname=become_seller_form.companyname.data)
-            # Seller.register(current_user.userkey, become_seller_form.company_name.data)
-            flash('You have successfully become a seller!', 'success')
-        except Exception as e:
-            flash(str(e), 'error')
+        if sellerkey is None:  # Check if current user is not already a seller
+            try:
+                sellerkey = Seller.find_max_sellerkey() + 1  # Get the next available seller key
+                companyname = become_seller_form.companyname.data
+                registrationdate = date.today() 
+                User.update_address(userkey=current_user.userkey, companyname=companyname)
+                Seller.register(sellerkey=sellerkey, userkey=userkey, companyname=companyname, registrationdate=registrationdate)
+                flash('You have successfully become a seller!', 'success')
+            except Exception as e:
+                flash(str(e), 'error')
+        else:
+            flash('You are already registered as a seller.', 'info')
     return redirect(become_seller_form.next.data)
-    
+
+
+@bp.route('/Switch_to_seller', methods=['GET','POST'])
+@login_required
+def switch_to_seller():
+    userkey = current_user.userkey
+    sellerkey = Seller.get_sellerkey(userkey)
+    if sellerkey is None: 
+        flash('You are not a seller. Register first.', 'info')
+    else:
+        seller_info = Seller.get_seller_information(sellerkey)
+        seller_name = seller_info[0]['first_name'] + seller_info[0]['last_name']
+        return render_template('seller_homepage.html', seller_name=seller_name, seller_key=sellerkey)
 
 
 @bp.app_context_processor
