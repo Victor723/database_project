@@ -7,9 +7,9 @@
 
 .sidebar {
     flex: 0 0 250px;
-    height: 37vh;
+    height: 100vh;
     /* Fixed height */
-    padding: 20px;
+    padding: 25px;
     background-color: #f5f5f5;
     overflow-y: auto;
     /* Scrollable */
