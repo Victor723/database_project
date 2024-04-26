@@ -65,7 +65,7 @@ class ProductSeller():
             """,
             sellerkey=sellerkey, productkey=productkey)
 
-        if row[0]:
+        if row:
             # Construct a product information dictionary
             product_info = {
                 'productkey': row[0][0],

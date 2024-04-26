@@ -1,0 +1,41 @@
+<!-- seller_order_details.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="main-content">
+        <h1>Order Details</h1>
+        <table class="order-details-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Line Item ID</th>
+                    <th>Product Name</th>
+                    <th>Date</th>
+                    <th>Customer Name</th>
+                    <th>Original Price</th>
+                    <th>Discount</th>
+                    <th>Tax</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ lineitem_info.order_id }}</td>
+                    <td>{{ lineitem_info.lineitem_id }}</td>
+                    <td>{{ lineitem_info.product_name }}</td>
+                    <td>{{ lineitem_info.date }}</td>
+                    <td>{{ lineitem_info.customer_name }}</td>
+                    <td>{{ lineitem_info.origin_price }}</td>
+                    <td>{{ lineitem_info.discount }}</td>
+                    <td>{{ lineitem_info.tax }}</td>
+                    <td>{{ lineitem_info.quantity }}</td>
+                    <td>{{ lineitem_info.total_price }}</td>
+                    <td>{{ lineitem_info.status }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
