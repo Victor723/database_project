@@ -49,14 +49,26 @@ ORDER BY pr_reviewdate DESC
     @staticmethod
     def get_product_rating(pr_productkey):
         rows = app.db.execute('''
-SELECT pr_productkey, AVG(pr_rating)
+SELECT ROUND(AVG(pr_rating), 2)
 FROM ProductReview
 WHERE pr_productkey = :pr_productkey
 GROUP BY pr_productkey
 ''',
                               pr_productkey = pr_productkey)
-        return [ProductReview(*row) for row in rows]
+        if rows:
+            return rows[0]
+        else:
+            return 0
     
+    @staticmethod
+    def get_product_review_counts(pr_productkey):
+        rows = app.db.execute('''
+SELECT COUNT(DISTINCT pr_userkey)
+FROM ProductReview
+WHERE pr_productkey = :pr_productkey
+''',
+                              pr_productkey = pr_productkey)
+        return rows[0]
 
     @staticmethod
     def get_top5_user_reviews(pr_userkey):

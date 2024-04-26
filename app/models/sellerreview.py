@@ -61,13 +61,26 @@ ORDER BY sr_reviewdate DESC
     @staticmethod
     def get_seller_rating(sr_sellerkey):
         rows = app.db.execute('''
-SELECT sr_sellerkey, AVG(sr_rating)
+SELECT ROUND(AVG(sr_rating), 2)
 FROM SellerReview
 WHERE sr_sellerkey = :sr_sellerkey
 GROUP BY sr_sellerkey
 ''',
                               sr_sellerkey = sr_sellerkey)
-        return [SellerReview(*row) for row in rows]
+        if rows:
+            return rows[0]
+        else:
+            return 0
+    
+    @staticmethod
+    def get_seller_review_counts(sr_sellerkey):
+        rows = app.db.execute('''
+SELECT COUNT(*)
+FROM SellerReview
+WHERE sr_sellerkey = :sr_sellerkey
+''',
+                              sr_sellerkey = sr_sellerkey)
+        return rows[0]
     
     
     @staticmethod

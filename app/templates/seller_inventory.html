@@ -6,6 +6,8 @@
     {% include "seller_navigation.html" %}
     <div class="main-content">
         <h1>Inventory</h1>
+        <!-- Button for add product -->
+        <a href="{{ url_for('sellers.add_product', s_sellerkey=seller_key) }}" class="add-product-btn">Add Product</a>
         <table class="inventory-table">
             <thead>
                 <tr>
@@ -30,6 +32,8 @@
                     <td>
                         <!-- Button for delete action -->
                         <button class="btn btn-danger" onclick="confirmDelete('{{ seller_key }}', '{{ product.productkey }}')">Delete</button>
+                         <!-- Button for modifying product information -->
+                        <a href="{{ url_for('sellers.modify_product', s_sellerkey=seller_key, p_productkey=product.productkey) }}" class="btn btn-warning">Modify</a>
                         <!-- Button for redirecting to product details -->
                         <a href="{{ url_for('sellers.seller_product_details', s_sellerkey=seller_key, p_productkey=product.productkey) }}" class="btn btn-primary">Details</a>
                     </td>

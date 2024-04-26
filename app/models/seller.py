@@ -1,4 +1,5 @@
 from flask import current_app as app
+from datetime import datetime
 
 
 class Seller():
@@ -111,9 +112,10 @@ class Seller():
     @staticmethod
     def get_order_info(sellerkey, limit, offset):
         rows = app.db.execute("""
-            SELECT l.l_orderkey, p.p_productname, o.o_ordercreatedate, 
+            SELECT l.l_orderkey, l_linenumber, p.p_productname, o.o_ordercreatedate, 
                 CONCAT(u.u_firstname, ' ', u.u_lastname) AS customer_name, 
-                o.o_totalprice, CASE WHEN l.l_fulfillmentdate IS NULL THEN 'Pending' ELSE 'Fulfilled' END AS status
+                l_originalprice, l_discount, l_tax, l_quantity,
+                CASE WHEN l.l_fulfillmentdate IS NULL THEN 'Pending' ELSE 'Fulfilled' END AS status
             FROM Lineitem l
             JOIN Orders o ON l.l_orderkey = o.o_orderkey
             JOIN Product p ON l.l_productkey = p.p_productkey
@@ -124,16 +126,65 @@ class Seller():
         
         order_info = []
         for row in rows:
+            origin_price = row[5]
+            discount = row[6]
+            tax = row[7]
+            quantity = row[8]
+            total_price = quantity * origin_price * (1 - discount) * (1 + tax)
             order_info.append({
                 'order_id': row[0],
-                'product_name': row[1],
-                'date': row[2],
-                'customer_name': row[3],
-                'total_price': row[4],
-                'status': row[5]
+                "lineitem_id": row[1],
+                'product_name': row[2],
+                'date': row[3],
+                'customer_name': row[4],
+                'origin_price': origin_price,
+                'discount': discount,
+                'tax': tax,
+                'quantity': quantity,
+                'total_price': total_price,  # Calculate total price
+                'status': row[9]
             })
             
         return order_info
+
+
+    @staticmethod
+    def get_lineitem_info(sellerkey, orderkey, lineitem_id):
+        rows = app.db.execute("""
+            SELECT l.l_orderkey, l_linenumber, p.p_productname, o.o_ordercreatedate, 
+                CONCAT(u.u_firstname, ' ', u.u_lastname) AS customer_name, 
+                l_originalprice, l_discount, l_tax, l_quantity,
+                CASE WHEN l.l_fulfillmentdate IS NULL THEN 'Pending' ELSE 'Fulfilled' END AS status
+            FROM Lineitem l
+            JOIN Orders o ON l.l_orderkey = o.o_orderkey
+            JOIN Product p ON l.l_productkey = p.p_productkey
+            JOIN Users u ON o.o_userkey = u.u_userkey
+            WHERE l.l_sellerkey = :sellerkey AND l.l_linenumber = :lineitem_id AND l.l_orderkey = :orderkey
+        """, sellerkey=sellerkey, orderkey=orderkey, lineitem_id=lineitem_id)
+        
+        if rows:
+            origin_price = rows[0][5]
+            discount = rows[0][6]
+            tax = rows[0][7]
+            quantity = rows[0][8]
+            total_price = quantity * origin_price * (1 - discount) * (1 + tax)
+            lineitem_info = {
+                'order_id': rows[0][0],
+                "lineitem_id": rows[0][1],
+                'product_name': rows[0][2],
+                'date': rows[0][3],
+                'customer_name': rows[0][4],
+                'origin_price': origin_price,
+                'discount': discount,
+                'tax': tax,
+                'quantity': quantity,
+                'total_price': total_price,  
+                'status': rows[0][9]
+            }
+        else:
+            lineitem_info = None
+            
+        return lineitem_info
 
 
     @staticmethod
@@ -172,3 +223,36 @@ class Seller():
                 'rating': row[4]
             })
         return seller_review
+
+
+    @staticmethod
+    def find_max_sellerkey():
+        row = app.db.execute('''
+            SELECT MAX(s_sellerkey)
+            FROM Seller
+        ''')
+        return row[0][0] if row is not None else None
+
+
+    @staticmethod
+    def register(sellerkey, userkey, companyname, registrationdate):
+        app.db.execute(
+            """
+            INSERT INTO Seller (s_sellerkey, s_userkey, s_companyname, s_registrationdate)
+            VALUES (:sellerkey, :userkey, :companyname, :registrationdate)
+            """,
+            sellerkey=sellerkey,
+            userkey=userkey,
+            companyname=companyname,
+            registrationdate=registrationdate
+        )
+
+
+    @staticmethod
+    def order_finish(s_sellerkey, o_orderkey, l_linenumber):
+        current_date = datetime.now()
+        app.db.execute("""
+            UPDATE Lineitem
+            SET l_fulfillmentdate = :CURRENT_DATE
+            WHERE l_sellerkey = :sellerkey AND l_orderkey = :orderkey AND l_linenumber = :linenumber
+        """, CURRENT_DATE=current_date, sellerkey=s_sellerkey, orderkey=o_orderkey, linenumber=l_linenumber)
