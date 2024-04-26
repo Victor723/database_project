@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-{# {% if current_user.is_authenticated %} #}
 <div class="container mt-3">
     <div class="row">
         <!-- Cart Items Column -->
@@ -27,17 +26,24 @@
                                 <td>${{ "%.2f"|format(item.ps_price) }}</td>
                                 <td>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" value="{{ item.pc_incartquantity }}" min="1">
+                                        <input type="number" class="form-control" value="{{ item.pc_incartquantity }}" min="1" id="quantityInput{{ loop.index }}">
                                         <div class="input-group-append">
-                                            <button class="btn btn-secondary" type="button">Update</button>
+                                            <button class="btn btn-secondary" type="button"
+                                                onclick="updateQuantity('{{ item.product_key }}', '{{ item.seller_key }}', 'quantityInput{{ loop.index }}')">
+                                                Update
+                                            </button>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <button class="btn btn-primary" type="button">Save for Later</button>
-                                   <!-- 'Remove' Button with a Red Color -->
-                                    <button class="btn btn-danger" type="button">Remove</button>
-
+                                    <button class="btn btn-primary" type="button" onclick="moveToSaveForLater('{{ item.product_key }}', '{{ item.seller_key }}', this)">
+                                        Save for Later
+                                    </button>
+                                    
+                                    <button class="btn btn-danger" type="button"
+                                        onclick="removeItem('{{ item.product_key }}', '{{ item.seller_key }}', this)">
+                                        Remove
+                                    </button>
                                 </td>
                             </tr>
                             {% else %}
@@ -48,18 +54,12 @@
                         </tbody>
                     </table>
                 </div>
-                
-
             {% else %}
                 <h2 class="text-center mt-5">Your Shopping Cart is empty.</h2>
             {% endif %}
-            <!-- Button to go to Save for Later page -->
             <div class="mt-3">
-                <a href="{{ url_for('cart.save_for_later') }}" class="btn btn-secondary btn-block">
-                    Go to Save for Later
-                </a>
+                <a href="{{ url_for('cart.save_for_later') }}" class="btn btn-secondary btn-block">Go to Save for Later</a>
             </div>
-
         </div>
         
         <!-- Cart Summary Column -->
@@ -69,11 +69,12 @@
                     <div class="card-header">Cart Summary</div>
                     <div class="card-body black-text">
                         <p class="card-text">Subtotal: ${{ total_cost }}</p>
-                        <p class="card-text">Shipping: ${{ 0 }}</p>
-                        <p class="card-text">Discount: ${{ 0 }}</p>
-                        <p class="card-text">Tax: ${{ 0 }}</p>
+                        <p class="card-text">Shipping: $0</p>
+                        <p class="card-text">Discount: $0</p>
+                        <p class="card-text">Tax: $0</p>
                         <h4 class="card-title">Total: ${{ total_cost }}</h4>
-                        <button class="btn btn-primary btn-block" type="button">Checkout</button>
+                        <button class="btn btn-primary btn-block" type="button" onclick="checkout()">Checkout</button>
+
                     </div>
                 </div>
                 <div class="card">
@@ -91,10 +92,126 @@
         </div>
     </div>
 </div>
+
+<script>
+function updateQuantity(productKey, sellerKey, inputElementId)  {
+    const quantityElement = document.getElementById(inputElementId);
+    if (!quantityElement) {
+        console.error(`Element with ID ${inputElementId} not found`);
+        return; // Exit the function if element not found
+    }
+    const newQuantity = quantityElement.value;
+
+    fetch('/update-quantity', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_key: productKey,
+            seller_key: sellerKey,
+            new_quantity: newQuantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert('Failed to update quantity: ' + data.error);
+        } else {
+            alert('Quantity updated to ' + data.new_quantity);
+            setTimeout(() => window.location.reload(), 500);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update quantity.');
+    });
+}
+
+function removeItem(productKey, sellerKey, element) {
+    console.log(element);
+    if (confirm('Are you sure you want to remove this item?')) {
+        fetch('/remove-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                product_key: productKey,
+                seller_key: sellerKey
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Item removed successfully');
+                let ancestor = element.parentElement;
+                while (ancestor && ancestor.tagName !== 'TR') {
+                    ancestor = ancestor.parentElement;
+                }
+
+                if (ancestor && ancestor.tagName === 'TR') {
+                    ancestor.remove();
+                }
+                setTimeout(() => window.location.reload(), 500);
+            } else {
+                alert('Failed to remove item: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove item: ' + error.message);
+        });
+    }
+}
+
+function moveToSaveForLater(productKey, sellerKey) {
+    fetch('/move-to-save-for-later', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_key: productKey,
+            seller_key: sellerKey
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Item saved for later successfully');
+            setTimeout(() => window.location.reload(), 500);
+        } else {
+            alert('Failed to save item for later: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to save item for later: ' + error.message);
+    });
+}
+
+function checkout() {
+    fetch('/checkout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Order created successfully');
+            window.location.href = '/orders/'; // Redirect to the orders page to view the order
+        } else {
+            alert('Failed to create order: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to create order: ' + error.message);
+    });
+}
+
+</script>
 {% endblock %}
-
- {# {% else %} #}
-    <!-- <p>You must be logged in to view this page.</p> -->
-    <!-- <a href="{{ url_for('users.login') }}" class="btn btn-primary">Login</a> -->
- {# {% endif %} #}
-

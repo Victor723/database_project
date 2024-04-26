@@ -1,23 +1,39 @@
-from flask import Blueprint, render_template, current_app
-from sqlalchemy.exc import SQLAlchemyError
-import datetime
-from .models.user import User
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask_login import login_required, current_user
 from .models.order import Order
-from flask import Blueprint
-from flask_login import current_user, login_required
+from datetime import datetime
 bp = Blueprint('orders', __name__)
 
-@bp.route('/orders/', methods=['GET', 'POST'])
-def show_orders():
-    userkey = current_user.userkey
-    try:
-        orders = Order.get_orders(userkey, 0) or []
-        current_app.logger.info(f"Orders fetched for user {userkey}: {orders}")
-    except SQLAlchemyError as e:
-        current_app.logger.error(f"Database error occurred: {str(e)}")
-        orders = []  # Fallback to an empty list in case of database error
+@bp.route('/orders/', methods=['GET'])
+@login_required
+def display_orders():
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    offset = (page - 1) * per_page
 
-    if not orders:
-        current_app.logger.info("No orders found.")
+    orders, total_orders = Order.get_orders(current_user.userkey, offset)
+    total_pages = (total_orders + per_page - 1) // per_page  # Calculate the total number of pages
+    
+    return render_template('orders.html', orders=orders, page=page, total_pages=total_pages)
 
-    return render_template('orders.html', orders=orders)
+    
+@bp.route('/order-details/', methods=['GET', 'POST'])
+@login_required
+def order_details():
+    if request.method == 'POST':
+        # Retrieve order_id from the form data
+        order_id = request.form.get('order_id')
+        if order_id:
+            order_details = Order.get_order_details(order_id)
+            if order_details:
+                # Render the order details template with the order data
+                return render_template('order_details.html', order_details=order_details)
+            else:
+                flash('Order not found.', 'error')
+                return redirect(url_for('orders.display_orders'))
+        else:
+            flash('No order ID provided.', 'error')
+            return redirect(url_for('orders.display_orders'))
+    else:
+        flash('Invalid request method.', 'error')
+        return redirect(url_for('orders.display_orders'))
