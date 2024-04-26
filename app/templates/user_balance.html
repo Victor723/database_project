@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user_balance.css') }}">
+
+<div class="profile-page">
+    {% with active_page='wallet', is_seller=is_seller %}
+    {% include '_user_sidebar.html' %}
+    {% endwith %}
+
+    <div class="profile-container">
+        <div class="wallet-balance">
+            <div class="balance-info">
+                <i class="fi fi-ts-wallet"></i>
+                <span>${{ current_user.balance }}</span>
+                <p>My Wallet Balance</p>
+            </div>
+
+            <div class="balance-actions">
+                <!-- Add money Modal Trigger -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add
+                    Money</button>
+
+                <!-- Add money Modal -->
+                <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <form method="POST" action="{{ url_for('users.manage_user_balance') }}"
+                                onsubmit="return validateAmountForm('addAmountId','amountAddError')">
+                                {{ form.action(value='add') }}
+                                {{ form.hidden_tag() }}
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addModalLabel">Add Money</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ form.amount.label(class="col-form-label") }}
+                                    {{ form.amount(class="form-control", id='addAmountId', placeholder="Enter an amount you want to add:") }}
+                                    <span class="text-danger" id="amountAddError"></span>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    {{ form.submit(class="btn btn-primary") }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+
+
+                <!-- Add money Modal Trigger -->
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#withdrawModal">Withdraw</button>
+
+                <!-- Add money Modal -->
+                <div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog"
+                    aria-labelledby="withdrawModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <form method="POST" action="{{ url_for('users.manage_user_balance') }}"
+                                onsubmit="return validateAmountForm('withdrawAmountId','amountWithdrawError')">
+                                {{ form.action(value='withdraw') }}
+                                {{ form.hidden_tag() }}
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="withdrawModalLabel">Withdraw</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {{ form.amount.label(class="col-form-label") }}
+                                    {{ form.amount(class="form-control", id='withdrawAmountId', placeholder="Enter an amount you want to withdraw:") }}
+                                    <span class="text-danger" id="amountWithdrawError"></span>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    {{ form.submit(class="btn btn-primary") }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validateAmountForm(inputId, errorId) {
+        var amount = document.getElementById(inputId).value;
+        var errorSpan = document.getElementById(errorId);
+        // Regex to allow up to two decimal places
+        var regex = /^\d+(\.\d{0,2})?$/; 
+
+        // Check if the input is empty
+        if (!amount.trim()) {
+            errorSpan.textContent = 'Amount cannot be empty.';
+            return false;
+        }
+        // Check if the input is not numeric
+        if (!regex.test(amount)) {
+            errorSpan.textContent = 'Please enter a valid numeric amount.';
+            return false;
+        }
+        // Clear the error message if input passes the checks
+        errorSpan.textContent = '';
+        return true;
+    }
+</script>
+
+
+{% endblock %}

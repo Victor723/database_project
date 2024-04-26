@@ -75,3 +75,17 @@
 .confirmation-box button {
     margin: 0 10px;
 }
+
+/* Add Product button */
+.add-product-btn {
+    float: right;
+    background-color: #3858D6;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.add-product-btn:hover {
+    background-color: #2e4ecf;
+}

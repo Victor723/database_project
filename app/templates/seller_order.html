@@ -17,6 +17,7 @@
                     <th>Customer Name</th>
                     <th>Total Price</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,6 +29,12 @@
                     <td>{{ order.customer_name }}</td>
                     <td>{{ order.total_price }}</td>
                     <td>{{ order.status }}</td>
+                    <td>
+                        <a href="{{ url_for('sellers.order_details', s_sellerkey=seller_key, o_orderkey=order.order_id, l_linenumber=order.lineitem_id) }}" class="btn btn-info">Detail</a>
+                        {% if order.status == 'Pending' %}
+                            <a href="{{ url_for('sellers.finish_order', s_sellerkey=seller_key, o_orderkey=order.order_id, l_linenumber=order.lineitem_id) }}" class="btn btn-success">Finish</a>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
