@@ -65,6 +65,7 @@ def seller_product_details(s_sellerkey, p_productkey):
 
 
 @bp.route('/seller/<s_sellerkey>/<p_productkey>/delete', methods=['GET','POST'])
+@login_required
 def delete_product(s_sellerkey, p_productkey):
     # Attempt to delete the product
     message = ProductSeller.delete_product(s_sellerkey, p_productkey)
@@ -79,6 +80,7 @@ def delete_product(s_sellerkey, p_productkey):
 
 
 @bp.route('/seller/<s_sellerkey>/<p_productkey>/modify', methods=['GET', 'POST'])
+@login_required
 def modify_product(s_sellerkey, p_productkey):
     if request.method == 'POST':
         # Retrieve form data
@@ -138,6 +140,7 @@ def modify_product(s_sellerkey, p_productkey):
 
 
 @bp.route('/seller/<s_sellerkey>/add_product', methods=['GET', 'POST'])
+@login_required
 def add_product(s_sellerkey):
     if request.method == 'POST':
         search_query = request.form.get('search_query')
@@ -148,6 +151,7 @@ def add_product(s_sellerkey):
 
 
 @bp.route('/seller/<s_sellerkey>/add_product/<p_productkey>', methods=['GET', 'POST'])
+@login_required
 def add_exit_product(s_sellerkey, p_productkey):
     if request.method == 'POST':
         # Retrieve form data
@@ -231,6 +235,7 @@ def add_exit_product(s_sellerkey, p_productkey):
 
 
 @bp.route('/seller/<s_sellerkey>/order', methods=['GET', 'POST'])
+@login_required
 def seller_order(s_sellerkey):
     # Get the current page from the query parameters or default to page 1
     page = int(request.args.get('page', 1))
@@ -254,13 +259,32 @@ def seller_order(s_sellerkey):
     return render_template('seller_order.html', seller_key=s_sellerkey, order_info=order_info, current_page=page, total_pages=total_pages)
 
 
+@bp.route('/seller/<s_sellerkey>/<o_orderkey>/<l_linenumber>/detail', methods=['GET', 'POST'])
+@login_required
+def order_details(s_sellerkey, o_orderkey, l_linenumber):
+    # Get lineitem information
+    lineitem_info = Seller.get_lineitem_info(s_sellerkey, o_orderkey, l_linenumber)
+    # Render the template with the product information
+    return render_template('seller_order_details.html', lineitem_info=lineitem_info, seller_key=s_sellerkey)
+
+
+@bp.route('/seller/<s_sellerkey>/<o_orderkey>/<l_linenumber>/finish', methods=['GET', 'POST'])
+@login_required
+def finish_order(s_sellerkey, o_orderkey, l_linenumber):
+    Seller.order_finish(s_sellerkey, o_orderkey, l_linenumber)
+    flash('Order line item marked as fulfilled.', 'success')
+    return redirect(url_for('sellers.order_details', s_sellerkey=s_sellerkey, o_orderkey=o_orderkey, l_linenumber=l_linenumber))
+
+
 @bp.route('/seller/<s_sellerkey>/review', methods=['GET', 'POST'])
+@login_required
 def seller_review(s_sellerkey):
     seller_review = Seller.get_seller_review(s_sellerkey)
     return render_template('seller_review.html', seller_key=s_sellerkey, seller_review=seller_review)
 
 
 @bp.route('/seller/<s_sellerkey>/profile', methods=['GET', 'POST'])
+@login_required
 def seller_profile(s_sellerkey):
     seller_profile = Seller.get_seller_information(s_sellerkey)
     return render_template('seller_profile.html', seller_key=s_sellerkey, seller_profile=seller_profile)

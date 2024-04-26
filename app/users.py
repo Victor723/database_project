@@ -310,6 +310,7 @@ def switch_to_seller():
     sellerkey = Seller.get_sellerkey(userkey)
     if sellerkey is None: 
         flash('You are not a seller. Register first.', 'info')
+        return redirect(url_for('users.user_profile'))
     else:
         seller_info = Seller.get_seller_information(sellerkey)
         seller_name = seller_info[0]['first_name'] + seller_info[0]['last_name']
