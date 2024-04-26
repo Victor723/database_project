@@ -289,7 +289,7 @@ class User(UserMixin):
                     order_month;
                 """,
                 userkey=userkey)
-            app.logger.info(f"get_monthly_expenditure for {userkey}") 
+            # app.logger.info(f"get_monthly_expenditure for {userkey}") 
             # app.logger.info(f"monthly_expenditure: {rows}") 
             return rows if rows else None
         except Exception as e:
@@ -316,7 +316,7 @@ class User(UserMixin):
                     order_week;
                 """,
                 userkey=userkey)
-            app.logger.info(f"get_weekly_expenditure for {userkey}") 
+            # app.logger.info(f"get_weekly_expenditure for {userkey}") 
             return rows if rows else None
         except Exception as e:
             app.logger.error(f"Failed to fetch weekly expenditure for user {userkey}: {str(e)}")
@@ -360,4 +360,30 @@ class User(UserMixin):
             return rows if rows else None
         except Exception as e:
             app.logger.error(f"Failed to fetch spending_summary for user {userkey}: {str(e)}")
+            return None
+
+    @staticmethod
+    def get_order_counts(userkey):
+        try:
+            rows = app.db.execute("""
+                SELECT 
+                    o_userkey,
+                    COUNT(*) AS total_orders,
+                    COUNT(o_fulfillmentdate) AS completed_orders,
+                    COUNT(*) - COUNT(o_fulfillmentdate) AS in_progress_orders
+                FROM 
+                    Orders
+                WHERE 
+                    o_userkey = :userkey
+                GROUP BY 
+                    o_userkey;
+                """,
+                userkey=userkey)
+            # app.logger.info(f"{rows}") 
+            if rows and rows[0][0] == userkey:
+                return rows[0][1:] 
+            else:
+                return None
+        except Exception as e:
+            app.logger.error(f"Failed to fetch order counts for user {userkey}: {str(e)}")
             return None

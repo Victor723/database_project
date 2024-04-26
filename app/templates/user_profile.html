@@ -15,7 +15,7 @@
             <div class="order-card total-orders">
                 <img src="{{ url_for('static', filename='img/user_order_rocket.png') }}" alt="Total Orders">
                 <div class="text-group">
-                    <div class="number">154</div>
+                    <div class="number">{{ user_order_counts[0] }}</div>
                     <div class="label">Total Orders</div>
                 </div>
             </div>
@@ -24,7 +24,7 @@
             <div class="order-card pending-orders">
                 <img src="{{ url_for('static', filename='img/user_order_note.png') }}" alt="Pending Orders">
                 <div class="text-group">
-                    <div class="number">9</div>
+                    <div class="number">{{ user_order_counts[1] }}</div>
                     <div class="label">Pending Orders</div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
             <div class="order-card completed-orders">
                 <img src="{{ url_for('static', filename='img/user_order_box.png') }}" alt="Completed Orders">
                 <div class="text-group">
-                    <div class="number">146</div>
+                    <div class="number">{{ user_order_counts[2] }}</div>
                     <div class="label">Completed Orders</div>
                 </div>
             </div>

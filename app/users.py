@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request, current_app
+from flask import render_template, redirect, url_for, flash, request, current_app, jsonify, json
 from werkzeug.urls import url_parse
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
@@ -17,8 +17,8 @@ bp = Blueprint('users', __name__)
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    email = StringField('EMAIL', validators=[DataRequired(), Email()])
+    password = PasswordField('PASSWORD', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
 
@@ -111,15 +111,14 @@ def register():
         if user: 
             if account_type == 'seller':
                 registration_date = date.today()
-                # if Seller.register(user.userkey, user.companyname, registration_date):
-                if True: # use true since Seller.register(user.userkey, user.companyname, registration_date) is not yet implemented
-                    flash('Congratulations, you are now registered!')
-                else:
-                    return render_template('register.html', title='Register', form=form)
-            else:
-                flash('Congratulations, you are now registered!')
+                # Seller.register(user.userkey, user.companyname, registration_date)
 
-            return redirect(url_for('users.login'))
+            login_user(user) # help users skip log in once registered for the first time
+            next_page = request.args.get('next')
+            if not next_page or url_parse(next_page).netloc != '':
+                next_page = url_for('index.index')
+            return redirect(next_page)
+        
     return render_template('register.html', title='Register', form=form)
 
 
@@ -187,7 +186,9 @@ def user_details():
 @bp.route('/user_profile', methods=['GET', 'POST'])
 @login_required
 def user_profile():
-    return render_template('user_profile.html',current_user=current_user)
+    user_order_counts = User.get_order_counts(current_user.userkey)
+    current_app.logger.info(f"{user_order_counts}") 
+    return render_template('user_profile.html',current_user=current_user, user_order_counts=user_order_counts)
 
 
 
@@ -334,23 +335,41 @@ def manage_user_balance():
             flash(str(e), 'error')
         return redirect(url_for('users.manage_user_balance'))
     
-    spending_summary = User.get_user_spending_summary(current_user.userkey, datetime.now() - timedelta(days=365), datetime.now())
-    spending_summary = [{'category': ele[0], 'amount': float(ele[1])} for ele in spending_summary]
-    spending_summary = sorted(spending_summary, key=lambda x: x['amount'], reverse=True)
-    total_spending, spending_summary = spending_summary[0], spending_summary[1:]
-    # current_app.logger.info(f"{total_spending}") 
-
     weekly_expenditure = list(User.get_weekly_expenditure(current_user.userkey))
     monthly_expenditure = list(User.get_monthly_expenditure(current_user.userkey))
     filled_weekly_expenditure = fill_missing_weeks(weekly_expenditure)
-    filled_monthly_expenditure = fill_missing_months(monthly_expenditure)
-    # current_app.logger.info(f"{type(filled_monthly_expenditure[0][0])} {type(filled_monthly_expenditure[0][1])} {type(filled_monthly_expenditure[0][2])}") 
+    filled_monthly_expenditure = fill_missing_months(monthly_expenditure) 
     return render_template('user_balance.html', 
                            form=form, 
                            filled_monthly_expenditure=filled_monthly_expenditure,
-                           filled_weekly_expenditure=filled_weekly_expenditure,
-                           spending_summary=spending_summary,
-                           total_spending=total_spending)
+                           filled_weekly_expenditure=filled_weekly_expenditure)
+
+
+@bp.route('/update_spending_summary', methods=['GET'])
+@login_required
+def update_spending_summary():
+    start_date = request.args.get('start', type=str)
+    end_date = request.args.get('end', type=str)
+    current_app.logger.info(f"{start_date} {end_date}") 
+    if start_date and end_date:
+        try:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+            spending_summary = User.get_user_spending_summary(current_user.userkey, start_date, end_date)
+            spending_summary = [{'category': ele[0], 'amount': float(ele[1])} for ele in spending_summary]
+            spending_summary = sorted(spending_summary, key=lambda x: x['amount'], reverse=True)
+            spending_sum = sum(ele['amount'] for ele in spending_summary[1:])
+            for i in range(1,len(spending_summary)):
+                spending_summary[i]['percentage'] = round((spending_summary[i]['amount'] / spending_sum)*100, 1)
+
+            # total_spending, spending_summary = spending_summary[0], spending_summary[1:]
+            # current_app.logger.info(f"{total_spending}") 
+            # current_app.logger.info(f"{spending_summary}")
+            return jsonify(spending_summary)
+        except Exception as e:
+            current_app.logger.error(f'Error fetching spending summary: {e}')
+            return jsonify({'error': 'Failed to fetch spending summary'}), 500
+    return jsonify({'error': 'Invalid parameters'}), 400
 
 
 
