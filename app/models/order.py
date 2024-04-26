@@ -90,7 +90,7 @@ class Order:
 
         # Fetch the line items for this order
         lineitems_query = """
-            SELECT p.p_productname, l.l_quantity, l.l_originalprice, (l.l_quantity * l.l_originalprice) AS subtotal
+            SELECT p.p_productname, l.l_quantity, l.l_originalprice, (l.l_quantity * l.l_originalprice) AS subtotal, l_sellerkey
             FROM Lineitem l
             JOIN ProductSeller ps ON l.l_productkey = ps.ps_productkey AND l.l_sellerkey = ps.ps_sellerkey
             JOIN Product p ON ps.ps_productkey = p.p_productkey
@@ -103,6 +103,7 @@ class Order:
                 'quantity': line_item[1],
                 'price': line_item[2],
                 'subtotal': line_item[3],
+                'sellerkey': line_item[4]
             })
 
         order_details['products'] = products
