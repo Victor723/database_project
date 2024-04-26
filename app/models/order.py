@@ -57,7 +57,7 @@ class Order:
         );
         '''
         result = app.db.execute(query, {'userkey': userkey, 'productkey': productkey}).scalar()
-        return result;
+        return result
 
     @staticmethod
     def check_seller(userkey, sellerkey):

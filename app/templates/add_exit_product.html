@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="main-content">
+        <h1>Add Product</h1>
+        <form method="post">
+            <label for="product_key">Product Key:</label>
+            <input type="text" id="product_key" name="product_key" value="{{ product_info.p_productkey }}" disabled><br><br>
+            <label for="product_name">Product Name:</label>
+            <input type="text" id="product_name" name="product_name" value="{{ product_info.p_productname }}" disabled><br><br>
+            <label for="product_price">Price:</label>
+            <input type="text" id="product_price" name="product_price" required><br><br>
+            <label for="product_quantity">Quantity:</label>
+            <input type="text" id="product_quantity" name="product_quantity" required><br><br>
+            <label for="product_discount">Discount:</label>
+            <input type="text" id="product_discount" name="product_discount"><br><br>
+            <input type="submit" value="Add Product">
+        </form>
+    </div>
+{% endblock %}
