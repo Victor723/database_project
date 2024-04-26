@@ -105,9 +105,10 @@
             <canvas id="expenditureChart"></canvas>
         </div>
 
-        <div class="profile-container">
 
-            <h3>Select Date Range for Spending Data</h3>
+        
+        <div class="profile-container">
+            <h3>Select a date range to for spending summary by category</h3>
             <form id="dateRangeForm">
                 <label for="startDate">Start Date:</label>
                 <input type="date" id="startDate" name="startDate" required>
@@ -117,9 +118,7 @@
                 
                 <button type="submit">Update Chart</button>
             </form>
-
             <canvas id="spendingPieChart"></canvas>
-            
             <div id="totalSpendingDisplay" class="total-spending"></div>
         </div>
 
@@ -232,19 +231,49 @@
 
 <!-- Script for Pie Chart -->
 <script>
-    var spendingSummary = {{ spending_summary | tojson }};
-    var total_spending = {{ total_spending | tojson }};
-    
-    var pieCtx = document.getElementById('spendingPieChart').getContext('2d');
-    var spendingPieChart = new Chart(pieCtx, {
+    document.getElementById('dateRangeForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        updateSpendingSummary(startDate, endDate);
+    });
+
+
+    function updateSpendingSummary(startDate, endDate) {
+    fetch(`/update_spending_summary?start=${startDate}&end=${endDate}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            updatePieChart(data);
+
+        })
+        .catch(error => {
+            console.error('Error fetching spending summary:', error);
+            alert('Failed to fetch spending data. ' + error.message);
+        });
+}
+
+
+function updatePieChart(data) {
+    const ctx = document.getElementById('spendingPieChart').getContext('2d');
+    // Extract and remove the total spending entry
+    const totalSpending = data.shift(); // Removes the first element and saves it
+    // Check if the pie chart already exists and is a Chart instance
+    if (window.spendingPieChart && typeof window.spendingPieChart.destroy === 'function') {
+        window.spendingPieChart.destroy();  // Destroy the existing chart if present
+    }
+    window.spendingPieChart = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: spendingSummary.map(item => item.category),
+            labels: data.map(item => item.category),
             datasets: [{
-                label: 'Spending by Category',
-                data: spendingSummary.map(item => item.amount),
-                backgroundColor: spendingSummary.map((_, index) => `hsl(${index * 360 / spendingSummary.length}, 80%, 60%, 0.75)`),
-                hoverOffset: 5
+                data: data.map(item => item.amount),
+                backgroundColor: data.map((_, index) => `hsl(${index * 360 / data.length}, 70%, 85%)`),
+                hoverOffset: 4
             }]
         },
         options: {
@@ -256,25 +285,26 @@
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `${context.label}: $${context.raw.toFixed(2)}`;
+                            const label = context.label;
+                            const amount = context.raw;
+                            const percentage = data[context.dataIndex].percentage; // Accessing percentage from the data
+                            return `${label}: $${amount.toFixed(2)} (${percentage.toFixed(2)}%)`;
                         }
                     }
                 },
-                title: {
-                    display: true,
-                    text: 'Spending Summary by Category',
-                    font: {
-                        size: 16
-                    }
-                }
+                // title: {
+                //     display: true,
+                //     text: 'Spending Summary by Category',
+                //     font: {
+                //         size: 16
+                //     }
+                // }
             }
         }
     });
-
-    // Update total spending display
-    var totalSpendingElement = document.getElementById('totalSpendingDisplay');
-    totalSpendingElement.textContent = `Total Spending: $${total_spending.amount.toFixed(2)}`;
+    // Display the total spending in the designated div
+    document.getElementById('totalSpendingDisplay').textContent = `Total Spending: $${totalSpending.amount.toFixed(2)}`;
+}
 </script>
-
 
 {% endblock %}

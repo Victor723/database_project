@@ -5,9 +5,18 @@
 
 <div class="profile-page">
     <!-- Sidebar Navigation -->
-    {% with active_page='dashboard', is_seller=is_seller %}
-    {% include '_user_sidebar.html' %}
-    {% endwith %}
+    <aside class="sidebar">
+        <nav class="nav flex-column">
+            <a class="nav-link active" href="{{ url_for('users.user_profile') }}">Dashboard</a>
+            <a class="nav-link" href="{{ url_for('users.user_details') }}">Account Details</a>
+            <a class="nav-link" href="{{ url_for('orders.display_orders') }}">Order History</a>
+            <a class="nav-link" href="{{ url_for('cart.shopping_cart') }}">Shopping Cart</a>
+            <span class="nav-link disabled">Address</span>
+            <a class="nav-link" href="{{ url_for('myreview.get_myreview') }}">My Review</a>
+            <span class="nav-link disabled">Wallet</span>
+        </nav>
+        <button type="button" class="btn-switch">Switch to seller</button>
+    </aside>
 
     <div class="main-content">
         <div class="order-status-container">
@@ -15,7 +24,7 @@
             <div class="order-card total-orders">
                 <img src="{{ url_for('static', filename='img/user_order_rocket.png') }}" alt="Total Orders">
                 <div class="text-group">
-                    <div class="number">154</div>
+                    <div class="number">{{ user_order_counts[0] }}</div>
                     <div class="label">Total Orders</div>
                 </div>
             </div>
@@ -24,7 +33,7 @@
             <div class="order-card pending-orders">
                 <img src="{{ url_for('static', filename='img/user_order_note.png') }}" alt="Pending Orders">
                 <div class="text-group">
-                    <div class="number">9</div>
+                    <div class="number">{{ user_order_counts[1] }}</div>
                     <div class="label">Pending Orders</div>
                 </div>
             </div>
@@ -33,7 +42,7 @@
             <div class="order-card completed-orders">
                 <img src="{{ url_for('static', filename='img/user_order_box.png') }}" alt="Completed Orders">
                 <div class="text-group">
-                    <div class="number">146</div>
+                    <div class="number">{{ user_order_counts[2] }}</div>
                     <div class="label">Completed Orders</div>
                 </div>
             </div>

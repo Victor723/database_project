@@ -172,3 +172,9 @@
     /* ... other styles ... */
     margin-bottom: 20px; /* Add some space below the order status cards */
 }
+
+.sidebar-divider {
+    height: 1px;
+    background-color: #dee2e6; /* Light grey color, adjust as needed */
+    margin: 5px 20px; /* Adds some vertical space and horizontal padding */
+}
