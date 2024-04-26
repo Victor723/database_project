@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block content %}
@@ -26,7 +25,16 @@
   <div class="row mt-4">
     <div class="col">
       <h3>Add to Cart</h3>
-      <p>This feature is coming soon!</p>
+        <form action="/add_to_cart" method="post">
+          <input type="hidden" name="product_id" value="{{ product_details.p_productkey }}">
+          {% for ps in productseller_info %}
+            <div class="mb-3">
+              <label>{{ ps.sellername }} (Stock: {{ ps.quantity }})</label>
+              <input type="number" name="quantity_{{ ps.sellerkey }}" min="0" max="{{ ps.quantity }}" value="0">
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-primary">Add to Cart</button>
+        </form>
     </div>
   </div>
 

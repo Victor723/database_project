@@ -96,7 +96,7 @@ class Cart:
         return result[0][0] if result else None
 
     def add_to_cart(c_userkey, ps_productkey, ps_sellerkey, quantity):
-        print("Executing add_to_cart")
+        
         cartkey = Cart.get_cartkey_by_user(c_userkey)
         if not cartkey:
             print("No cart found for this user, creating new cart.")
@@ -107,6 +107,11 @@ class Cart:
             ''', c_userkey=c_userkey)
             cartkey = result[0][0]
             print(f"New cartkey: {cartkey}")
+        
+        if not ps_sellerkey:  # Check if sellerkey is empty
+            print("Seller key is missing.")  # Note the indentation before print
+            return None  # Return None to indicate failure
+
 
         # Check if the item already exists in the cart
         res = app.db.execute('''
