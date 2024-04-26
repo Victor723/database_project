@@ -16,7 +16,8 @@ def product_details(product_id):
     product_details = Product.get_prod_details(product_id)
     # add review session
     product_reviews = ProductReview.get_product_reviews(product_id)
-    
+    product_rating = ProductReview.get_product_rating(product_id)
+    product_review_counts = ProductReview.get_product_review_counts(product_id)
     sellers_ids = ProductSeller.get_sellerkey_by_productkey(product_id)
     productseller_info = []
     for sid in sellers_ids:
@@ -34,4 +35,6 @@ def product_details(product_id):
                         product_details=product_details,
                         productseller_info=productseller_info,
                         product_reviews = product_reviews,
+                        product_rating = product_rating,
+                        product_review_counts = product_review_counts,
                         user_key = user_key)

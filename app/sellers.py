@@ -1,12 +1,13 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from werkzeug.urls import url_parse
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 
 from .models.seller import Seller
 from .models.productseller import ProductSeller
+from .models.sellerreview import SellerReview
 
 
 from flask import Blueprint
@@ -105,9 +106,12 @@ def seller_order(s_sellerkey):
 
 
 @bp.route('/seller/<s_sellerkey>/review', methods=['GET'])
+@login_required
 def seller_review(s_sellerkey):
-    seller_reviews = Seller.get_seller_review(s_sellerkey)
-    return render_template('seller_review.html', seller_key=s_sellerkey, seller_reviews=seller_reviews)
+    seller_review_counts = SellerReview.get_seller_review_counts(s_sellerkey)
+    seller_review_rating = SellerReview.get_seller_rating(s_sellerkey)
+    seller_reviews = SellerReview.get_seller_reviews(s_sellerkey)
+    return render_template('seller_review.html', seller_key=s_sellerkey, seller_reviews=seller_reviews, seller_rating = seller_review_rating, seller_review_counts = seller_review_counts)
 
 
 @bp.route('/seller/<s_sellerkey>/profile', methods=['GET', 'POST'])

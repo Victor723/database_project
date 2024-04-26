@@ -28,6 +28,10 @@
     <h2>Please log in to create reviews.</h2>
     <!-- <a href="/login" class="btn btn-primary">Login</a> -->
     {% endif %}
+    <div>
+      <p>Average Rating: {{ product_rating }}</p>
+      <p>Review Counts: {{ product_review_counts }}</p>
+    </div>
     <table class="table">
       <thead>
         <tr>

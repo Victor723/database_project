@@ -5,33 +5,39 @@
 {% block content %}
     {% include "seller_navigation.html" %}
 
-<!-- Display All Seller Reviews in a Table -->
-{% if seller_reviews %}
-<h2>Seller Reviews</h2>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Reviewer</th>
-      <th>Review Date</th>
-      <th>Review</th>
-      <th>Rating</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for review in seller_reviews %}
-      <tr>
-        <td>{{ review.sr_userkey }}</td>
-        <td>{{ review.sr_reviewdate }}</td>
-        <td>{{ review.sr_review }}</td>
-        <td>{{ review.sr_rating }}</td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% else %}
-<h2>Please log in to view reviews.</h2>
-<!-- You can add a login link or button here -->
-<!-- <a href="/login" class="btn btn-primary">Login</a> -->
-{% endif %}
+  <!-- Display All Seller Reviews in a Table -->
+  {% if current_user.is_authenticated %}  
+    {% if seller_reviews %}
+      <h2>Seller Reviews</h2>
+      <div>
+        <p>Average Rating: {{ seller_rating }}</p>
+        <p>Review Counts: {{seller_review_counts}}</p>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Reviewer</th>
+            <th>Review Date</th>
+            <th>Review</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for review in seller_reviews %}
+            <tr>
+              <td>{{ review.sr_userkey }}</td>
+              <td>{{ review.sr_reviewdate }}</td>
+              <td>{{ review.sr_review }}</td>
+              <td>{{ review.sr_rating }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <h2>Please log in to view reviews.</h2>
+      <!-- You can add a login link or button here -->
+      <!-- <a href="/login" class="btn btn-primary">Login</a> -->
+    {% endif %}
+  {% endif %}
 
 {% endblock %}
