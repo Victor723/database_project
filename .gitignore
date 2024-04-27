@@ -8,4 +8,4 @@ poetry.lock
 ./app/static/img/*.png
 
 .flaskenv
-temp_backup
+temp_backup.DS_Store
