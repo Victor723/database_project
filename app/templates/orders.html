@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-
 {% block content %}
 
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/orders.css') }}">
 
 <div class="profile-page">
-
     <!-- Sidebar Navigation -->
     {% with active_page='orders', is_seller=is_seller %}
     {% include '_user_sidebar.html' %}
@@ -15,67 +16,154 @@
         <div class="row">
             <!-- Order History Column -->
             <div class="col-12">
-                {% if orders %}
+
                 <h2 class="mb-4 duke-blue">Order History</h2>
-                
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr class="duke-blue-bg white-text">
-                                <th scope="col">Order ID</th>
-                                <th scope="col">Product Names</th>
-                                <th scope="col">Total Price</th>
-                                <th scope="col">Order Date</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for order in orders %}
-                            <tr>
-                                <td>{{ order.o_orderkey }}</td>
-                                <td>{{ order.product_names }}</td>
-                                <td>${{ "%.2f"|format(order.total_price) }}</td>
-                                <td>{{ order['o_ordercreatedate'] }}</td>
-                                <td>
-                                    <!-- Adjust this to match the correct endpoint -->
-                                    <form action="{{ url_for('orders.order_details') }}" method="POST">
-                                        <input type="hidden" name="order_id" value="{{ order.o_orderkey }}">
-                                        <button type="submit" class="btn btn-link p-0">View Details</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="5" class="text-center">No orders found.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
 
-                </div>
-
-                <!-- Pagination here -->
-                <nav>
-                    <ul class="pagination">
-                        {% if page > 1 %}
-                            <li class="page-item"><a href="{{ url_for('orders.display_orders', page=page-1) }}" class="page-link">Previous</a></li>
-                        {% endif %}
-
-                        {% for i in range(1, total_pages+1) %}
-                            <li class="page-item {% if i == page %}active{% endif %}"><a href="{{ url_for('orders.display_orders', page=i) }}" class="page-link">{{ i }}</a></li>
-                        {% endfor %}
-
-                        {% if page < total_pages %}
-                            <li class="page-item"><a href="{{ url_for('orders.display_orders', page=page+1) }}" class="page-link">Next</a></li>
-                        {% endif %}
+                <div class="container mt-3">
+                    <ul class="nav nav-tabs nav-tabs-custom">
+                        <li class="nav-item nav-item-custom">
+                            <a class="nav-link nav-link-custom active" href="#all-orders" data-toggle="tab">All
+                                Orders</a>
+                        </li>
+                        <li class="nav-item nav-item-custom">
+                            <a class="nav-link nav-link-custom" href="#pending-orders" data-toggle="tab">Pending
+                                Orders</a>
+                        </li>
+                        <li class="nav-item nav-item-custom">
+                            <a class="nav-link nav-link-custom" href="#completed-orders" data-toggle="tab">Completed
+                                Orders</a>
+                        </li>
                     </ul>
-                </nav>
 
-                {% else %}
-                <h2 class="text-center mt-5">You have no order history.</h2>
-                {% endif %}
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="all-orders">
+                            <!-- Orders content -->
+                            <div class="filter-orders mb-3">
+                                <form action="{{ url_for('orders.display_orders') }}" method="GET">
+                                    <label for="time_frame"><strong>{{total_orders}} orders</strong> placed in: </label>
+                                    <select name="time_frame" onchange="this.form.submit()">
+                                        <option value="all" {% if time_frame=='all' %}selected{% endif %}>All Orders
+                                        </option>
+                                        <option value="30_days" {% if time_frame=='30_days' %}selected{% endif %}>Last
+                                            30 Days</option>
+                                        <option value="three_months" {% if time_frame=='three_months' %}selected{% endif
+                                            %}>Past Three Months</option>
+                                        <option value="2024" {% if time_frame=='2024' %}selected{% endif %}>2024
+                                        </option>
+                                        <option value="2023" {% if time_frame=='2023' %}selected{% endif %}>2023
+                                        </option>
+                                        <option value="2022" {% if time_frame=='2022' %}selected{% endif %}>2022
+                                        </option>
+                                    </select>
+                                </form>
+                            </div>
+
+                            {% if orders %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr class="duke-blue-bg white-text">
+                                            <th scope="col">Order ID</th>
+                                            <th scope="col">Product Names</th>
+                                            <th scope="col">Total Price</th>
+                                            <th scope="col">Order Date</th>
+                                            <th scope="col">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for order in orders %}
+                                        <tr>
+                                            <td>{{ order.o_orderkey }}</td>
+                                            <td>{{ order.product_names }}</td>
+                                            <td>${{ "%.2f"|format(order.total_price) }}</td>
+                                            <td>{{ order['o_ordercreatedate'] }}</td>
+                                            <td>
+                                                <!-- Adjust this to match the correct endpoint -->
+                                                <form action="{{ url_for('orders.order_details') }}" method="POST">
+                                                    <input type="hidden" name="order_id" value="{{ order.o_orderkey }}">
+                                                    <button type="submit" class="btn btn-link p-0">View Details</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">No orders found.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination here -->
+                            <nav>
+                                <ul class="pagination">
+                                    {% if page > 1 %}
+                                    <li class="page-item"><a
+                                            href="{{ url_for('orders.display_orders', page=page-1, time_frame=time_frame) }}"
+                                            class="page-link">Previous</a></li>
+                                    {% endif %}
+
+                                    {% for i in range(1, total_pages+1) %}
+                                    <li class="page-item {% if i == page %}active{% endif %}"><a
+                                            href="{{ url_for('orders.display_orders', page=i, time_frame=time_frame) }}"
+                                            class="page-link">{{ i }}</a></li>
+                                    {% endfor %}
+
+                                    {% if page < total_pages %} <li class="page-item"><a
+                                            href="{{ url_for('orders.display_orders', page=page+1, time_frame=time_frame) }}"
+                                            class="page-link">Next</a></li>
+                                        {% endif %}
+                                </ul>
+                            </nav>
+
+                            {% else %}
+                            {% if time_frame == 'all' %}
+                            <h2 class="text-center mt-5">You have no order history.</h2>
+                            {% elif time_frame == '30_days'%}
+                            <h2 class="text-center mt-5">Looks like you didn't place an order in the last 30 days.
+                            </h2>
+                            {% elif time_frame == 'three_months'%}
+                            <h2 class="text-center mt-5">Looks like you didn't place an order in the past 3 months.
+                            </h2>
+                            {% else %}
+                            <h2 class="text-center mt-5">Looks like you didn't place an order in {{time_frame}}.</h2>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <div class="tab-pane" id="pending-orders">
+                            <!-- pending orders content -->
+                        </div>
+
+                        <div class="tab-pane" id="completed-orders">
+                            <!-- completed orders content -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('a[href="#pending-orders"]').click(function(e) {
+            e.preventDefault();  // Prevent the default anchor behavior
+            if ($('#pending-orders').is(':empty')) {// Check if the data is already loaded to avoid unnecessary requests
+                $.ajax({
+                    url: '/orders/pending-orders', 
+                    type: 'GET',
+                    success: function(data) {
+                        $('#pending-orders').html(data);  // Populate the div with the response
+                        $('.nav-tabs a[href="#pending-orders"]').tab('show');  // Activate the tab
+                    },
+                    error: function() {
+                        $('#pending-orders').html('<p>Error loading pending orders.</p>');
+                    }
+                });
+            }
+        });
+    });
+</script>
 {% endblock %}

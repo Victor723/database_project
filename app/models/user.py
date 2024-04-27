@@ -259,121 +259,121 @@ class User(UserMixin):
             return False
         
     
-    @staticmethod
-    def get_monthly_expenditure(userkey):
-        try:
-            rows = app.db.execute("""
-                SELECT
-                    EXTRACT(YEAR FROM o_ordercreatedate) AS order_year,
-                    EXTRACT(MONTH FROM o_ordercreatedate) AS order_month,
-                    SUM(o_totalprice) AS total_spent
-                FROM Orders
-                WHERE
-                    o_userkey = :userkey AND
-                    o_ordercreatedate >= CURRENT_DATE - INTERVAL '1 year'
-                GROUP BY
-                    EXTRACT(YEAR FROM o_ordercreatedate),
-                    EXTRACT(MONTH FROM o_ordercreatedate)
-                ORDER BY
-                    order_year,
-                    order_month;
-                """,
-                userkey=userkey)
-            # app.logger.info(f"get_monthly_expenditure for {userkey}") 
-            # app.logger.info(f"monthly_expenditure: {rows}") 
-            return rows if rows else None
-        except Exception as e:
-            app.logger.error(f"Failed to fetch monthly expenditure for user {userkey}: {str(e)}")
-            return None
+    # @staticmethod
+    # def get_monthly_expenditure(userkey):
+    #     try:
+    #         rows = app.db.execute("""
+    #             SELECT
+    #                 EXTRACT(YEAR FROM o_ordercreatedate) AS order_year,
+    #                 EXTRACT(MONTH FROM o_ordercreatedate) AS order_month,
+    #                 SUM(o_totalprice) AS total_spent
+    #             FROM Orders
+    #             WHERE
+    #                 o_userkey = :userkey AND
+    #                 o_ordercreatedate >= CURRENT_DATE - INTERVAL '1 year'
+    #             GROUP BY
+    #                 EXTRACT(YEAR FROM o_ordercreatedate),
+    #                 EXTRACT(MONTH FROM o_ordercreatedate)
+    #             ORDER BY
+    #                 order_year,
+    #                 order_month;
+    #             """,
+    #             userkey=userkey)
+    #         # app.logger.info(f"get_monthly_expenditure for {userkey}") 
+    #         # app.logger.info(f"monthly_expenditure: {rows}") 
+    #         return rows if rows else None
+    #     except Exception as e:
+    #         app.logger.error(f"Failed to fetch monthly expenditure for user {userkey}: {str(e)}")
+    #         return None
         
-    @staticmethod
-    def get_weekly_expenditure(userkey):
-        try:
-            rows = app.db.execute("""
-                SELECT
-                    EXTRACT(YEAR FROM o_ordercreatedate) AS order_year,
-                    EXTRACT(WEEK FROM o_ordercreatedate) AS order_week,
-                    SUM(o_totalprice) AS total_spent
-                FROM Orders
-                WHERE
-                    o_userkey = :userkey AND
-                    o_ordercreatedate >= CURRENT_DATE - INTERVAL '1 year'
-                GROUP BY
-                    EXTRACT(YEAR FROM o_ordercreatedate),
-                    EXTRACT(WEEK FROM o_ordercreatedate)
-                ORDER BY
-                    order_year,
-                    order_week;
-                """,
-                userkey=userkey)
-            # app.logger.info(f"get_weekly_expenditure for {userkey}") 
-            return rows if rows else None
-        except Exception as e:
-            app.logger.error(f"Failed to fetch weekly expenditure for user {userkey}: {str(e)}")
-            return None
+    # @staticmethod
+    # def get_weekly_expenditure(userkey):
+    #     try:
+    #         rows = app.db.execute("""
+    #             SELECT
+    #                 EXTRACT(YEAR FROM o_ordercreatedate) AS order_year,
+    #                 EXTRACT(WEEK FROM o_ordercreatedate) AS order_week,
+    #                 SUM(o_totalprice) AS total_spent
+    #             FROM Orders
+    #             WHERE
+    #                 o_userkey = :userkey AND
+    #                 o_ordercreatedate >= CURRENT_DATE - INTERVAL '1 year'
+    #             GROUP BY
+    #                 EXTRACT(YEAR FROM o_ordercreatedate),
+    #                 EXTRACT(WEEK FROM o_ordercreatedate)
+    #             ORDER BY
+    #                 order_year,
+    #                 order_week;
+    #             """,
+    #             userkey=userkey)
+    #         # app.logger.info(f"get_weekly_expenditure for {userkey}") 
+    #         return rows if rows else None
+    #     except Exception as e:
+    #         app.logger.error(f"Failed to fetch weekly expenditure for user {userkey}: {str(e)}")
+    #         return None
         
-    @staticmethod
-    def get_user_spending_summary(userkey, startdate, enddate):
-        try:
-            rows = app.db.execute("""
-                SELECT 
-                    c.cat_catname AS Category_Name,
-                    CAST(SUM((l.l_originalprice - COALESCE(l.l_discount, 0) + COALESCE(l.l_tax, 0)) * l.l_quantity) AS DECIMAL(10,2)) AS Total_Spending_Per_Category
-                FROM 
-                    Orders o
-                JOIN 
-                    Lineitem l ON o.o_orderkey = l.l_orderkey
-                JOIN 
-                    Product p ON l.l_productkey = p.p_productkey
-                JOIN 
-                    Category c ON p.p_catkey = c.cat_catkey
-                WHERE 
-                    o.o_userkey = :userkey
-                    AND o.o_ordercreatedate BETWEEN :startdate AND :enddate
-                GROUP BY 
-                    c.cat_catname
-                UNION ALL
-                SELECT 
-                    'Total' AS Category_Name,
-                    CAST(SUM(o.o_totalprice) AS DECIMAL(10,2)) AS Total_Spending
-                FROM 
-                    Orders o
-                WHERE 
-                    o.o_userkey = :userkey
-                    AND o.o_ordercreatedate BETWEEN :startdate AND :enddate;
-                """,
-                userkey=userkey,
-                startdate=startdate,
-                enddate=enddate)
-            app.logger.info(f"get_user_spending_summary for {userkey}") 
-            # app.logger.info(f"{rows}") 
-            return rows if rows else None
-        except Exception as e:
-            app.logger.error(f"Failed to fetch spending_summary for user {userkey}: {str(e)}")
-            return None
+    # @staticmethod
+    # def get_user_spending_summary(userkey, startdate, enddate):
+    #     try:
+    #         rows = app.db.execute("""
+    #             SELECT 
+    #                 c.cat_catname AS Category_Name,
+    #                 CAST(SUM((l.l_originalprice - COALESCE(l.l_discount, 0) + COALESCE(l.l_tax, 0)) * l.l_quantity) AS DECIMAL(10,2)) AS Total_Spending_Per_Category
+    #             FROM 
+    #                 Orders o
+    #             JOIN 
+    #                 Lineitem l ON o.o_orderkey = l.l_orderkey
+    #             JOIN 
+    #                 Product p ON l.l_productkey = p.p_productkey
+    #             JOIN 
+    #                 Category c ON p.p_catkey = c.cat_catkey
+    #             WHERE 
+    #                 o.o_userkey = :userkey
+    #                 AND o.o_ordercreatedate BETWEEN :startdate AND :enddate
+    #             GROUP BY 
+    #                 c.cat_catname
+    #             UNION ALL
+    #             SELECT 
+    #                 'Total' AS Category_Name,
+    #                 CAST(SUM(o.o_totalprice) AS DECIMAL(10,2)) AS Total_Spending
+    #             FROM 
+    #                 Orders o
+    #             WHERE 
+    #                 o.o_userkey = :userkey
+    #                 AND o.o_ordercreatedate BETWEEN :startdate AND :enddate;
+    #             """,
+    #             userkey=userkey,
+    #             startdate=startdate,
+    #             enddate=enddate)
+    #         app.logger.info(f"get_user_spending_summary for {userkey}") 
+    #         # app.logger.info(f"{rows}") 
+    #         return rows if rows else None
+    #     except Exception as e:
+    #         app.logger.error(f"Failed to fetch spending_summary for user {userkey}: {str(e)}")
+    #         return None
 
-    @staticmethod
-    def get_order_counts(userkey):
-        try:
-            rows = app.db.execute("""
-                SELECT 
-                    o_userkey,
-                    COUNT(*) AS total_orders,
-                    COUNT(o_fulfillmentdate) AS completed_orders,
-                    COUNT(*) - COUNT(o_fulfillmentdate) AS in_progress_orders
-                FROM 
-                    Orders
-                WHERE 
-                    o_userkey = :userkey
-                GROUP BY 
-                    o_userkey;
-                """,
-                userkey=userkey)
-            app.logger.info(f"{rows}") 
-            if rows:
-                return rows[0][1:] 
-            else:
-                return [0]*3 # has zero order
-        except Exception as e:
-            app.logger.error(f"Failed to fetch order counts for user {userkey}: {str(e)}")
-            return None
+    # @staticmethod
+    # def get_order_counts(userkey):
+    #     try:
+    #         rows = app.db.execute("""
+    #             SELECT 
+    #                 o_userkey,
+    #                 COUNT(*) AS total_orders,
+    #                 COUNT(o_fulfillmentdate) AS completed_orders,
+    #                 COUNT(*) - COUNT(o_fulfillmentdate) AS in_progress_orders
+    #             FROM 
+    #                 Orders
+    #             WHERE 
+    #                 o_userkey = :userkey
+    #             GROUP BY 
+    #                 o_userkey;
+    #             """,
+    #             userkey=userkey)
+    #         app.logger.info(f"{rows}") 
+    #         if rows:
+    #             return rows[0][1:] 
+    #         else:
+    #             return [0]*3 # has zero order
+    #     except Exception as e:
+    #         app.logger.error(f"Failed to fetch order counts for user {userkey}: {str(e)}")
+    #         return None

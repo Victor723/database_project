@@ -168,7 +168,7 @@ def user_details():
 @bp.route('/user_profile', methods=['GET', 'POST'])
 @login_required
 def user_profile():
-    user_order_counts = User.get_order_counts(current_user.userkey)
+    user_order_counts = Order.get_order_counts(current_user.userkey)
     current_app.logger.info(f"{current_user.userkey} ") 
     return render_template('user_profile.html',current_user=current_user, user_order_counts=user_order_counts)
 
@@ -316,8 +316,8 @@ def manage_user_balance():
             flash(str(e), 'error')
         return redirect(url_for('users.manage_user_balance'))
     
-    weekly_expenditure = (User.get_weekly_expenditure(current_user.userkey))
-    monthly_expenditure = (User.get_monthly_expenditure(current_user.userkey))
+    weekly_expenditure = Order.get_weekly_expenditure(current_user.userkey)
+    monthly_expenditure = Order.get_monthly_expenditure(current_user.userkey)
 
     if weekly_expenditure and monthly_expenditure:
         filled_weekly_expenditure = fill_missing_weeks(weekly_expenditure)
@@ -342,7 +342,7 @@ def update_spending_summary():
         try:
             start_date = datetime.strptime(start_date, '%Y-%m-%d')
             end_date = datetime.strptime(end_date, '%Y-%m-%d')
-            spending_summary = User.get_user_spending_summary(current_user.userkey, start_date, end_date)
+            spending_summary = Order.get_user_spending_summary(current_user.userkey, start_date, end_date)
             spending_summary = [{'category': ele[0], 'amount': float(ele[1])} for ele in spending_summary]
             spending_summary = sorted(spending_summary, key=lambda x: x['amount'], reverse=True)
             spending_sum = sum(ele['amount'] for ele in spending_summary[1:])

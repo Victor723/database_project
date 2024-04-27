@@ -60,3 +60,53 @@
     background-color: #dee2e6; /* Light grey color, adjust as needed */
     margin: 5px 20px; /* Adds some vertical space and horizontal padding */
 }
+
+
+
+/* tab bar */
+
+/* Navigation Tabs Custom Style */
+.nav-tabs-custom {
+    border-bottom: 2px solid #DEE2E6; /* Light gray bottom border */
+    font-size: 16px; /* Adjust as necessary */
+    padding-left: 0; /* Remove padding if present */
+    margin-bottom: 0; /* Align with bottom border if needed */
+}
+
+.nav-item-custom {
+    margin-right: 5px; /* Space between tabs */
+}
+
+.nav-link-custom {
+    border: none !important; /* No borders on the sides or top */
+    border-radius: 0px; /* Remove border radius to make tabs square */
+    color: #50759d !important; /* Color for unselected tab text */
+    background-color: transparent; /* Transparent background for unselected tabs */
+    margin-bottom: -2px; /* Align with bottom border to overlap it */
+    padding: 10px 15px; /* Padding inside the tab */
+    transition: all 0.3s ease-in-out; /* Smooth transition for hover and active states */
+    box-shadow: none !important;
+    background: none !important;
+}
+
+.nav-link-custom:hover,
+.nav-link-custom:focus {
+    border: none !important;  /* No border */
+    background-color: transparent !important;  /* No background color change */
+    color: #e14646 !important;  /* Text color changes to orange */
+    text-decoration: none !important;  /* No underline or other text decorations */
+    box-shadow: none !important;  /* No shadow */
+}
+
+.nav-link-custom.active {
+    color: #000 !important; /* Color for selected tab text */
+    background-color: transparent; /* Transparent background for selected tab */
+    border-bottom: 2px solid #FF4500; /* Orange bottom border for selected tab */
+    border-radius: 0; /* Ensure no border radius */
+    font-weight: bold !important; /* Make text bold for the active tab */
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* tab bar */
