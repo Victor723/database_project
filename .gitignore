@@ -9,3 +9,5 @@ poetry.lock
 
 .flaskenv
 temp_backup.DS_Store
+
+db/.DS_Store
