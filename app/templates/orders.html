@@ -146,24 +146,5 @@
     </div>
 </div>
 
-<script>
-    $(document).ready(function() {
-        $('a[href="#pending-orders"]').click(function(e) {
-            e.preventDefault();  // Prevent the default anchor behavior
-            if ($('#pending-orders').is(':empty')) {// Check if the data is already loaded to avoid unnecessary requests
-                $.ajax({
-                    url: '/orders/pending-orders', 
-                    type: 'GET',
-                    success: function(data) {
-                        $('#pending-orders').html(data);  // Populate the div with the response
-                        $('.nav-tabs a[href="#pending-orders"]').tab('show');  // Activate the tab
-                    },
-                    error: function() {
-                        $('#pending-orders').html('<p>Error loading pending orders.</p>');
-                    }
-                });
-            }
-        });
-    });
-</script>
+
 {% endblock %}

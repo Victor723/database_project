@@ -42,11 +42,6 @@ def display_orders():
                            active_tab='all-orders')
 
 
-@bp.route('/order/pending-orders')
-@login_required
-def api_pending_orders():
-    pending_orders = Order.get_pending_orders(current_user.userkey)  # Your function to fetch pending orders
-    return render_template('pending_orders_snippet.html', orders=pending_orders)
 
 
 
