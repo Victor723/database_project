@@ -8,15 +8,17 @@ class Order:
         self.o_ordercreatedate = o_ordercreatedate
 
     @staticmethod
-    def get_orders(o_userkey, offset=0, per_page=10, start_date=None, end_date=None):
-        date_filter = ""
+    def get_orders(o_userkey, offset=0, per_page=10, start_date=None, end_date=None, pending_only=False):
+        condition_filter = ""
         params = {'o_userkey': o_userkey, 'offset': offset, 'per_page': per_page}
         if start_date:
-            date_filter += " AND o.o_ordercreatedate >= :start_date"
+            condition_filter += " AND o.o_ordercreatedate >= :start_date"
             params['start_date'] = start_date.strftime('%Y-%m-%d')
         if end_date:
-            date_filter += " AND o.o_ordercreatedate <= :end_date"
+            condition_filter += " AND o.o_ordercreatedate <= :end_date"
             params['end_date'] = end_date.strftime('%Y-%m-%d')
+        if pending_only:
+            condition_filter += " AND o.o_fulfillmentdate IS NULL"
 
         query = f'''
             SELECT 
@@ -31,7 +33,7 @@ class Order:
                 JOIN Product p ON l.l_productkey = p.p_productkey
             WHERE 
                 o.o_userkey = :o_userkey
-                {date_filter}
+                {condition_filter}
             GROUP BY 
                 o.o_orderkey
             ORDER BY 

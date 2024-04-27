@@ -14,7 +14,9 @@ def display_orders():
     per_page = 10
     offset = (page - 1) * per_page
 
+    pending_only = request.args.get('pending_only', 'false') == 'true'  # Get pending_only parameter and convert to boolean
     time_frame = request.args.get('time_frame', 'all')
+    
     current_date = datetime.now()
     start_date = None
     end_date = None
@@ -33,13 +35,13 @@ def display_orders():
         start_date = datetime(2022, 1, 1)
         end_date = datetime(2022, 12, 31)
 
-    orders, total_orders = Order.get_orders(current_user.userkey, offset, per_page, start_date, end_date)
-    current_app.logger.info(f'{len(orders)}, {total_orders}')
+    orders, total_orders = Order.get_orders(current_user.userkey, offset, per_page, start_date, end_date, pending_only)
+    # current_app.logger.info(f'{len(orders)}, {total_orders}')
     total_pages = (total_orders + per_page - 1) // per_page  # Calculate the total number of pages
 
     return render_template('orders.html', orders=orders, page=page, total_pages=total_pages, 
-                           time_frame=time_frame, total_orders=total_orders,
-                           active_tab='all-orders')
+                           time_frame=time_frame, total_orders=total_orders
+                           )
 
 
 
@@ -54,6 +56,7 @@ def order_details():
         order_id = request.form.get('order_id')
         if order_id:
             order_details = Order.get_order_details(order_id)
+            current_app.logger.info(f'{(order_details)}')
             if order_details:
                 # Render the order details template with the order data
                 return render_template('order_details.html', order_details=order_details)
