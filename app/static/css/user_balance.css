@@ -234,5 +234,8 @@ div.profile-container:has(#spendingPieChart) {
     height: 700px;  /* Fixed height */
 }
 
-
-
+.sidebar-divider {
+    height: 1px;
+    background-color: #dee2e6; /* Light grey color, adjust as needed */
+    margin: 5px 20px; /* Adds some vertical space and horizontal padding */
+}

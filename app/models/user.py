@@ -84,30 +84,20 @@ class User(UserMixin):
 
         
     @staticmethod
-    def register(email, password, firstname, lastname, companyname, streetaddress, city, stateregion, zipcode, country, phonenumber):
+    def register(email, password, firstname, lastname, companyname=None):
         if not (email and password and firstname and lastname):
             return {'error': 'Missing required fields'}
         try:
             rows = app.db.execute("""
-                INSERT INTO Users(u_email, u_password, u_firstname, u_lastname,
-                    u_companyname, u_streetaddress, u_city, 
-                    u_stateregion, u_zipcode, u_country, u_phonenumber)
-                VALUES(:email, :password, :firstname, :lastname,
-                    :companyname, :streetaddress, :city, 
-                    :stateregion, :zipcode, :country, :phonenumber)
+                INSERT INTO Users(u_email, u_password, u_firstname, u_lastname, u_companyname)
+                VALUES(:email, :password, :firstname, :lastname, :companyname)
                 RETURNING u_userkey
-                    """,
+                """,
                 email=email,
                 password=generate_password_hash(password),
                 firstname=firstname, 
                 lastname=lastname,
-                companyname=companyname,
-                streetaddress=streetaddress,
-                city=city,
-                stateregion=stateregion,
-                zipcode=zipcode,
-                country=country,
-                phonenumber=phonenumber)
+                companyname=companyname)
             userkey = rows[0][0]
             return User.get(userkey)
         except Exception as e:
@@ -379,11 +369,11 @@ class User(UserMixin):
                     o_userkey;
                 """,
                 userkey=userkey)
-            # app.logger.info(f"{rows}") 
-            if rows and rows[0][0] == userkey:
+            app.logger.info(f"{rows}") 
+            if rows:
                 return rows[0][1:] 
             else:
-                return None
+                return [0]*3 # has zero order
         except Exception as e:
             app.logger.error(f"Failed to fetch order counts for user {userkey}: {str(e)}")
             return None
