@@ -21,7 +21,7 @@ def product_details(product_id):
     sellers_ids = ProductSeller.get_sellerkey_by_productkey(product_id)
     productseller_info = []
     for sid in sellers_ids:
-        productseller_info = ProductSeller.get_product_info(sid, product_id)
+        productseller_info.append(ProductSeller.get_product_info(sid, product_id))
     
     if current_user.is_authenticated:
         user_key = current_user.userkey
@@ -38,3 +38,22 @@ def product_details(product_id):
                         product_rating = product_rating,
                         product_review_counts = product_review_counts,
                         user_key = user_key)
+
+
+@bp.route('/add_to_cart', methods=['POST'])
+def add_to_cart():
+    productkey = request.form['product_id']
+    # Iterate over each seller and check the quantity requested
+    if current_user.is_authenticated:
+        userkey = current_user.userkey
+        for key in request.form:
+            if key.startswith('quantity_'):
+                sellerkey = key.split('_')[1]
+                quantity = int(request.form[key])
+                if quantity > 0:
+                    # add quantity of product from seller to cart
+                    Cart.add_to_cart(userkey, productkey, sellerkey, quantity)
+    else:
+        return redirect(url_for('users.login'))  # Redirect to the cart page or another appropriate page
+    return redirect(url_for('cart.shopping_cart'))  # Redirect to the cart page or another appropriate page
+

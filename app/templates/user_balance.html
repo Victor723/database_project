@@ -100,13 +100,12 @@
                 </div>
             </div>
         </div>
- 
+        
+        {% if filled_monthly_expenditure and filled_weekly_expenditure %}
         <div class="profile-container">
             <canvas id="expenditureChart"></canvas>
         </div>
 
-
-        
         <div class="profile-container">
             <h3>Select a date range to for spending summary by category</h3>
             <form id="dateRangeForm">
@@ -121,6 +120,8 @@
             <canvas id="spendingPieChart"></canvas>
             <div id="totalSpendingDisplay" class="total-spending"></div>
         </div>
+        {% endif %}
+
 
     </div>
 </div>

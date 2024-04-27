@@ -50,16 +50,6 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
     companyname = StringField('Company Name')
-    streetaddress = StringField('Street Address')
-    city = StringField('City')
-    stateregion = StringField('State / Region')
-    zipcode = StringField('Zipcode')
-    country = StringField('Country')
-    phonenumber = StringField('Phone Number', validators=[
-        Optional(),
-        Regexp(regex=r'^(?:\+?1\s*(?:[.-]\s*)?)?(?:(\(\s*\d{3}\s*\))|\d{3})\s*(?:[.-]\s*)?\d{3}\s*(?:[.-]\s*)?\d{4}$',
-            message='Invalid phone number. Format must be XXX-XXX-XXXX or +1 XXX-XXX-XXXX.')
-    ])
     submit_user = SubmitField('Sign up')
     submit_seller = SubmitField('Sign up as a seller')
 
@@ -92,8 +82,6 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('index.index'))
     form = RegistrationForm()
-    # Set country choices dynamically from the REST Countries API
-    form.country.choices = get_country_choices()
 
     if form.validate_on_submit():
         account_type = 'seller' if form.submit_seller.data else 'user'
@@ -101,17 +89,11 @@ def register():
                          form.password.data,
                          form.firstname.data,
                          form.lastname.data,
-                         form.companyname.data,
-                         form.streetaddress.data,
-                         form.city.data,
-                         form.stateregion.data,
-                         form.zipcode.data,
-                         form.country.data,
-                         form.phonenumber.data)
+                         form.companyname.data)
         if user: 
             if account_type == 'seller':
-                registration_date = date.today()
-                # Seller.register(user.userkey, user.companyname, registration_date)
+                sellerkey = Seller.find_max_sellerkey() + 1  # Get the next available seller key
+                Seller.register(sellerkey, user.userkey, user.companyname, date.today())
 
             login_user(user) # help users skip log in once registered for the first time
             next_page = request.args.get('next')
@@ -187,7 +169,7 @@ def user_details():
 @login_required
 def user_profile():
     user_order_counts = User.get_order_counts(current_user.userkey)
-    current_app.logger.info(f"{user_order_counts}") 
+    current_app.logger.info(f"{current_user.userkey} ") 
     return render_template('user_profile.html',current_user=current_user, user_order_counts=user_order_counts)
 
 
@@ -207,8 +189,7 @@ class ChangeAddressForm(FlaskForm):
     submit = SubmitField('Save Changes')
 
     def validate_companyname(self, field):
-        is_seller = True
-        if is_seller:
+        if Seller.get_sellerkey(current_user.userkey):
             if field.data and not field.data.strip(): # if empty spaces are filled out in the field
                 raise ValidationError('Company name cannot be empty.')
         
@@ -335,14 +316,20 @@ def manage_user_balance():
             flash(str(e), 'error')
         return redirect(url_for('users.manage_user_balance'))
     
-    weekly_expenditure = list(User.get_weekly_expenditure(current_user.userkey))
-    monthly_expenditure = list(User.get_monthly_expenditure(current_user.userkey))
-    filled_weekly_expenditure = fill_missing_weeks(weekly_expenditure)
-    filled_monthly_expenditure = fill_missing_months(monthly_expenditure) 
+    weekly_expenditure = (User.get_weekly_expenditure(current_user.userkey))
+    monthly_expenditure = (User.get_monthly_expenditure(current_user.userkey))
+
+    if weekly_expenditure and monthly_expenditure:
+        filled_weekly_expenditure = fill_missing_weeks(weekly_expenditure)
+        filled_monthly_expenditure = fill_missing_months(monthly_expenditure) 
+    else:
+        filled_weekly_expenditure = []
+        filled_monthly_expenditure = []
+        
     return render_template('user_balance.html', 
-                           form=form, 
-                           filled_monthly_expenditure=filled_monthly_expenditure,
-                           filled_weekly_expenditure=filled_weekly_expenditure)
+                        form=form, 
+                        filled_monthly_expenditure=filled_monthly_expenditure,
+                        filled_weekly_expenditure=filled_weekly_expenditure)
 
 
 @bp.route('/update_spending_summary', methods=['GET'])
@@ -378,21 +365,20 @@ class BecomeSellerForm(FlaskForm):
     next = HiddenField()
     submit = SubmitField('Continue')
 
-
+# qanderson@example.net
 @bp.route('/become_a_seller', methods=['POST'])
 @login_required
 def become_a_seller():
     become_seller_form = BecomeSellerForm()
-    userkey = current_user.userkey
-    sellerkey = Seller.get_sellerkey(userkey)
     if 'submit' in request.form:
-        if sellerkey is None:  # Check if current user is not already a seller
+        User.update_address(userkey=current_user.userkey, companyname=become_seller_form.companyname.data)
+        if not Seller.get_sellerkey(current_user.userkey):  # Check if current user is not already a seller
             try:
-                sellerkey = Seller.find_max_sellerkey() + 1  # Get the next available seller key
+                nxt_sellerkey = Seller.find_max_sellerkey() + 1  # Get the next available seller key
                 companyname = become_seller_form.companyname.data
                 registrationdate = date.today() 
-                User.update_address(userkey=current_user.userkey, companyname=companyname)
-                Seller.register(sellerkey=sellerkey, userkey=userkey, companyname=companyname, registrationdate=registrationdate)
+                # User.update_address(userkey=current_user.userkey, companyname=companyname)
+                Seller.register(sellerkey=nxt_sellerkey, userkey=current_user.userkey, companyname=companyname, registrationdate=registrationdate)
                 flash('You have successfully become a seller!', 'success')
             except Exception as e:
                 flash(str(e), 'error')
@@ -447,7 +433,6 @@ def inject_user_status():
     if not current_user.is_authenticated:
         return {'is_seller': False}
     
-    return dict(is_seller = False,
-        # is_seller=Seller.is_seller(current_user.userkey), 
-        become_seller_form=BecomeSellerForm(obj=current_user))
+    is_seller = True if Seller.get_sellerkey(current_user.userkey) else False
+    return dict(is_seller=is_seller, become_seller_form=BecomeSellerForm(obj=current_user))
 

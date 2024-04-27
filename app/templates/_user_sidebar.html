@@ -25,7 +25,7 @@
             href="{{ url_for('users.user_profile') }}">Dashboard</a>
 
         <a class="nav-link {{ 'active' if active_page == 'orders' }}"
-        href="{{ url_for('orders.show_orders') }}">Orders</a>
+        href="{{ url_for('orders.display_orders') }}">Orders</a>
 
         <a class="nav-link {{ 'active' if active_page == 'details' }}"
             href="{{ url_for('users.user_details') }}">Account & Security</a>
@@ -45,7 +45,7 @@
         <div class="sidebar-divider"></div>
         
         {% if is_seller %}
-        <a class="nav-link" href="{{ url_for('users.manage_user_balance') }}">Switch to seller</a>
+        <a class="nav-link" href="{{ url_for('users.switch_to_seller') }}">Switch to seller</a>
         {% else %}
         <a href="#" class="nav-link" data-toggle="modal" data-target="#sellerModal">Become a seller</a>
         {% endif %}

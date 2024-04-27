@@ -2,7 +2,10 @@
 **/__pycache__
 **/.venv
 poetry.lock
-# *.csv binary
+./db/data/ *.csv
+./app/static/img/*.jpeg
+./app/static/img/*.jpg
+./app/static/img/*.png
 
 .flaskenv
 temp_backup
