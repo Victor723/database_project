@@ -39,9 +39,7 @@ FROM Product, Category
 WHERE p_catkey = cat_catkey
 ''')
         return [Product(*row) for row in rows]
-    
 
-    
 
     @staticmethod
     def get_top_K(k):
@@ -86,3 +84,25 @@ WHERE p_catkey = cat_catkey
 AND p_productname LIKE :like_pattern OR p_description LIKE :like_pattern''', 
             like_pattern=like_pattern)
         return [Product(*row) for row in rows]
+
+    def find_max_productkey():
+        row = app.db.execute('''
+            SELECT MAX(p_productkey)
+            FROM Product
+        ''')
+        return row[0][0] if row is not None else None
+
+    @staticmethod
+    def search_products_by_name(search_query):
+        # Perform a search based on the search query
+        # This query will search for similar product names in the Product table
+        search_results = app.db.execute(
+            """
+            SELECT p_productkey, p_productname, p_price, p_description, p_imageurl
+            FROM Product
+            WHERE p_productname LIKE :search_query
+            """,
+            search_query=f'%{search_query}%'
+        )
+
+        return search_results

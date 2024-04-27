@@ -1,18 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-3">
-    <div class="row">
-        <!-- Order History Column -->
-        <div class="col-12">
-            {% if orders %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/orders.css') }}">
+
+<div class="profile-page">
+
+    <!-- Sidebar Navigation -->
+    {% with active_page='orders', is_seller=is_seller %}
+    {% include '_user_sidebar.html' %}
+    {% endwith %}
+
+    <div class="container mt-3">
+        <div class="row">
+            <!-- Order History Column -->
+            <div class="col-12">
+                {% if orders %}
                 <h2 class="mb-4 duke-blue">Order History</h2>
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
                             <tr class="duke-blue-bg white-text">
                                 <th scope="col">Order ID</th>
-                                <th scope="col">Product Name</th>
+                                <th scope="col">Product Names</th>
                                 <th scope="col">Total Price</th>
                                 <th scope="col">Order Date</th>
                                 <th scope="col">Action</th>
@@ -21,13 +31,16 @@
                         <tbody>
                             {% for order in orders %}
                             <tr>
-                                <td>{{ order.product_name }}</td>
-                                <td>{{ order.status }}</td>
-                                <td>{{ order.date.strftime('%b %d, %Y %H:%M') if order.date else 'Date not available' }}</td>
-
-                                <td>${{ '%.2f'|format(order.total_price) }} ({{ order.items_count }} Items)</td>
+                                <td>{{ order.o_orderkey }}</td>
+                                <td>{{ order.product_names }}</td>
+                                <td>${{ "%.2f"|format(order.total_price) }}</td>
+                                <td>{{ order['o_ordercreatedate'] }}</td>
                                 <td>
-                                    <a href="{{ url_for('view_order_details', order_id=order.id) }}">View Details</a>
+                                    <!-- Adjust this to match the correct endpoint -->
+                                    <form action="{{ url_for('orders.order_details') }}" method="POST">
+                                        <input type="hidden" name="order_id" value="{{ order.o_orderkey }}">
+                                        <button type="submit" class="btn btn-link p-0">View Details</button>
+                                    </form>
                                 </td>
                             </tr>
                             {% else %}
@@ -43,22 +56,23 @@
                 <nav>
                     <ul class="pagination">
                         {% if page > 1 %}
-                            <li class="page-item"><a href="{{ url_for('orders', page=page-1) }}" class="page-link">Previous</a></li>
+                            <li class="page-item"><a href="{{ url_for('orders.display_orders', page=page-1) }}" class="page-link">Previous</a></li>
                         {% endif %}
-                        
+
                         {% for i in range(1, total_pages+1) %}
-                            <li class="page-item {% if i == page %}active{% endif %}"><a href="{{ url_for('orders', page=i) }}" class="page-link">{{ i }}</a></li>
+                            <li class="page-item {% if i == page %}active{% endif %}"><a href="{{ url_for('orders.display_orders', page=i) }}" class="page-link">{{ i }}</a></li>
                         {% endfor %}
 
                         {% if page < total_pages %}
-                            <li class="page-item"><a href="{{ url_for('orders', page=page+1) }}" class="page-link">Next</a></li>
+                            <li class="page-item"><a href="{{ url_for('orders.display_orders', page=page+1) }}" class="page-link">Next</a></li>
                         {% endif %}
                     </ul>
                 </nav>
 
-            {% else %}
+                {% else %}
                 <h2 class="text-center mt-5">You have no order history.</h2>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
