@@ -3,66 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 
 {% extends "base.html" %}
 
 {% block content %}
 
-<br><br>
-
-<div id="formContainer">
-  <!-- <form action="/" method="post" id="showAllForm">
-    <button type="submit" name="action" value="showAll">Show All Products</button>
-  </form> -->
-
-  <form method="post" id="topKForm">
-    <label for="topK">Enter number of product to display:</label>
-    <input type="number" id="topK" name="topK" min="1" value="">
-    <button type="submit">Sort by Price</button>
-  </form>
-
-  <form action="/" method="get" class="filter-form">
-    <select name="category" id="categorySelect">
-        <option value="">All Categories</option>
-        {% for category in categories %}
-        <option value="{{ category.catkey }}">{{ category.catname }}</option>
-        {% endfor %}
-    </select>
-    <!-- Confirm button on the right -->
-    <button type="submit">Filter by Category</button>
-  </form>
+<div class="container mt-5">
+  <div class="row">
+      <div class="col-12 mb-3">
+          <form action="/" method="get" class="search-form">
+              <div class="input-group input-group-lg">
+                  <input type="text" class="form-control form-control-lg" name="search" id="searchInput" placeholder="Search products...">
+                  <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="submit">Search</button>
+                  </div>
+              </div>
+          </form>
+      </div>
+  </div>
+  <div class="row">
+      <div class="col-lg-6 mb-3">
+          <form method="post" id="topKForm">
+              <div class="input-group">
+                  <input type="number" class="form-control" id="topK" name="topK" min="1" placeholder="Number of products...">
+                  <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="submit">Sort by Price</button>
+                  </div>
+              </div>
+          </form>
+      </div>
+      <div class="col-lg-6 mb-3">
+          <form action="/" method="get" class="filter-form">
+              <div class="input-group">
+                  <select class="custom-select" name="category" id="categorySelect">
+                      <option value="">All Categories</option>
+                      {% for category in categories %}
+                      <option value="{{ category.catkey }}">{{ category.catname }}</option>
+                      {% endfor %}
+                  </select>
+                  <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="submit">Filter by Category</button>
+                  </div>
+              </div>
+          </form>
+      </div>
+  </div>
 </div>
 
+
+
 <br><br>
 
-<h2>Products for sale:</h2>
-<table class='table table-hover table-bordered container'>
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">Product ID</th>
-      <th scope="col">Product Name</th>
-      <th scope="col">Image</th>
-      <th scope="col">Category</th>
-      <th scope="col">Price</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for product in avail_products%}
-      <tr>
-        <th scope="row">{{product.p_productkey}}</th>
-        <td><a href="/product/{{ product.p_productkey }}">{{product.p_productname}}</td>
-        {% if product.p_imageurl %}
-          <td><img src="{{ product.p_imageurl }}" alt="{{ product.p_productname }}" class="img-fluid"></td>
-        {% else %}
-          <td><p>No Image Available</p></td>
-        {% endif %}
-        <td>{{product.p_catname}}</td>
-        <td>{{product.p_price}}</td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="container mt-5">
+  <h2 class="mt-4 mb-4">Products for sale:</h2> 
+  <div class="row">
+      {% for product in avail_products %}
+      <div class="col-md-4 mb-4">
+          <div class="card">
+              <img src="{{ product.p_imageurl }}" class="card-img-top" alt="{{ product.p_productname }}" style="height: 200px; object-fit: contain;">
+              <div class="card-body">
+                  <a href="/product/{{ product.p_productkey }}"><h5 class="card-title">{{ product.p_productname }}</h5></a>
+                  <p class="card-text">${{ product.p_price }}</p>
+                  <p class="card-text">Category: {{ product.p_catname }}</p>
+              </div>
+          </div>
+      </div>
+      {% endfor %}
+  </div>
+
+  <!-- pages -->
+</div>
+
+
 
 <br><br>
 

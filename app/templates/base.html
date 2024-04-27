@@ -105,9 +105,11 @@
       </a>
       <div style="color: aliceblue; text-align: right; margin-bottom: 25px">
         {% if current_user.is_authenticated %}
-          Hello {{current_user.firstname}}! 
-          <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
+          Hello {{current_user.firstname}}!    
           <a href="{{ url_for('users.user_profile') }}" type="button" class="btn btn-light">Profile</a>
+          <a href="{{ url_for('cart.shopping_cart') }}" type="button" class="btn btn-light">Cart</a>
+          <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a>
+
 
         {% else %} <!-- not logged in yet -->
           <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a>
