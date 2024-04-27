@@ -16,18 +16,9 @@
             <div class="account-settings mb-3">
                 <h2 class="h3 mb-3 font-weight-normal">Edit your address</h2>
                 <div class="form-group">
-                    {{ form.companyname.label(class="form-label") }}
-                    {{ form.companyname(class="form-control",
-                    placeholder=current_user.companyname)
-                    }}
-                    {% for error in form.companyname.errors %}
-                    <span style="color: red;">[{{ error }}]</span>
-                    {% endfor %}
-                </div>
-                <div class="form-group">
                     {{ form.streetaddress.label(class="form-label") }}
                     {{ form.streetaddress(class="form-control",
-                    placeholder=current_user.streetaddress)
+                    placeholder=(current_user.streetaddress if current_user.streetaddress else ''))
                     }}
                 </div>
                 <div class="form-row">
@@ -35,36 +26,44 @@
                         {{ form.country.label(class="form-label") }}
                         <select class="form-control" id="{{ form.country.id }}" name="{{ form.country.name }}">
                             {% for code, name in form.country.choices %}
-                                <option value="{{ code }}" {% if current_user.country == code %}selected{% endif %}>{{ name }}</option>
+                                <option value="{{ code }}" {% if current_user.country == name %}selected{% endif %}>{{ name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="form-group col-md-6">
                         {{ form.stateregion.label(class="form-label") }}
-                        {{ form.stateregion(class="form-control", placeholder=current_user.stateregion) }}
+                        {{ form.stateregion(class="form-control", placeholder=(current_user.stateregion if current_user.stateregion else '')) }}
                     </div>
                 </div>
-                
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         {{ form.city.label(class="form-label") }}
                         {{ form.city(class="form-control",
-                        placeholder=current_user.city)
+                        placeholder=(current_user.city if current_user.city else ''))
                         }}
                     </div>
                     <div class="form-group col-md-6">
                         {{ form.zipcode.label(class="form-label") }}
                         {{ form.zipcode(class="form-control",
-                        placeholder=current_user.zipcode)
+                        placeholder=(current_user.zipcode if current_user.zipcode else ''))
                         }}
                     </div>
                 </div>
                 <div class="form-group">
                     {{ form.phonenumber.label(class="form-label") }}
                     {{ form.phonenumber(class="form-control",
-                    placeholder=current_user.phonenumber)
+                    placeholder=(current_user.phonenumber if current_user.phonenumber else ''))
                     }}
                     {% for error in form.phonenumber.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    {{ form.companyname.label(class="form-label") }}
+                    {{ form.companyname(class="form-control",
+                    placeholder=current_user.companyname)
+                    }}
+                    {% for error in form.companyname.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}
                 </div>

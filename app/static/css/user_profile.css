@@ -7,9 +7,9 @@
 
 .sidebar {
     flex: 0 0 250px;
-    height: 37vh;
+    height: 100vh;
     /* Fixed height */
-    padding: 20px;
+    padding: 25px;
     background-color: #f5f5f5;
 }
 
@@ -46,11 +46,6 @@
     background-color: #0056b3;
 }
 
-.profile-content {
-    flex: 1;
-    padding: 20px;
-}
-
 .profile-container {
     background-color: #fff;
     /* White background */
@@ -66,12 +61,29 @@
 }
 
 .profile-header {
+    display: flex;
+    align-items: center; /* Center items vertically */
+
     border-bottom: 1px solid #eee;
     /* A light line to separate the header */
     padding-bottom: 20px;
     /* Space below the header */
     margin-bottom: 20px;
     /* Space below the header before the next content starts */
+}
+
+.profile-header img {
+    width: 100px; /* Adjust according to your design */
+    height: 100px; /* Ensure the image is a circle if desired */
+    border-radius: 50%; /* Makes the image circular */
+    margin-right: 20px; /* Space between the image and the user info */
+    cursor: pointer; /* Indicates the image can be clicked */
+}
+
+.profile-header .user-info {
+    display: flex;
+    flex-direction: column; /* Stack name and email vertically */
+    justify-content: center; /* Aligns content centrally in the column */
 }
 
 .info-label {
@@ -89,4 +101,80 @@
 .info-value {
     display: inline-block;
     /* Allow the value to be inline with the label */
+}
+
+.order-status-container {
+    display: flex;
+    justify-content: start; /* Align cards to the start of the container */
+    align-items: center;
+    padding: 20px;
+    gap: 5px; /* Use the gap property to add space between flex items */
+}
+
+
+.order-card {
+    display: flex;
+    align-items: center; /* Vertically center the items */
+    justify-content: start; /* Align items to the start of the card */
+    flex-grow: 1;
+    margin: 0 10px; /* This will add space to the left and right of each card */
+    padding: 20px;
+    text-align: left; /* Align text to the left */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+
+.total-orders {
+    background-color: #EAF6FE; /* Light blue */
+}
+/* #e9f5ff */
+.pending-orders {
+    background-color: #FFF3EB; /* Light orange */
+}
+
+.completed-orders {
+    background-color: #EAF7E9; /* Light green */
+}
+
+.order-card img {
+    width: 50px;
+    height: auto;
+    margin-right: 15px; /* Add space between the image and the text */
+}
+
+.order-card .number {
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 5px; /* Optional: add space between the number and the label */
+}
+
+.order-card .label {
+    font-size: 16px;
+}
+
+.order-card .text-group {
+    display: flex;
+    flex-direction: column; /* Stack number and label vertically */
+    justify-content: center; /* Aligns content centrally in the column */
+}
+
+/* Additional wrapper for the right side content */
+.main-content {
+    display: flex;
+    flex-direction: column; /* This will stack the order status and profile content vertically */
+    flex-grow: 1; /* This ensures that the main content area takes up the remaining space */
+}
+
+.order-status-container {
+    display: flex;
+    justify-content: space-between;
+    /* ... other styles ... */
+    margin-bottom: 20px; /* Add some space below the order status cards */
+}
+
+.sidebar-divider {
+    height: 1px;
+    background-color: #dee2e6; /* Light grey color, adjust as needed */
+    margin: 5px 20px; /* Adds some vertical space and horizontal padding */
 }
