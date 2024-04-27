@@ -156,9 +156,9 @@
 
 .sidebar {
     flex: 0 0 250px;
-    height: 37vh;
+    height: 100vh;
     /* Fixed height */
-    padding: 20px;
+    padding: 25px;
     background-color: #f5f5f5;
     overflow-y: auto;
     /* Scrollable */
@@ -216,4 +216,10 @@
     margin: 20px;
     /* Space outside the box */
     flex-grow: 0.6;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background-color: #dee2e6; /* Light grey color, adjust as needed */
+    margin: 5px 20px; /* Adds some vertical space and horizontal padding */
 }

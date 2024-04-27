@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <br>
+
 <head>
   <title>Mini Amazon</title>
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -10,88 +11,129 @@
   <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet">
   <style>
     body {
-        font-family: "Lato", sans-serif;
+      font-family: "Lato", sans-serif;
     }
 
     .main-head {
-        height: 150px;
-        background: #FFF;
+      height: 150px;
+      background: #FFF;
     }
 
     .sidenav {
-        height: 100%;
-        background-color: #000;
-        overflow-x: hidden;
-        padding-top: 20px;
+      height: 100%;
+      background-color: #000;
+      overflow-x: hidden;
+      padding-top: 20px;
     }
 
     .main {
-        padding: 0px 10px;
+      padding: 0px 10px;
     }
 
     .login-main-text {
-        margin-top: 20%;
-        padding: 60px;
-        color: #fff;
+      margin-top: 20%;
+      padding: 60px;
+      color: #fff;
     }
 
     .login-main-text h2 {
-        font-weight: 300;
+      font-weight: 300;
     }
 
     .btn-black {
-        background-color: #000 !important;
-        color: #fff;
+      background-color: #000 !important;
+      color: #fff;
     }
 
 
     .btn-primary {
-        background-color: #001A57; /* Duke blue */
-        color: #fff; /* White text */
-        border: none; /* No border */
+      background-color: #001A57;
+      /* Duke blue */
+      color: #fff;
+      /* White text */
+      border: none;
+      /* No border */
     }
+
     .btn-primary:hover {
-        background-color: #0b16b1; /* Darker Duke blue for hover */
+      background-color: #0b16b1;
+      /* Darker Duke blue for hover */
     }
 
     /* Secondary Button: White */
     .btn-secondary {
-        background-color: #fff; /* White background */
-        color: #001A57; /* Duke blue text */
-        border: 1px solid #001A57; /* Duke blue border */
+      background-color: #fff;
+      /* White background */
+      color: #001A57;
+      /* Duke blue text */
+      border: 1px solid #001A57;
+      /* Duke blue border */
     }
+
     .btn-secondary:hover {
-        background-color: #f8f8f8; /* Off-white background for hover */
-        border-color: #000046; /* Darker Duke blue border for hover */
-        color: #000046; /* Darker Duke blue text for hover */
+      background-color: #f8f8f8;
+      /* Off-white background for hover */
+      border-color: #000046;
+      /* Darker Duke blue border for hover */
+      color: #000046;
+      /* Darker Duke blue text for hover */
     }
 
     /* Tertiary Button: Black */
     .btn-tertiary {
-        background-color: #000; /* Black background */
-        color: #fff; /* White text */
-        border: none; /* No border */
+      background-color: #000;
+      /* Black background */
+      color: #fff;
+      /* White text */
+      border: none;
+      /* No border */
     }
+
     .btn-tertiary:hover {
-        background-color: #333333; /* Dark grey for hover */
+      background-color: #333333;
+      /* Dark grey for hover */
     }
 
     /* This ensures that the 'Save for Later' and 'Remove' buttons have the same style */
-    .btn-info, .btn-danger {
-        background-color: #001A57; /* Duke blue */
-        color: #fff; /* White text */
-        border: none; /* No border */
+    .btn-info,
+    .btn-danger {
+      background-color: #001A57;
+      /* Duke blue */
+      color: #fff;
+      /* White text */
+      border: none;
+      /* No border */
     }
+
     .btn-info:hover {
-        background-color: #000046; /* Darker Duke blue for hover */
+      background-color: #000046;
+      /* Darker Duke blue for hover */
     }
+
     .btn-danger:hover {
-      background-color: #cf2222; /* Darker Duke blue for hover */
+      background-color: #cf2222;
+      /* Darker Duke blue for hover */
     }
 
     .btn-danger {
-        background-color: #8d0a17ef; /* Red */
-        color: #fff; /* White text */
+      background-color: #8d0a17ef;
+      /* Red */
+      color: #fff;
+      /* White text */
+    }
+
+    .flash-container {
+      position: fixed;
+      /* or absolute */
+      top: 150;
+      right: 0;
+      left: 38.5%;
+      width: 25%;
+      z-index: 1050;
+      /* Adjust z-index to be above other content */
+      padding: 10px;
+      opacity: 0.8;
+      box-sizing: border-box;
     }
   </style>
 </head>
@@ -99,42 +141,45 @@
 <body>
   <div class="sidenav">
     {% block msg %}
-      <a href="{{ url_for('index.index') }}" style="display: flex; align-items: center; color: aliceblue; text-decoration: none;">
-        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Mini Amazon Logo" style="width: 50px; height: auto; margin-right: 10px;">
-        <h1 style="color:aliceblue"> Mini Amazon by FiveGuys </h1>
+    <a href="{{ url_for('index.index') }}"
+      style="display: flex; align-items: center; color: aliceblue; text-decoration: none;">
+      <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Mini Amazon Logo"
+        style="width: 50px; height: auto; margin-right: 10px;">
+      <h1 style="color:aliceblue"> Mini Amazon by FiveGuys </h1>
+    </a>
+    <div style="color:aliceblue; text-align: right; margin-bottom: 25px">
+      {% if current_user.is_authenticated %}
+      <span style="font-size: 24px; margin-right: 10px;">Hello {{ current_user.firstname }}!</span>
+      <!-- <a href="{{ url_for('users.user_profile') }}" type="button" class="btn btn-light">Profile</a> -->
+      <a href="{{ url_for('users.user_profile') }}" class="icon-button">
+        <img src="{{ url_for('static', filename='img/user_icon.png') }}" alt="User Icon"
+          style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
       </a>
-      <div style="color:aliceblue; text-align: right; margin-bottom: 25px">
-        {% if current_user.is_authenticated %}
-        <span style="font-size: 24px; margin-right: 10px;">Hello {{ current_user.firstname }}!</span>
-          <!-- <a href="{{ url_for('users.logout') }}" type="button" class="btn btn-light">Log out</a> --> 
-          <!-- <a href="{{ url_for('users.user_profile') }}" type="button" class="btn btn-light">Profile</a> -->
-          <a href="{{ url_for('users.user_profile') }}" class="icon-button">
-            <img src="{{ url_for('static', filename='img/user_large.png') }}" alt="User Icon" style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
-          </a>
-        {% else %} <!-- not logged in yet -->
-          <!-- <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a> -->
-          <a href="{{ url_for('users.login') }}" class="icon-button">
-            <img src="{{ url_for('static', filename='img/user_large.png') }}" alt="User Icon" style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
-          </a>
-        {% endif %}
-      </div>
+      {% else %} <!-- not logged in yet -->
+      <!-- <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a> -->
+      <a href="{{ url_for('users.login') }}" class="icon-button">
+        <img src="{{ url_for('static', filename='img/user_icon.png') }}" alt="User Icon"
+          style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
+      </a>
+      {% endif %}
+    </div>
     {% endblock %}
   </div>
   <div class="main">
     <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <div class="container mt-3">
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-              {{ message }}
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
+    {% if messages %}
+    <div class="flash-container">
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
     {% endwith %}
     {% block content %}{% endblock %}
   </div>

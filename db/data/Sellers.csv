@@ -1,4 +1,5 @@
 s_sellerkey,s_userkey,s_companyname,s_registrationdate
+<<<<<<< HEAD
 1,42,Morse-Curry,2023-01-21
 2,69,Wu-Schwartz,2023-02-15
 3,34,Mendez PLC,2022-08-29
@@ -49,3 +50,55 @@ s_sellerkey,s_userkey,s_companyname,s_registrationdate
 48,32,Garcia Ltd,2022-06-17
 49,99,Herrera-Davis,2024-02-15
 50,59,"Miller, Schmitt and Anderson",2023-06-12
+=======
+1,88,Kelly LLC,2023-05-14
+2,96,Gonzalez Group,2023-03-02
+3,17,Serrano-Perez,2023-09-21
+4,93,Long-Keller,2024-03-07
+5,15,"Boone, Jones and Thornton",2024-02-12
+6,2,Spears-Guerrero,2024-01-24
+7,81,Fox-Stanley,2023-09-22
+8,16,Rodriguez-Evans,2022-07-22
+9,77,Lucas-Martinez,2023-08-06
+10,27,Johnson-Baker,2023-12-25
+11,43,Hines-Jackson,2023-07-24
+12,42,"Smith, Randall and Vang",2022-08-09
+13,3,Martin-Hamilton,2023-10-28
+14,31,Cooke Ltd,2024-03-23
+15,98,Rogers LLC,2023-01-02
+16,89,Neal-Schmidt,2024-03-31
+17,28,Colon Inc,2023-01-27
+18,39,"Miller, Davis and Johnson",2023-09-01
+19,76,Turner LLC,2022-07-04
+20,70,Sharp-Molina,2023-04-17
+21,19,Rodriguez Inc,2023-02-06
+22,92,Velasquez Group,2023-09-06
+23,33,Jones Inc,2022-08-18
+24,42,Brown-Maxwell,2022-05-08
+25,13,"Mcguire, Bruce and Howard",2022-05-12
+26,65,Lewis-Roberson,2023-03-04
+27,82,Morgan-Garcia,2023-07-31
+28,56,Smith Inc,2022-11-12
+29,32,Martinez LLC,2023-02-09
+30,70,Frederick Ltd,2023-10-13
+31,35,Anderson-Chapman,2023-01-02
+32,79,Horn-Robbins,2024-03-06
+33,20,Scott-Travis,2023-04-12
+34,41,Brown-Gibson,2022-07-16
+35,71,"Villa, Kane and Castillo",2023-09-04
+36,59,"Gomez, Oconnor and Reyes",2023-02-16
+37,77,Hughes-Little,2024-03-16
+38,73,"Cordova, Murray and Ball",2024-04-23
+39,8,Young Group,2022-05-12
+40,65,"Simmons, Steele and Murphy",2024-02-20
+41,9,"Becker, May and Walker",2023-11-02
+42,32,Goodman-Martin,2022-11-08
+43,99,"Smith, Wong and Robertson",2023-01-26
+44,87,Mitchell Group,2022-12-05
+45,55,"Rodriguez, Mendoza and Williams",2022-09-28
+46,54,Ellis Inc,2023-09-25
+47,37,"Blake, Walker and Harding",2023-08-16
+48,69,Cook-Simpson,2023-12-11
+49,62,Ingram-Brooks,2022-09-04
+50,82,"Williams, Duran and Farmer",2023-08-26
+>>>>>>> 27f2c4d7f9b560bec32b0677cfcc1c2a67bfa620

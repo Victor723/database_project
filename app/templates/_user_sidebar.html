@@ -24,35 +24,44 @@
         <a class="nav-link {{ 'active' if active_page == 'dashboard' }}"
             href="{{ url_for('users.user_profile') }}">Dashboard</a>
 
-        <a class="nav-link {{ 'active' if active_page == 'details' }}"
-            href="{{ url_for('users.user_details') }}">Account Details</a>
-
         <a class="nav-link {{ 'active' if active_page == 'orders' }}"
-            href="{{ url_for('orders.display_orders') }}">Order History</a>
+        href="{{ url_for('orders.display_orders') }}">Orders</a>
 
-        <span class="nav-link disabled">Track Order</span>
+        <a class="nav-link {{ 'active' if active_page == 'details' }}"
+            href="{{ url_for('users.user_details') }}">Account & Security</a>
 
-        <a class="nav-link {{ 'active' if active_page == 'cart' }}"
-            href="{{ url_for('cart.shopping_cart') }}">Shopping Cart</a>
+        <!-- <a class="nav-link {{ 'active' if active_page == 'cart' }}"
+            href="{{ url_for('cart.shopping_cart') }}">Shopping Cart</a> -->
 
         <a class="nav-link {{ 'active' if active_page == 'address' }}"
-            href="{{ url_for('users.user_address') }}"> My Address</a>
+            href="{{ url_for('users.user_address') }}">Address</a>
 
         <a class="nav-link {{ 'active' if active_page == 'review' }}" 
             href="{{ url_for('myreview.get_myreview') }}">My Review</a>
 
         <a class="nav-link {{ 'active' if active_page == 'wallet' }}"
-            href="{{ url_for('users.manage_user_balance') }}">Balance</a>
+            href="{{ url_for('users.manage_user_balance') }}">Balance & Spending</a>
 
+        <div class="sidebar-divider"></div>
+        
+        {% if is_seller %}
+        <a class="nav-link" href="{{ url_for('users.switch_to_seller') }}">Switch to seller</a>
+        {% else %}
+        <a href="#" class="nav-link" data-toggle="modal" data-target="#sellerModal">Become a seller</a>
+        {% endif %}
+
+        <div class="sidebar-divider"></div>
         <a class="nav-link" onclick="return confirm('You are logging out.');" 
-            href="{{ url_for('users.logout') }}">Log Out</a>
+            href="{{ url_for('users.logout') }}">Sign out</a>
     </nav>
 
-    <a href="{{ url_for('users.switch_to_seller') }}" class="switch-btn">Switch to seller</a>
+    <!-- {% if is_seller %}
+    <button type="button" class="btn-switch">Switch to seller</button>
 
+    {% else %} -->
     <!-- Modal Trigger -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sellerModal">Become a
-        seller</button>
+    <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sellerModal">Become a
+        seller</button> -->
 
     <!-- Modal -->
     <div class="modal fade" id="sellerModal" tabindex="-1" role="dialog" aria-labelledby="sellerModalLabel"
@@ -82,5 +91,5 @@
             </div>
         </div>
     </div>
-
+    <!-- {% endif %} -->
 </aside>

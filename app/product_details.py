@@ -21,7 +21,7 @@ def product_details(product_id):
     sellers_ids = ProductSeller.get_sellerkey_by_productkey(product_id)
     productseller_info = []
     for sid in sellers_ids:
-        productseller_info = ProductSeller.get_product_info(sid, product_id)
+        productseller_info.append(ProductSeller.get_product_info(sid, product_id))
     
     if current_user.is_authenticated:
         user_key = current_user.userkey
