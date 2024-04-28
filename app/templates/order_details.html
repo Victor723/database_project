@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-12">
+            <!-- Navigation Bar -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('orders.display_orders') }}">Order History</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Order Details</li>
+                </ol>
+            </nav>
+            <!-- Order Details Header -->
+            <div class="order-details-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-2">ORDER DETAILS</h2>
+                    <p class="text-muted">#{{ order_details.order_number }}</p>
+                    <p>{{ order_details.products_count }} Products • Ordered Placed in {{ order_details.order_date }}</p>
+                </div>
+                <div>
+                    <h2 class="text-primary">${{ '%.2f'|format(order_details.total_price) }}</h2>
+                </div>
+            </div>
+
+            <!-- Product List -->
+            <div class="product-list mt-4">
+                <h4>Product ({{ order_details.products|length }})</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">PRODUCTS</th>
+                            <th scope="col">PRICE</th>
+                            <th scope="col">QUANTITY</th>
+                            <th scope="col">SUB-TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in order_details.products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>${{ '%.2f'|format(product.price) }}</td>
+                            <td>x{{ product.quantity }}</td>
+                            <td>${{ '%.2f'|format(product.subtotal) }}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-secondary review-button" data-product-id="{{ product.id }}">Review</button>
+                            </td>
+                            <td>
+                                {% if product.fulfillment_date %}
+                                    Fulfilled on {{ product.fulfillment_date.strftime('%b %d, %Y') }}
+                                {% else %}
+                                    Not Fulfilled
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        
+        {% if order_details.is_fulfilled %}
+        <div class="alert alert-success" role="alert">
+            This order is fully fulfilled.
+        </div>
+        {% else %}
+        <div class="alert alert-warning" role="alert">
+            This order is not fully fulfilled.
+        </div>
+        {% endif %} 
+        </div>
+    </div>
+</div>
+{% endblock %}

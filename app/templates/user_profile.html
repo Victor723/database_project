@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/user_profile.css') }}">
@@ -10,31 +9,73 @@
     {% include '_user_sidebar.html' %}
     {% endwith %}
 
-    <!-- Profile Content -->
-    <div class="profile-container">
-        <div class="profile-header">
-            <!-- <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Profile Picture"> -->
-            <h2>{{ current_user.firstname }} {{ current_user.lastname }}</h2>
-            <p>{{ current_user.email }}</p>
+    <div class="main-content">
+        <div class="order-status-container">
+            <!-- Total Orders -->
+            <div class="order-card total-orders">
+                <img src="{{ url_for('static', filename='img/user_order_rocket.png') }}" alt="Total Orders">
+                <div class="text-group">
+                    <div class="number">{{ user_order_counts[0] }}</div>
+                    <div class="label">Total Orders</div>
+                </div>
+            </div>
+
+            <!-- Pending Orders -->
+            <div class="order-card pending-orders">
+                <img src="{{ url_for('static', filename='img/user_order_note.png') }}" alt="Pending Orders">
+                <div class="text-group">
+                    <div class="number">{{ user_order_counts[1] }}</div>
+                    <div class="label">Pending Orders</div>
+                </div>
+            </div>
+
+            <!-- Completed Orders -->
+            <div class="order-card completed-orders">
+                <img src="{{ url_for('static', filename='img/user_order_box.png') }}" alt="Completed Orders">
+                <div class="text-group">
+                    <div class="number">{{ user_order_counts[2] }}</div>
+                    <div class="label">Completed Orders</div>
+                </div>
+            </div>
         </div>
-        <div class="profile-info">
-            <div class="info-row">
-                <label class="info-label">Company Name:</label>
-                <span class="info-value">{{ current_user.companyname }}</span>
+
+
+        <!-- Profile Content -->
+        <div class="profile-container">
+            <div class="profile-header">
+
+                <form method="POST" action="{{ url_for('users.upload_profile_image') }}" enctype="multipart/form-data"
+                    style="display:none;">
+                    <input type="file" name="profile_image" id="profileImageInput" accept="image/*"
+                        onchange="this.form.submit()">
+                </form>
+                <img src="{{ url_for('static', filename=current_user.imageurl) }}" alt="Profile Picture"
+                    onclick="document.getElementById('profileImageInput').click();" style="cursor: pointer;">
+
+                <div class="user-info">
+                    <h2>{{ current_user.firstname }} {{ current_user.lastname }}</h2>
+                    <p>{{ current_user.email }}</p>
+                </div>
             </div>
-            <div class="info-row">
-                <label class="info-label">Address:</label>
-                <span class="info-value">
-                    {{ current_user.streetaddress }},
-                    {{ current_user.city }},
-                    {{ current_user.stateregion }},
-                    {{ current_user.zipcode }},
-                    {{ current_user.country }}
-                </span>
-            </div>
-            <div class="info-row">
-                <label class="info-label">Phone Number:</label>
-                <span class="info-value">{{ current_user.phonenumber }}</span>
+            <div class="profile-info">
+                <div class="info-row">
+                    <label class="info-label">Company Name:</label>
+                    <span class="info-value">{{ current_user.companyname }}</span>
+                </div>
+                <div class="info-row">
+                    <label class="info-label">Address:</label>
+                    <span class="info-value">
+                        {{ current_user.streetaddress }},
+                        {{ current_user.city }},
+                        {{ current_user.stateregion }},
+                        {{ current_user.zipcode }},
+                        {{ current_user.country }}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <label class="info-label">Phone Number:</label>
+                    <span class="info-value">{{ current_user.phonenumber }}</span>
+                </div>
             </div>
         </div>
     </div>

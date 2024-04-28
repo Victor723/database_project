@@ -34,7 +34,7 @@ WHERE p_productkey = :p_productkey AND p_catkey = cat_catkey
     @staticmethod
     def get_all(available=True):
         rows = app.db.execute('''
-SELECT p_productkey, p_productname, p_price, cat_catname
+SELECT p_productkey, p_productname, p_price, cat_catname, p_description, p_imageurl
 FROM Product, Category
 WHERE p_catkey = cat_catkey
 ''')
@@ -44,7 +44,7 @@ WHERE p_catkey = cat_catkey
     @staticmethod
     def get_top_K(k):
         rows = app.db.execute(f'''
-SELECT p_productkey, p_productname, p_price, cat_catname
+SELECT p_productkey, p_productname, p_price, cat_catname, p_description, p_imageurl
 FROM Product, Category
 WHERE p_catkey = cat_catkey
 ORDER BY p_price DESC
@@ -66,7 +66,7 @@ LIMIT {k};
     @staticmethod
     def get_all_by_category(catkey):
         rows = app.db.execute(f'''
-SELECT p_productkey, p_productname, p_price, cat_catname
+SELECT p_productkey, p_productname, p_price, cat_catname, p_description, p_imageurl
 FROM Product, Category
 WHERE p_catkey = cat_catkey AND p_catkey = :catkey
 ''',
@@ -75,6 +75,16 @@ WHERE p_catkey = cat_catkey AND p_catkey = :catkey
 
 
     @staticmethod
+    def get_all_by_keyword(keyword):
+        like_pattern = f'%{keyword}%'
+        rows = app.db.execute(f'''
+SELECT p_productkey, p_productname, p_price, cat_catname, p_description, p_imageurl
+FROM Product, Category
+WHERE p_catkey = cat_catkey
+AND p_productname LIKE :like_pattern OR p_description LIKE :like_pattern''', 
+            like_pattern=like_pattern)
+        return [Product(*row) for row in rows]
+
     def find_max_productkey():
         row = app.db.execute('''
             SELECT MAX(p_productkey)

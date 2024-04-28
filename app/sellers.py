@@ -9,6 +9,7 @@ from datetime import datetime
 
 from .models.seller import Seller
 from .models.productseller import ProductSeller
+from .models.sellerreview import SellerReview
 from .models.product import Product
 from .models.category import Category
 
@@ -289,11 +290,13 @@ def finish_order(s_sellerkey, o_orderkey, l_linenumber):
     return redirect(url_for('sellers.seller_order', s_sellerkey=s_sellerkey))
 
 
-@bp.route('/seller/<s_sellerkey>/review', methods=['GET', 'POST'])
+@bp.route('/seller/<s_sellerkey>/review', methods=['GET'])
 @login_required
 def seller_review(s_sellerkey):
-    seller_review = Seller.get_seller_review(s_sellerkey)
-    return render_template('seller_review.html', seller_key=s_sellerkey, seller_review=seller_review)
+    seller_review_counts = SellerReview.get_seller_review_counts(s_sellerkey)
+    seller_review_rating = SellerReview.get_seller_rating(s_sellerkey)
+    seller_reviews = SellerReview.get_seller_reviews(s_sellerkey)
+    return render_template('seller_review.html', seller_key=s_sellerkey, seller_reviews=seller_reviews, seller_rating = seller_review_rating, seller_review_counts = seller_review_counts)
 
 
 @bp.route('/seller/<s_sellerkey>/profile', methods=['GET', 'POST'])

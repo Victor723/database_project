@@ -58,10 +58,11 @@ class ProductSeller():
     @staticmethod
     def get_product_info(sellerkey, productkey):
         row = app.db.execute("""
-            SELECT p.p_productkey, p.p_productname, p.p_price, p.p_description, p.p_imageurl, cat.cat_catkey, cat.cat_catname, ps.ps_quantity, ps.ps_discount, ps.ps_createtime
+            SELECT p.p_productkey, p.p_productname, p.p_price, p.p_description, p.p_imageurl, cat.cat_catkey, cat.cat_catname, ps.ps_quantity, ps.ps_discount, ps.ps_createtime, s.s_sellerkey, s.s_companyname
             FROM Product p
             INNER JOIN ProductSeller ps ON p.p_productkey = ps.ps_productkey
             INNER JOIN Category cat ON p.p_catkey = cat.cat_catkey
+            INNER JOIN Seller s ON ps.ps_sellerkey = s.s_sellerkey
             WHERE ps.ps_sellerkey = :sellerkey AND p.p_productkey = :productkey
             """,
             sellerkey=sellerkey, productkey=productkey)
@@ -77,7 +78,9 @@ class ProductSeller():
                 'category': f"({row[0][5]}) {row[0][6]}",
                 'quantity': row[0][7],
                 'discount': row[0][8],
-                'createtime': row[0][9]
+                'createtime': row[0][9],
+                'sellerkey': row[0][10],
+                'sellername': row[0][11]
             }
             return product_info
 

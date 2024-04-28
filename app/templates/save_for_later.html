@@ -27,16 +27,22 @@
                                 <td>${{ "%.2f"|format(item.ps_price) }}</td>
                                 <td>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" value="{{ item.savequantity}}" min="1">
+                                        <input type="number" class="form-control" value="{{ item.pc_save }}" min="1" id="quantityInput{{ loop.index }}">
                                         <div class="input-group-append">
-                                            <button class="btn btn-secondary" type="button">Update</button>
+                                            <button class="btn btn-secondary" type="button"
+                                                onclick="updateQuantity('{{ item.product_key }}', '{{ item.seller_key }}', document.getElementById('quantityInput{{ loop.index }}'))">
+                                                Update
+                                            </button>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
                                     <button class="btn btn-primary" type="button">Move to Cart</button>
                                    <!-- 'Remove' Button with a Red Color -->
-                                    <button class="btn btn-danger" type="button">Remove</button>
+                                   <button class="btn btn-danger" type="button"
+                                        onclick="removeItem('{{ item.product_key }}', '{{ item.seller_key }}', this)">
+                                        Remove
+                                    </button>
 
                                 </td>
                             </tr>
@@ -60,6 +66,56 @@
     </div>
     </div>
 </div>
+<script>
+    function updateQuantity(productKey, sellerKey, quantityInput) {
+        // Get the new quantity value
+        let newQuantity = quantityInput.value;
+        // Redirect to the update quantity route
+        
+    }
+
+    function moveToCart(productKey, sellerKey, button) {
+        // Redirect to the move to save for later route
+       
+    }
+
+    function removeItem(productKey, sellerKey, element) {
+    console.log(element);
+    if (confirm('Are you sure you want to remove this item?')) {
+        fetch('/remove-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                product_key: productKey,
+                seller_key: sellerKey
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Item removed successfully');
+                let ancestor = element.parentElement;
+                while (ancestor && ancestor.tagName !== 'TR') {
+                    ancestor = ancestor.parentElement;
+                }
+
+                if (ancestor && ancestor.tagName === 'TR') {
+                    ancestor.remove();
+                }
+                setTimeout(() => window.location.reload(), 500);
+            } else {
+                alert('Failed to remove item: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove item: ' + error.message);
+        });
+    }
+}
+</script>
 {% endblock %}
 
  {# {% else %} #}
