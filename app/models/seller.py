@@ -50,16 +50,30 @@ class Seller():
 
 
     @staticmethod
-    def get_product_info(id, limit=10, offset=0):
-        rows = app.db.execute("""
+    def get_product_info_sorted(id, sort_column, sort_order, limit=10, offset=0):
+        # Ensure the sort column is valid to prevent SQL injection
+        valid_columns = ['ps.ps_productkey', 'p.p_productname', 'ps.ps_quantity', 'ps.ps_price', 'ps.ps_discount', 'ps.ps_createtime']
+        if sort_column not in valid_columns:
+            sort_column = 'ps.ps_productkey'  # Default to sorting by product key if column is invalid
+
+        # Ensure sort order is valid to prevent SQL injection
+        valid_sort_orders = ['asc', 'desc']
+        if sort_order not in valid_sort_orders:
+            sort_order = 'asc'  # Default to ascending order if order is invalid
+
+        # Build the SQL query dynamically with parameters
+        query = """
             SELECT ps.ps_productkey, p.p_productname, ps.ps_quantity, ps.ps_price, ps.ps_discount, ps.ps_createtime
             FROM ProductSeller ps
             INNER JOIN Product p ON ps.ps_productkey = p.p_productkey
             WHERE ps.ps_sellerkey = :id
+            ORDER BY {sort_column} {sort_order}
             LIMIT :limit OFFSET :offset
-            """,
-            id=id, limit=limit, offset=offset)
-        
+        """.format(sort_column=sort_column, sort_order=sort_order.upper())
+
+        # Execute the query
+        rows = app.db.execute(query, id=id, limit=limit, offset=offset)
+
         products = []
         for row in rows:
             product_info = {
@@ -70,7 +84,8 @@ class Seller():
                 'discount': row[4],
                 'createtime': row[5]
             }
-            products.append(product_info)      
+            products.append(product_info)
+
         return products
 
     @staticmethod
@@ -107,6 +122,33 @@ class Seller():
 
         # Return 0 if there are no rows or if the first row is empty
         return 0
+
+
+    @staticmethod
+    def search_products(sellerkey, search_query):
+        # Query for products matching the search query
+        rows = app.db.execute("""
+            SELECT ps.ps_productkey, p.p_productname, ps.ps_quantity, ps.ps_price, ps.ps_discount, ps.ps_createtime
+            FROM ProductSeller ps
+            INNER JOIN Product p ON ps.ps_productkey = p.p_productkey
+            WHERE ps.ps_sellerkey = :sellerkey
+            AND (p.p_productname ILIKE :search_query OR ps.ps_productkey::TEXT ILIKE :search_query)
+        """, sellerkey=sellerkey, search_query=f"%{search_query}%")
+
+        products = []
+        for row in rows:
+            product_info = {
+                'productkey': row[0],
+                'productname': row[1],
+                'quantity': row[2],
+                'price': row[3],
+                'discount': row[4],
+                'createtime': row[5]
+            }
+            products.append(product_info)
+
+        return products
+
 
 
     @staticmethod

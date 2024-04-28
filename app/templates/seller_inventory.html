@@ -6,20 +6,26 @@
     {% include "seller_navigation.html" %}
     <div class="main-content">
         <h1>Inventory</h1>
+        <!-- Add search form -->
+        <form action="{{ url_for('sellers.seller_inventory', s_sellerkey=seller_key) }}" method="GET" class="search-form">
+            <input type="text" name="search_query" placeholder="Search by product name or key">
+            <button type="submit">Search</button>
+        </form>
         <!-- Button for add product -->
         <a href="{{ url_for('sellers.add_product', s_sellerkey=seller_key) }}" class="add-product-btn">Add Product</a>
+
         <table class="inventory-table">
             <thead>
                 <tr>
-                    <th>Product Key</th>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Discount</th>
-                    <th>Create Time</th>
+                    <th><a href="#" onclick="updateSorting('ps.ps_productkey')">Product Key</a></th>
+                    <th><a href="#" onclick="updateSorting('p.p_productname')">Product Name</a></th>
+                    <th><a href="#" onclick="updateSorting('ps.ps_quantity')">Quantity</a></th>
+                    <th><a href="#" onclick="updateSorting('ps.ps_price')">Price</a></th>
+                    <th><a href="#" onclick="updateSorting('ps.ps_discount')">Discount</a></th>
+                    <th><a href="#" onclick="updateSorting('ps.ps_createtime')">Create Time</a></th>
                     <th>Action</th>
                 </tr>
-            </thead>
+            </thead>            
             <tbody>
                 {% for product in productseller_info %}
                 <tr>
@@ -45,15 +51,15 @@
         <!-- Pagination controls -->
         <div class="pagination">
             <span>Page {{ current_page }} of {{ total_pages }}</span>
-            <a href="?page=1">First</a>
+            <a href="{{ url_for('sellers.seller_inventory', s_sellerkey=seller_key, sort_column=sort_column, sort_order=sort_order, page=1) }}">First</a>
             {% if current_page > 1 %}
-                <a href="?page={{ current_page - 1 }}">Previous</a>
+                <a href="{{ url_for('sellers.seller_inventory', s_sellerkey=seller_key, sort_column=sort_column, sort_order=sort_order, page=current_page - 1) }}">Previous</a>
             {% endif %}
             {% if current_page < total_pages %}
-                <a href="?page={{ current_page + 1 }}">Next</a>
+                <a href="{{ url_for('sellers.seller_inventory', s_sellerkey=seller_key, sort_column=sort_column, sort_order=sort_order, page=current_page + 1) }}">Next</a>
             {% endif %}
-            <a href="?page={{ total_pages }}">Last</a>
-        </div>
+            <a href="{{ url_for('sellers.seller_inventory', s_sellerkey=seller_key, sort_column=sort_column, sort_order=sort_order, page=total_pages) }}">Last</a>
+        </div>        
     </div>
 
     <!-- Confirmation message box -->
@@ -66,6 +72,20 @@
     </div>
 
     <script>
+        function updateSorting(column) {
+            // Get the current sorting order
+            var currentColumn = "{{ sort_column }}";
+            var currentOrder = "{{ sort_order }}";
+
+            // If the clicked column is already the current sorting column,
+            // toggle the sorting order; otherwise, default to ascending order
+            var newOrder = (column === currentColumn) ? (currentOrder === 'asc' ? 'desc' : 'asc') : 'asc';
+
+            // Update the URL with the new sorting parameters
+            var url = `{{ url_for('sellers.seller_inventory', s_sellerkey=seller_key) }}?sort_column=${column}&sort_order=${newOrder}`;
+            window.location.href = url;
+        }
+    
         function confirmDelete(sellerKey, productKey) {
             // Show the confirmation message box
             document.getElementById('confirmation-box').style.display = 'block';
@@ -73,12 +93,12 @@
             window.sellerKey = sellerKey;
             window.productKey = productKey;
         }
-
+    
         function closeConfirmation() {
             // Close the confirmation message box
             document.getElementById('confirmation-box').style.display = 'none';
         }
-
+    
         function deleteProduct() {
             // Make a POST request to delete the product
             fetch(`/seller/${window.sellerKey}/${window.productKey}/delete`, {

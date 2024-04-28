@@ -10,6 +10,7 @@ from datetime import datetime
 from .models.seller import Seller
 from .models.productseller import ProductSeller
 from .models.product import Product
+from .models.category import Category
 
 
 from flask import Blueprint
@@ -39,20 +40,32 @@ def seller_inventory(s_sellerkey):
     # Define the number of products per page
     products_per_page = 10
 
-    # Calculate the offset for the query based on the current page
-    offset = (page - 1) * products_per_page
+    # Get sorting parameters from the request
+    sort_column = request.args.get('sort_column', 'ps.ps_productkey')  # Default sorting by product key
+    sort_order = request.args.get('sort_order', 'asc')  # Default sorting order is ascending
 
-    # Get product information for the specified sellerkey, limited by pagination
-    productseller_info = ProductSeller.get_productseller_info(s_sellerkey, limit=products_per_page, offset=offset)
+    # Get the search query from the request
+    search_query = request.args.get('search_query', '')
+
+    # If search query is provided, filter products by name or key
+    if search_query:
+        productseller_info = Seller.search_products(s_sellerkey, search_query)
+    else:
+        # Calculate the offset for the query based on the current page
+        offset = (page - 1) * products_per_page
+
+        # Get product information for the specified sellerkey, limited by pagination and sorted
+        productseller_info = Seller.get_product_info_sorted(s_sellerkey, sort_column, sort_order, limit=products_per_page, offset=offset)
 
     # Calculate the total number of products
-    total_products = ProductSeller.get_total_product_count(s_sellerkey)
+    total_products = Seller.get_total_product_count(s_sellerkey)
 
     # Calculate the total number of pages
     total_pages = (total_products + products_per_page - 1) // products_per_page
 
     # Render the template with the product information and pagination details
-    return render_template('seller_inventory.html', seller_key=s_sellerkey, productseller_info=productseller_info, current_page=page, total_pages=total_pages)
+    return render_template('seller_inventory.html', seller_key=s_sellerkey, productseller_info=productseller_info,
+                           current_page=page, total_pages=total_pages, sort_column=sort_column, sort_order=sort_order)
 
 
 @bp.route('/seller/<s_sellerkey>/<p_productkey>/details', methods=['GET', 'POST'])
@@ -150,6 +163,33 @@ def add_product(s_sellerkey):
         return render_template('add_product.html', seller_key=s_sellerkey)
 
 
+@bp.route('/seller/<s_sellerkey>/add_product/create', methods=['GET', 'POST'])
+@login_required
+def create_product(s_sellerkey):
+    if request.method == 'POST':
+        # Retrieve form data
+        product_key = Product.find_max_productkey() + 1
+        product_name = request.form['product_name']
+        product_price = request.form['price']
+        product_description = request.form['description']
+        product_image_url = request.form['imageurl']
+        category_key = request.form['category_key']
+        quantity = request.form['quantity']
+        discount = request.form['discount']
+
+        try:
+            Product.create_product(product_key, product_name, product_price, product_description, product_image_url, category_key)
+            ProductSeller.create_productseller(product_key, s_sellerkey, quantity, discount, product_price)
+            flash('Product created successfully.', 'success')
+            return redirect(url_for('sellers.add_product', s_sellerkey=s_sellerkey))
+        except Exception as e:
+            flash(str(e), 'error')
+            return redirect(url_for('sellers.add_product', s_sellerkey=s_sellerkey))
+    else:
+        # Render the template for creating a new product
+        return render_template('create_product.html', seller_key=s_sellerkey)
+
+
 @bp.route('/seller/<s_sellerkey>/add_product/<p_productkey>', methods=['GET', 'POST'])
 @login_required
 def add_exit_product(s_sellerkey, p_productkey):
@@ -187,52 +227,6 @@ def add_exit_product(s_sellerkey, p_productkey):
         product_info = Product.get_prod_details(p_productkey)
         return render_template('add_exit_product.html', seller_key=s_sellerkey, product_info=product_info)
         
-
-
-
-    #     product_key = Product.find_max_productkey() + 1
-    #     product_price = request.form['product_price']
-    #     product_description = request.form['product_description']
-    #     product_imageurl = request.form['product_imageurl']
-    #     product_quantity = request.form['product_quantity']
-    #     product_discount = request.form['product_discount']
-    #     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-
-    #     # Insert new product into Product table
-    #     app.db.execute(
-    #         """
-    #         INSERT INTO Product (p_productkey, p_productname, p_price, p_description, p_imageurl, p_catkey)
-    #         VALUES (:product_key, :product_name, :product_price, :product_description, :product_imageurl, 1)
-    #         """,
-    #         product_key=product_key,
-    #         product_name=product_name,
-    #         product_price=product_price,
-    #         product_description=product_description,
-    #         product_imageurl=product_imageurl
-    #     )
-
-    #     # Insert new product into ProductSeller table
-    #     app.db.execute(
-    #         """
-    #         INSERT INTO ProductSeller (ps_productkey, ps_sellerkey, ps_quantity, ps_price, ps_discount, ps_createtime)
-    #         VALUES (:product_key, :seller_key, :product_quantity, :product_price, :product_discount, :current_time)
-    #         """,
-    #         product_key=product_key,
-    #         seller_key=s_sellerkey,
-    #         product_quantity=product_quantity,
-    #         product_price=product_price,
-    #         product_discount=product_discount,
-    #         current_time=current_time
-    #     )
-
-    #     # Redirect to inventory page after adding product
-    #     return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
-    # else:
-    #     # Render the add product form
-    #     return render_template('add_product.html', seller_key=s_sellerkey)
-
-
 
 @bp.route('/seller/<s_sellerkey>/order', methods=['GET', 'POST'])
 @login_required
@@ -290,3 +284,31 @@ def seller_profile(s_sellerkey):
     return render_template('seller_profile.html', seller_key=s_sellerkey, seller_profile=seller_profile)
 
 
+@bp.route('/categories')
+def get_categories():
+    categories = Category.get_all()
+    return jsonify(categories=[cat.serialize() for cat in categories])
+
+
+@bp.route('/create_category', methods=['POST'])
+def create_category():
+    try:
+        # Extract category name from the request data
+        category_name = request.json.get('category_name')
+
+        # Check if the category name is provided
+        if not category_name:
+            raise ValueError('Category name is required.')
+
+        # Create the new category
+        category_created = Category.create_category(category_name)
+
+        # Check if the category was successfully created
+        if category_created:
+            return jsonify({'success': True, 'message': 'Category created successfully'})
+        else:
+            raise ValueError('Failed to create category.')
+
+    except Exception as e:
+        # Handle any errors and respond with an error message
+        return jsonify({'success': False, 'error': str(e)})
