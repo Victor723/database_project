@@ -1,5 +1,6 @@
 from flask import current_app as app
-from app.models.productseller import ProductSeller    
+from app.models.productseller import ProductSeller  
+from .seller import Seller  
 class Order:
     def __init__(self, o_orderkey, o_userkey, o_totalprice, o_ordercreatedate):
         self.o_orderkey = o_orderkey
@@ -70,7 +71,7 @@ class Order:
         );
         '''
         result = app.db.execute(query, {'userkey': userkey, 'sellerkey': sellerkey}).scalar()
-        return result;
+        return result
 
     @staticmethod
     def get_order_details(order_id):
@@ -109,3 +110,44 @@ class Order:
         order_details['products'] = products
 
         return order_details
+
+
+    @staticmethod
+    def update_seller_inventory(order_key):
+        # Retrieve line items for the order
+        lineitems = app.db.execute("""
+            SELECT l_sellerkey, l_orderkey, l_linenumber, l_productkey, p_productname, l_quantity
+            FROM Lineitem l
+            JOIN Product p ON l.l_productkey = p.p_productkey
+            WHERE l_orderkey = :order_key
+        """, order_key=order_key)
+
+        # Iterate through each line item
+        for lineitem in lineitems:
+            seller_key = lineitem[0]
+            order_key = lineitem[1]
+            linenumber = lineitem[2]
+            product_key = lineitem[3]
+            product_name = lineitem[4]
+            quantity = lineitem[5]
+
+            # Check if there is enough quantity in seller's inventory
+            inventory = Seller.check_quantity(seller_key, order_key, linenumber, product_key)
+            product_key = []
+            out_of_stock_product = []
+            # If there is enough quantity, update the inventory and mark the order as fulfilled
+            if inventory is None:
+                out_of_stock_product.append(product_name)
+        
+        if out_of_stock_product is not None:
+            message = ", ".join(out_of_stock_product) + " are out of stock"
+            return message
+        else:
+            for lineitem in lineitems:
+                seller_key = lineitem[0]
+                order_key = lineitem[1]
+                linenumber = lineitem[2]
+                product_key = lineitem[3]
+                inventory = Seller.check_quantity(seller_key, order_key, linenumber, product_key)
+                Seller.update_quantity(seller_key, product_key, inventory)
+            return "Checkout successfully"

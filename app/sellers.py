@@ -277,16 +277,11 @@ def order_details(s_sellerkey, o_orderkey, l_linenumber):
 @bp.route('/seller/<s_sellerkey>/<o_orderkey>/<l_linenumber>/finish', methods=['GET', 'POST'])
 @login_required
 def finish_order(s_sellerkey, o_orderkey, l_linenumber):
-    # Check if the seller has enough quantity
-    lineitem_info = Seller.get_lineitem_info(s_sellerkey, o_orderkey, l_linenumber)
-    product_key = lineitem_info['product_key']
-    inventory = Seller.check_quantity(s_sellerkey, o_orderkey, l_linenumber, product_key)
-    if inventory:
-        # If there is enough quantity, mark the order line item as fulfilled
-        Seller.order_finish(s_sellerkey, o_orderkey, l_linenumber, product_key, inventory)
+    try:
+        order_finish(s_sellerkey, o_orderkey, l_linenumber)
         flash('Order line item marked as fulfilled.', 'success')
-    else:
-        flash('The item is out of stock.', 'error')
+    except Exception as e:
+        flash(f'An error occurred: {str(e)}', 'error')
     return redirect(url_for('sellers.seller_order', s_sellerkey=s_sellerkey))
 
 

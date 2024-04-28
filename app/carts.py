@@ -105,8 +105,8 @@ def move_to_save_for_later():
 def checkout():
     user_key = current_user.userkey
     cart_key = Cart.get_cartkey_by_user(c_userkey=user_key)
-    success = Cart.create_order_from_cart(user_key, cart_key)
-    if success:
-        return jsonify({'success': 'Order created successfully'}), 200
+    result = Cart.create_order_from_cart(user_key, cart_key)
+    if result:
+        return jsonify(result), 200
     else:
         return jsonify({'error': 'Failed to create order'}), 500

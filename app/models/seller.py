@@ -337,7 +337,7 @@ class Seller():
 
 
     @staticmethod
-    def order_finish(s_sellerkey, o_orderkey, l_linenumber, p_productkey, inventory):
+    def order_finish(s_sellerkey, o_orderkey, l_linenumber):
         current_date = datetime.now()
         app.db.execute("""
             UPDATE Lineitem
@@ -345,6 +345,9 @@ class Seller():
             WHERE l_sellerkey = :sellerkey AND l_orderkey = :orderkey AND l_linenumber = :linenumber
         """, CURRENT_DATE=current_date, sellerkey=s_sellerkey, orderkey=o_orderkey, linenumber=l_linenumber)
 
+
+    @staticmethod
+    def update_quantity(s_sellerkey, p_productkey, inventory):
         # Update the quantity in the ProductSeller table
         app.db.execute("""
             UPDATE ProductSeller
