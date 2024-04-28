@@ -31,7 +31,7 @@ def product_details(product_id):
     # had_review = ProductReview.get(user_key, product_id)
     # # bought = Order.get()
     # can_add_review = not had_review # & bought
-    return render_template('product.html',
+    return render_template('product_details.html',
                         product_details=product_details,
                         productseller_info=productseller_info,
                         product_reviews = product_reviews,

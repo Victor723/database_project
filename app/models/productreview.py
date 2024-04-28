@@ -56,9 +56,9 @@ GROUP BY pr_productkey
 ''',
                               pr_productkey = pr_productkey)
         if rows:
-            return rows[0]
+            return rows[0][0]
         else:
-            return 0
+            return 0.0
     
     @staticmethod
     def get_product_review_counts(pr_productkey):

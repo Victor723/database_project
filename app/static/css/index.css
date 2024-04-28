@@ -52,3 +52,21 @@ div#formContainer {
     padding: 5px 10px;
     background-color: #ddd
 }
+
+.star-rating {
+    unicode-bidi: bidi-override;
+    color: #c5c5c5;  /* Grey color for empty stars */
+    font-size: 1.5em;
+    line-height: 1em;
+    position: relative;
+    display: inline-block;
+}
+
+.star-rating .filled-stars {
+    color: #e9ce2c;  /* Gold color for filled stars */
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}

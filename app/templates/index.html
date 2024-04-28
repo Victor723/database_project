@@ -1,3 +1,8 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,109 +11,137 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 
-{% extends "base.html" %}
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12 mb-3">
+                <form action="/" method="get" class="search-form">
+                    <div class="input-group input-group-lg">
+                        <input type="text" class="form-control form-control-lg" name="search" id="searchInput" placeholder="Search products..." value="{{ search_query|default('', true) }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mb-3">
+                <form method="post" id="topKForm">
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="topK" name="topK" min="1" placeholder="Number of products..." value="{{ topK_query|default('', true) }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit">Sort by Price</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-6 mb-3">
+                <form action="/" method="get" class="filter-form">
+                    <div class="input-group">
+                        <select class="custom-select" name="category" id="categorySelect">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.catkey }}">{{ category.catname }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit">Filter by Category</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+      
+    <br><br>
+    
+    <div class="container mt-5">
+        <h2 class="mt-4 mb-4">
+            {% if search_query %}
+            Results for "{{ search_query }}":
+            {% else %}
+            Products for sale:
+            {% endif %}
+        </h2> 
+        <div class="row">
+            {% for product in avail_products %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ product.p_imageurl }}" class="card-img-top" alt="{{ product.p_productname }}" style="height: 200px; object-fit: contain;">
+                    <div class="card-body">
+                        <a href="/product/{{ product.p_productkey }}"><h5 class="card-title">{{ product.p_productname }}</h5></a>
+                        <p class="card-text">${{ product.p_price }}</p>
+                        <p class="card-text">Category: {{ product.p_catname }}</p>
+                        <div class="star-rating">
+                            <div class="filled-stars" style="width:{{ product.p_rating / 5 * 100 }}%">
+                                ★★★★★
+                            </div>
+                            ★★★★★
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- pages -->
 
-{% block content %}
-
-<div class="container mt-5">
-  <div class="row">
-      <div class="col-12 mb-3">
-          <form action="/" method="get" class="search-form">
-              <div class="input-group input-group-lg">
-                  <input type="text" class="form-control form-control-lg" name="search" id="searchInput" placeholder="Search products...">
-                  <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="submit">Search</button>
-                  </div>
-              </div>
-          </form>
-      </div>
-  </div>
-  <div class="row">
-      <div class="col-lg-6 mb-3">
-          <form method="post" id="topKForm">
-              <div class="input-group">
-                  <input type="number" class="form-control" id="topK" name="topK" min="1" placeholder="Number of products...">
-                  <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="submit">Sort by Price</button>
-                  </div>
-              </div>
-          </form>
-      </div>
-      <div class="col-lg-6 mb-3">
-          <form action="/" method="get" class="filter-form">
-              <div class="input-group">
-                  <select class="custom-select" name="category" id="categorySelect">
-                      <option value="">All Categories</option>
-                      {% for category in categories %}
-                      <option value="{{ category.catkey }}">{{ category.catname }}</option>
-                      {% endfor %}
-                  </select>
-                  <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="submit">Filter by Category</button>
-                  </div>
-              </div>
-          </form>
-      </div>
-  </div>
-</div>
-
-
-
-<br><br>
-
-<div class="container mt-5">
-  <h2 class="mt-4 mb-4">Products for sale:</h2> 
-  <div class="row">
-      {% for product in avail_products %}
-      <div class="col-md-4 mb-4">
-          <div class="card">
-              <img src="{{ product.p_imageurl }}" class="card-img-top" alt="{{ product.p_productname }}" style="height: 200px; object-fit: contain;">
-              <div class="card-body">
-                  <a href="/product/{{ product.p_productkey }}"><h5 class="card-title">{{ product.p_productname }}</h5></a>
-                  <p class="card-text">${{ product.p_price }}</p>
-                  <p class="card-text">Category: {{ product.p_catname }}</p>
-              </div>
-          </div>
-      </div>
-      {% endfor %}
-  </div>
-
-  <!-- pages -->
-</div>
-
-
+</body>
 
 <br><br>
 
 <script>
-  // Wait for the DOM to be fully loaded
-  document.addEventListener('DOMContentLoaded', function() {
-    // Check if there's a stored value in Local Storage and set it as the input value
-    const savedTopK = localStorage.getItem('topKValue');
-    if (savedTopK) {
-      document.getElementById('topK').value = savedTopK;
+// Wait for the DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Handle URL parameters and set category if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category');
+    if (category) {
+        document.getElementById('categorySelect').value = category;
     }
-  
-    // Listen for form submission to store the input value
-    document.getElementById('topKForm').addEventListener('submit', function() {
-      const topKValue = document.getElementById('topK').value;
-      localStorage.setItem('topKValue', topKValue);
+
+    // Retrieve values from local storage and set them in the respective input fields
+    const savedTopK = localStorage.getItem('topK');
+    if (savedTopK) {
+        document.getElementById('topK').value = savedTopK;
+    }
+    const savedSearchInput = localStorage.getItem('searchInput');
+    if (savedSearchInput) {
+        document.getElementById('searchInput').value = savedSearchInput;
+    }
+
+    // When 'topKForm' is submitted, save the value to local storage, clear other data, and submit the form
+    document.getElementById('topKForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Stop the form from submitting in the traditional way
+        localStorage.setItem('topK', document.getElementById('topK').value);
+        localStorage.removeItem('searchInput'); // Clear the search input from local storage
+        document.querySelector('.search-form').reset(); // Reset the search form
+        document.getElementById('categorySelect').value = ""; // Reset the category selector
+        this.submit(); // Now, submit the form
     });
-  });
 
- 
-  document.addEventListener('DOMContentLoaded', (event) => {
-      // Retrieve the current URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const category = urlParams.get('category'); // Get the category parameter from the URL
+    // When 'search-form' is submitted, save the value to local storage, clear other data, and submit the form
+    document.querySelector('.search-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Stop the form from submitting in the traditional way
+        localStorage.setItem('searchInput', document.getElementById('searchInput').value);
+        localStorage.removeItem('topK'); // Clear topK from local storage
+        document.getElementById('topKForm').reset(); // Reset the topK form
+        document.getElementById('categorySelect').value = ""; // Reset the category selector
+        this.submit(); // Now, submit the form
+    });
 
-      if (category) {
-          // If there's a category selected, set it as the selected value in the dropdown
-          document.getElementById('categorySelect').value = category;
-      }
-  });
+    // When 'filter-form' is submitted, simply clear other fields without changing the form's behavior
+    document.querySelector('.filter-form').addEventListener('submit', function(event) {
+        localStorage.removeItem('topK'); // Clear topK from local storage
+        localStorage.removeItem('searchInput'); // Clear the search input from local storage
+        document.getElementById('topKForm').reset(); // Reset the topK form
+        document.querySelector('.search-form').reset(); // Reset the search form
+    });
+});
 
-  </script>
+</script>
 
 
 {% endblock %}
