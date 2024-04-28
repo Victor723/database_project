@@ -237,11 +237,22 @@ def seller_order(s_sellerkey):
     # Define the number of orders per page
     orders_per_page = 10
 
-    # Calculate the offset for the query based on the current page
-    offset = (page - 1) * orders_per_page
+    # Get sorting parameters from the query string
+    date_order = request.args.get('date_order', 'DESC')
+    status_order = request.args.get('status_order', 'DESC')
 
-    # Get order information for the specified seller key, limited by pagination
-    order_info = Seller.get_order_info(s_sellerkey, limit=orders_per_page, offset=offset)
+    # Get the search query from the request
+    search_query = request.args.get('search_query', '')
+
+    # If search query is provided, filter orders by customer name, product name, or order ID
+    if search_query:
+        order_info = Seller.search_lineitems(s_sellerkey, search_query)
+    else:
+        # Calculate the offset for the query based on the current page
+        offset = (page - 1) * orders_per_page
+
+        # Get order information for the specified seller key, limited by pagination and sorted
+        order_info = Seller.get_order_info(s_sellerkey, limit=orders_per_page, offset=offset, date_order=date_order, status_order=status_order)
 
     # Calculate the total number of orders
     total_orders = Seller.get_total_order_count(s_sellerkey)
@@ -249,8 +260,8 @@ def seller_order(s_sellerkey):
     # Calculate the total number of pages
     total_pages = (total_orders + orders_per_page - 1) // orders_per_page
 
-    # Render the template with the order information and pagination details
-    return render_template('seller_order.html', seller_key=s_sellerkey, order_info=order_info, current_page=page, total_pages=total_pages)
+    # Render the template with the order information, pagination details, and sort order
+    return render_template('seller_order.html', seller_key=s_sellerkey, order_info=order_info, current_page=page, total_pages=total_pages, date_order=date_order, status_order=status_order)
 
 
 @bp.route('/seller/<s_sellerkey>/<o_orderkey>/<l_linenumber>/detail', methods=['GET', 'POST'])
@@ -265,9 +276,17 @@ def order_details(s_sellerkey, o_orderkey, l_linenumber):
 @bp.route('/seller/<s_sellerkey>/<o_orderkey>/<l_linenumber>/finish', methods=['GET', 'POST'])
 @login_required
 def finish_order(s_sellerkey, o_orderkey, l_linenumber):
-    Seller.order_finish(s_sellerkey, o_orderkey, l_linenumber)
-    flash('Order line item marked as fulfilled.', 'success')
-    return redirect(url_for('sellers.order_details', s_sellerkey=s_sellerkey, o_orderkey=o_orderkey, l_linenumber=l_linenumber))
+    # Check if the seller has enough quantity
+    lineitem_info = Seller.get_lineitem_info(s_sellerkey, o_orderkey, l_linenumber)
+    product_key = lineitem_info['product_key']
+    inventory = Seller.check_quantity(s_sellerkey, o_orderkey, l_linenumber, product_key)
+    if inventory:
+        # If there is enough quantity, mark the order line item as fulfilled
+        Seller.order_finish(s_sellerkey, o_orderkey, l_linenumber, product_key, inventory)
+        flash('Order line item marked as fulfilled.', 'success')
+    else:
+        flash('The item is out of stock.', 'error')
+    return redirect(url_for('sellers.seller_order', s_sellerkey=s_sellerkey))
 
 
 @bp.route('/seller/<s_sellerkey>/review', methods=['GET', 'POST'])
