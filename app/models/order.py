@@ -46,33 +46,6 @@ class Order:
         # Note: total_orders is the count from the first row, which should be the same for all rows
         return orders, total_orders
 
-
-    @staticmethod
-    def check_product(userkey, productkey):
-        query = '''
-            SELECT EXISTS(
-        SELECT 1
-        FROM Orders o
-        JOIN Lineitem l ON o.o_orderkey = l.l_orderkey
-        WHERE o.o_userkey = :userkey AND l.l_productkey = :productkey
-        );
-        '''
-        result = app.db.execute(query, {'userkey': userkey, 'productkey': productkey}).scalar()
-        return result;
-
-    @staticmethod
-    def check_seller(userkey, sellerkey):
-        query = '''
-            SELECT EXISTS(
-        SELECT 1
-        FROM Orders o
-        JOIN Lineitem l ON o.o_orderkey = l.l_orderkey
-        WHERE o.o_userkey = :userkey AND l.l_sellerkey = :sellerkey
-        );
-        '''
-        result = app.db.execute(query, {'userkey': userkey, 'sellerkey': sellerkey}).scalar()
-        return result;
-
     @staticmethod
     def get_order_details(order_id):
         order_details = {}
