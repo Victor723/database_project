@@ -1,21 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<link rel="stylesheet" href="{{ url_for('static', filename='css/orders.css') }}">
-
-<div class="profile-page">
-
-    <!-- Sidebar Navigation -->
-    {% with active_page='orders', is_seller=is_seller %}
-    {% include '_user_sidebar.html' %}
-    {% endwith %}
-
-    <div class="container mt-3">
-        <div class="row">
-            <!-- Order History Column -->
-            <div class="col-12">
-                {% if orders %}
+<div class="container mt-3">
+    <div class="row">
+        <!-- Order History Column -->
+        <div class="col-12">
+            {% if orders %}
                 <h2 class="mb-4 duke-blue">Order History</h2>
                 <div class="table-responsive">
                     <table class="table">
@@ -58,7 +48,7 @@
                         {% if page > 1 %}
                             <li class="page-item"><a href="{{ url_for('orders.display_orders', page=page-1) }}" class="page-link">Previous</a></li>
                         {% endif %}
-
+                        
                         {% for i in range(1, total_pages+1) %}
                             <li class="page-item {% if i == page %}active{% endif %}"><a href="{{ url_for('orders.display_orders', page=i) }}" class="page-link">{{ i }}</a></li>
                         {% endfor %}
@@ -69,10 +59,9 @@
                     </ul>
                 </nav>
 
-                {% else %}
+            {% else %}
                 <h2 class="text-center mt-5">You have no order history.</h2>
-                {% endif %}
-            </div>
+            {% endif %}
         </div>
     </div>
 </div>

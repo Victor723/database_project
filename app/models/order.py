@@ -1,5 +1,6 @@
 from flask import current_app as app
 from app.models.productseller import ProductSeller    
+from app.models.seller import Seller
 class Order:
     def __init__(self, o_orderkey, o_userkey, o_totalprice, o_ordercreatedate):
         self.o_orderkey = o_orderkey
@@ -57,7 +58,7 @@ class Order:
         );
         '''
         result = app.db.execute(query, {'userkey': userkey, 'productkey': productkey}).scalar()
-        return result
+        return result;
 
     @staticmethod
     def check_seller(userkey, sellerkey):
@@ -90,20 +91,22 @@ class Order:
 
         # Fetch the line items for this order
         lineitems_query = """
-            SELECT p.p_productname, l.l_quantity, l.l_originalprice, (l.l_quantity * l.l_originalprice) AS subtotal, l_sellerkey
+            SELECT p.p_productname, u.u_firstname, u.u_lastname, ps_sellerkey ,l.l_quantity, l.l_originalprice, (l.l_quantity * l.l_originalprice) AS subtotal
             FROM Lineitem l
             JOIN ProductSeller ps ON l.l_productkey = ps.ps_productkey AND l.l_sellerkey = ps.ps_sellerkey
             JOIN Product p ON ps.ps_productkey = p.p_productkey
+            JOIN Seller s ON s.s_sellerkey = ps.ps_sellerkey
+            JOIN Users u ON s.s_userkey = u.u_userkey
             WHERE l.l_orderkey = :order_id
         """
         products = []
         for line_item in app.db.execute(lineitems_query, order_id=order_id):
             products.append({
-                'name': line_item[0],
-                'quantity': line_item[1],
-                'price': line_item[2],
-                'subtotal': line_item[3],
-                'sellerkey': line_item[4]
+                'product_name': line_item[0],
+                'seller_name': line_item[1] + ' ' + line_item[2],
+                'quantity': line_item[4],
+                'price': line_item[5],
+                'subtotal': line_item[6],
             })
 
         order_details['products'] = products

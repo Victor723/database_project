@@ -1,6 +1,5 @@
 from flask import current_app as app
 
-
 class Lineitem:
     def __init__(self, l_linenumber, l_orderkey, l_productkey, l_sellerkey, l_quantity, l_originalprice, l_fulfillmentdate, l_discount, l_tax):
         self.l_linenumber = l_linenumber

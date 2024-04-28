@@ -1,104 +1,51 @@
 s_sellerkey,s_userkey,s_companyname,s_registrationdate
-<<<<<<< HEAD
-1,42,Morse-Curry,2023-01-21
-2,69,Wu-Schwartz,2023-02-15
-3,34,Mendez PLC,2022-08-29
-4,61,Coleman-Chavez,2022-08-25
-5,52,"Aguilar, Davis and Serrano",2024-01-18
-6,13,"Brennan, Martinez and Day",2023-05-14
-7,100,Fowler-Hicks,2024-03-28
-8,32,Padilla Group,2022-08-19
-9,78,Owen Group,2023-04-07
-10,33,"Vargas, Spence and Martinez",2023-07-27
-11,18,Carter-Morris,2023-08-30
-12,65,Stevens and Sons,2023-06-11
-13,74,Robbins and Sons,2022-06-13
-14,84,"Jackson, Price and Whitaker",2022-12-18
-15,56,Sutton and Sons,2022-11-29
-16,70,Davis-Fuller,2022-11-16
-17,29,Woods-Miller,2024-01-23
-18,57,Miller LLC,2023-07-01
-19,56,Brown-Guerrero,2023-07-03
-20,3,Romero and Sons,2024-01-25
-21,67,Proctor Ltd,2023-08-15
-22,14,Huerta Group,2023-08-28
-23,69,"Reyes, Perez and Herring",2024-03-27
-24,29,Chambers LLC,2022-10-31
-25,95,Harrell-Moreno,2023-10-23
-26,66,Johnson Inc,2022-07-23
-27,70,"Smith, Fernandez and Nichols",2022-05-03
-28,64,"Carter, Valencia and Mitchell",2022-11-02
-29,75,Stone and Sons,2022-05-12
-30,100,Walker LLC,2022-12-18
-31,53,Montgomery-Martinez,2023-02-20
-32,98,May Inc,2023-01-20
-33,82,"Ray, Gray and Moore",2022-11-20
-34,30,Moss-Campbell,2023-12-28
-35,94,Winters Ltd,2023-09-21
-36,74,"Mason, Parker and Day",2022-06-22
-37,97,Underwood-Perez,2023-10-21
-38,66,Hubbard-Davila,2023-10-23
-39,56,Watson Ltd,2023-04-21
-40,76,Williams Group,2023-11-03
-41,13,"Gilbert, Patel and Haas",2022-11-25
-42,7,Edwards Ltd,2023-10-04
-43,28,"Hampton, Snyder and Rodriguez",2022-10-11
-44,31,"Torres, Collins and Lee",2023-04-09
-45,61,"Johnson, Bailey and Barron",2023-02-20
-46,12,Mayo-Lutz,2024-02-13
-47,60,Johnson PLC,2023-10-31
-48,32,Garcia Ltd,2022-06-17
-49,99,Herrera-Davis,2024-02-15
-50,59,"Miller, Schmitt and Anderson",2023-06-12
-=======
-1,88,Kelly LLC,2023-05-14
-2,96,Gonzalez Group,2023-03-02
-3,17,Serrano-Perez,2023-09-21
-4,93,Long-Keller,2024-03-07
-5,15,"Boone, Jones and Thornton",2024-02-12
-6,2,Spears-Guerrero,2024-01-24
-7,81,Fox-Stanley,2023-09-22
-8,16,Rodriguez-Evans,2022-07-22
-9,77,Lucas-Martinez,2023-08-06
-10,27,Johnson-Baker,2023-12-25
-11,43,Hines-Jackson,2023-07-24
-12,42,"Smith, Randall and Vang",2022-08-09
-13,3,Martin-Hamilton,2023-10-28
-14,31,Cooke Ltd,2024-03-23
-15,98,Rogers LLC,2023-01-02
-16,89,Neal-Schmidt,2024-03-31
-17,28,Colon Inc,2023-01-27
-18,39,"Miller, Davis and Johnson",2023-09-01
-19,76,Turner LLC,2022-07-04
-20,70,Sharp-Molina,2023-04-17
-21,19,Rodriguez Inc,2023-02-06
-22,92,Velasquez Group,2023-09-06
-23,33,Jones Inc,2022-08-18
-24,42,Brown-Maxwell,2022-05-08
-25,13,"Mcguire, Bruce and Howard",2022-05-12
-26,65,Lewis-Roberson,2023-03-04
-27,82,Morgan-Garcia,2023-07-31
-28,56,Smith Inc,2022-11-12
-29,32,Martinez LLC,2023-02-09
-30,70,Frederick Ltd,2023-10-13
-31,35,Anderson-Chapman,2023-01-02
-32,79,Horn-Robbins,2024-03-06
-33,20,Scott-Travis,2023-04-12
-34,41,Brown-Gibson,2022-07-16
-35,71,"Villa, Kane and Castillo",2023-09-04
-36,59,"Gomez, Oconnor and Reyes",2023-02-16
-37,77,Hughes-Little,2024-03-16
-38,73,"Cordova, Murray and Ball",2024-04-23
-39,8,Young Group,2022-05-12
-40,65,"Simmons, Steele and Murphy",2024-02-20
-41,9,"Becker, May and Walker",2023-11-02
-42,32,Goodman-Martin,2022-11-08
-43,99,"Smith, Wong and Robertson",2023-01-26
-44,87,Mitchell Group,2022-12-05
-45,55,"Rodriguez, Mendoza and Williams",2022-09-28
-46,54,Ellis Inc,2023-09-25
-47,37,"Blake, Walker and Harding",2023-08-16
-48,69,Cook-Simpson,2023-12-11
-49,62,Ingram-Brooks,2022-09-04
-50,82,"Williams, Duran and Farmer",2023-08-26
->>>>>>> 27f2c4d7f9b560bec32b0677cfcc1c2a67bfa620
+1,1,Williams Group,2022-12-19
+2,37,Sutton and Sons,2022-11-30
+3,48,Davis-Fuller,2022-11-17
+4,7,Woods-Miller,2024-01-24
+5,82,Miller LLC,2023-07-02
+6,3,Brown-Guerrero,2023-07-04
+7,84,Romero and Sons,2024-01-26
+8,11,Proctor Ltd,2023-08-16
+9,83,Huerta Group,2023-08-29
+10,17,"Reyes, Perez and Herring",2024-03-28
+11,17,Chambers LLC,2022-11-01
+12,16,Harrell-Moreno,2023-10-24
+13,3,Johnson Inc,2022-07-24
+14,12,"Smith, Fernandez and Nichols",2022-05-04
+15,38,"Carter, Valencia and Mitchell",2022-11-03
+16,52,Stone and Sons,2022-05-13
+17,18,Walker LLC,2022-12-19
+18,7,Montgomery-Martinez,2023-02-21
+19,97,May Inc,2023-01-21
+20,34,"Ray, Gray and Moore",2022-11-21
+21,42,Moss-Campbell,2023-12-29
+22,2,Winters Ltd,2023-09-22
+23,1,"Mason, Parker and Day",2022-06-23
+24,18,Underwood-Perez,2023-10-22
+25,23,Hubbard-Davila,2023-10-24
+26,72,Watson Ltd,2023-04-22
+27,69,Williams Group,2023-11-04
+28,83,"Gilbert, Patel and Haas",2022-11-26
+29,28,Edwards Ltd,2023-10-05
+30,100,"Hampton, Snyder and Rodriguez",2022-10-12
+31,13,"Torres, Collins and Lee",2023-04-10
+32,38,"Johnson, Bailey and Barron",2023-02-21
+33,92,Mayo-Lutz,2024-02-14
+34,97,Johnson PLC,2023-11-01
+35,9,Garcia Ltd,2022-06-18
+36,53,Herrera-Davis,2024-02-16
+37,97,"Miller, Schmitt and Anderson",2023-06-13
+38,74,Brown LLC,2023-11-12
+39,48,Moore and Sons,2023-09-14
+40,26,Meyers-Wright,2022-08-11
+41,66,"Lowery, Bailey and Rivera",2023-11-20
+42,50,Washington and Sons,2023-11-15
+43,90,"Hicks, Jackson and Clark",2022-05-06
+44,8,Contreras and Sons,2022-06-12
+45,43,Mercado LLC,2023-11-26
+46,26,Lee-Cross,2023-02-07
+47,91,Reyes-Mclaughlin,2023-04-09
+48,57,Deleon Inc,2023-05-30
+49,51,"Hall, Ross and Buchanan",2024-03-16
+50,88,"Smith, Carpenter and Golden",2022-09-06
