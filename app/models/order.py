@@ -8,7 +8,7 @@ class Order:
         self.o_ordercreatedate = o_ordercreatedate
 
     @staticmethod
-    def get_orders(o_userkey, offset=0, per_page=10, start_date=None, end_date=None, pending_only=False):
+    def get_orders(o_userkey, offset=0, per_page=10, start_date=None, end_date=None, mode='all', product_names=[]):
         condition_filter = ""
         params = {'o_userkey': o_userkey, 'offset': offset, 'per_page': per_page}
         if start_date:
@@ -17,8 +17,17 @@ class Order:
         if end_date:
             condition_filter += " AND o.o_ordercreatedate <= :end_date"
             params['end_date'] = end_date.strftime('%Y-%m-%d')
-        if pending_only:
+        if mode == 'pending':
             condition_filter += " AND o.o_fulfillmentdate IS NULL"
+        elif mode == 'completed':
+            condition_filter += " AND o.o_fulfillmentdate IS NOT NULL"
+
+        # Use a subquery to filter orders that contain at least one of the specified products
+        product_filter = ""
+        if product_names:
+            params['product_names'] = tuple(product_names) 
+            product_filter = f"AND EXISTS (SELECT 1 FROM Lineitem li JOIN Product p ON li.l_productkey = p.p_productkey WHERE li.l_orderkey = o.o_orderkey AND p.p_productname IN :product_names)"
+
 
         query = f'''
             SELECT 
@@ -34,6 +43,7 @@ class Order:
             WHERE 
                 o.o_userkey = :o_userkey
                 {condition_filter}
+                {product_filter}
             GROUP BY 
                 o.o_orderkey
             ORDER BY 

@@ -11,6 +11,8 @@ from decimal import Decimal
 from .models.user import User
 from .models.seller import Seller
 from.models.order import Order
+from .models.productreview import ProductReview
+from .models.sellerreview import SellerReview
 
 from flask import Blueprint
 bp = Blueprint('users', __name__)
@@ -43,24 +45,36 @@ def login():
 
 
 
+class RequiredIfSeller(object): # makes a field required if the register_as_seller field is set to True.
+    def __init__(self, message=None):
+        if not message:
+            message = 'This field is required.'
+        self.message = message
+
+    def __call__(self, form, field):
+        if form.register_as_seller.data:
+            if not field.data or not field.data.strip():
+                raise ValidationError(self.message)
+            
 class RegistrationForm(FlaskForm):
-    firstname = StringField('First Name', validators=[DataRequired()])
-    lastname = StringField('Last Name', validators=[DataRequired()])
+    first_name = StringField('First Name', validators=[DataRequired()])
+    last_name = StringField('Last Name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
-    companyname = StringField('Company Name')
-    submit_user = SubmitField('Sign up')
-    submit_seller = SubmitField('Sign up as a seller')
+    company_name = StringField('Company Name', validators=[RequiredIfSeller()])
+    street_address = StringField('Street Address', validators=[RequiredIfSeller()])
+    country = StringField('Country', validators=[RequiredIfSeller()])
+    state_region = StringField('Region / State', validators=[RequiredIfSeller()])
+    city = StringField('City', validators=[RequiredIfSeller()])
+    zip_code = StringField('Zip Code', validators=[RequiredIfSeller()])
+    phone_number = StringField('Phone Number', validators=[RequiredIfSeller()])
+    register_as_seller = BooleanField('Register as a seller')  # Checkbox to register as a seller
+    submit = SubmitField('Sign up')
 
     def validate_email(self, email):
         if User.email_exists(email.data):
             raise ValidationError('Already a user with this email.')
-        
-    def validate_companyname(self, field):
-        if 'submit_seller' in request.form and (not field.data or not field.data.strip()):
-            raise ValidationError('Company name is required for sellers.')
-
 
 def get_country_choices():
     url = "https://restcountries.com/v3.1/all"
@@ -68,32 +82,42 @@ def get_country_choices():
         response = requests.get(url)
         response.raise_for_status()  # Raise an exception for HTTP errors
         countries = response.json()
-        # Extract country names and codes; you can adjust the fields as needed
-        country_choices = [(country['cca2'], country['name']['common']) for country in countries if 'cca2' in country and 'name' in country]
-        return [("","")] + sorted(country_choices, key=lambda choice: choice[1])
+
+        country_choices = [(country['cca2'], country['name']['common']) for country in countries 
+                           if 'cca2' in country and 'name' in country]
+        # add one empty string pair as placeholder and return
+        return [("","")] + sorted(country_choices, key=lambda choice: choice[1]) 
     except requests.RequestException as e:
         print(f"Error fetching countries: {e}")
-        return []  # Return an empty list in case of error
+        return [] 
     
 
 
-@bp.route('/register', methods=['GET', 'POST'])
+@bp.route('/user_register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index.index'))
     form = RegistrationForm()
-
+    form.country.choices = get_country_choices()
     if form.validate_on_submit():
-        account_type = 'seller' if form.submit_seller.data else 'user'
-        user = User.register(form.email.data,
-                         form.password.data,
-                         form.firstname.data,
-                         form.lastname.data,
-                         form.companyname.data)
+        checked = form.register_as_seller.data
+        email = form.email.data
+        password = form.password.data
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        company_name = form.company_name.data if checked else None
+        street_address = form.street_address.data if checked else None
+        city = form.city.data if checked else None
+        state_region = form.state_region.data if checked else None
+        zip_code = form.zip_code.data if checked else None
+        country = form.country.data if checked else None
+        phone_number = form.phone_number.data if checked else None
+        user = User.register(email, password, first_name, last_name, company_name, street_address, 
+                             city, state_region, zip_code, country, phone_number)
         if user: 
-            if account_type == 'seller':
+            if checked:
                 sellerkey = Seller.find_max_sellerkey() + 1  # Get the next available seller key
-                Seller.register(sellerkey, user.userkey, user.companyname, date.today())
+                Seller.register(sellerkey, user.user_key, user.company_name, date.today())
 
             login_user(user) # help users skip log in once registered for the first time
             next_page = request.args.get('next')
@@ -101,7 +125,7 @@ def register():
                 next_page = url_for('index.index')
             return redirect(next_page)
         
-    return render_template('register.html', title='Register', form=form)
+    return render_template('user_register.html', title='Register', form=form)
 
 
 
@@ -113,8 +137,8 @@ def logout():
 
 
 class UserDetailsForm(FlaskForm):
-    firstname = StringField('First Name', validators=[])
-    lastname = StringField('Last Name', validators=[])
+    first_name = StringField('First Name', validators=[])
+    last_name = StringField('Last Name', validators=[])
     email = StringField('Email', validators=[Email(), Optional()])
     submit_details = SubmitField('Save Changes')
 
@@ -129,7 +153,6 @@ class ChangePasswordForm(FlaskForm):
     submit_password = SubmitField('Save Password')
 
 
-
 @bp.route('/user_details', methods=['GET', 'POST'])
 @login_required
 def user_details():
@@ -137,24 +160,23 @@ def user_details():
     password_form = ChangePasswordForm()
     if request.method == 'POST':
         if 'submit_details' in request.form:
-            if (user_details_form.email.data or user_details_form.firstname.data or user_details_form.lastname.data):
+            if (user_details_form.email.data or user_details_form.first_name.data or user_details_form.last_name.data):
                 if user_details_form.validate_on_submit():
                     try:
                         User.update_user_details(
-                            current_user.userkey,
+                            current_user.user_key,
                             user_details_form.email.data,
-                            user_details_form.firstname.data,
-                            user_details_form.lastname.data
+                            user_details_form.first_name.data,
+                            user_details_form.last_name.data
                         )
-                        # flash('Your account details have been updated.', 'success')
                     except Exception as e:
                         flash(str(e), 'error')
                     return redirect(url_for('users.user_details'))
             
         if 'submit_password' in request.form and password_form.validate_on_submit():
             try:
-                if User.check_password(current_user.userkey, password_form.current_password.data):
-                    User.update_password(current_user.userkey, password_form.new_password.data)
+                if User.check_password(current_user.user_key, password_form.current_password.data):
+                    User.update_password(current_user.user_key, password_form.new_password.data)
                     flash('Your password has been changed.', 'success')
                 else:
                     flash('Current password is incorrect.', 'error')
@@ -168,20 +190,20 @@ def user_details():
 @bp.route('/user_profile', methods=['GET', 'POST'])
 @login_required
 def user_profile():
-    user_order_counts = Order.get_order_counts(current_user.userkey)
-    current_app.logger.info(f"{current_user.userkey} ") 
+    user_order_counts = Order.get_order_counts(current_user.user_key)
+    current_app.logger.info(f"{current_user.user_key} ") 
     return render_template('user_profile.html',current_user=current_user, user_order_counts=user_order_counts)
 
 
 
 class ChangeAddressForm(FlaskForm):
-    companyname = StringField('Company Name')
-    streetaddress = StringField('Street Address')
+    company_name = StringField('Company Name')
+    street_address = StringField('Street Address')
     country = StringField('Country')
-    stateregion = StringField('Region / State')
+    state_region = StringField('Region / State')
     city = StringField('City')
-    zipcode = StringField('Zip Code')
-    phonenumber = StringField('Phone Number', validators=[
+    zip_code = StringField('Zip Code')
+    phone_number = StringField('Phone Number', validators=[
         Optional(),
         Regexp(regex=r'^(?:\+?1\s*(?:[.-]\s*)?)?(?:(\(\s*\d{3}\s*\))|\d{3})\s*(?:[.-]\s*)?\d{3}\s*(?:[.-]\s*)?\d{4}$',
             message='Invalid phone number; Format must be XXX-XXX-XXXX or +1 XXX-XXX-XXXX; "-" is optional')
@@ -189,7 +211,7 @@ class ChangeAddressForm(FlaskForm):
     submit = SubmitField('Save Changes')
 
     def validate_companyname(self, field):
-        if Seller.get_sellerkey(current_user.userkey):
+        if Seller.get_sellerkey(current_user.user_key):
             if field.data and not field.data.strip(): # if empty spaces are filled out in the field
                 raise ValidationError('Company name cannot be empty.')
         
@@ -201,26 +223,25 @@ def user_address():
     form.country.choices = get_country_choices()
 
     if 'submit' in request.form:
-        if (form.companyname.data or 
-            form.streetaddress.data or
+        if (form.company_name.data or 
+            form.street_address.data or
             form.country.data != current_user.country or 
-            form.stateregion.data or
+            form.state_region.data or
             form.city.data or 
-            form.zipcode.data or
-            form.phonenumber.data):
+            form.zip_code.data or
+            form.phone_number.data):
             if form.validate_on_submit():
                 try:
                     User.update_address(
-                        current_user.userkey,
-                        form.companyname.data,
-                        form.streetaddress.data,
+                        current_user.user_key,
+                        form.company_name.data,
+                        form.street_address.data,
                         form.country.data,
-                        form.stateregion.data,
+                        form.state_region.data,
                         form.city.data,
-                        form.zipcode.data,
-                        form.phonenumber.data
+                        form.zip_code.data,
+                        form.phone_number.data
                     )
-                    # flash('Your address have been updated.', 'success')
                 except Exception as e:
                     flash(str(e), 'error')
                 return redirect(url_for('users.user_address'))
@@ -308,16 +329,14 @@ def manage_user_balance():
                 flash('Insufficient funds', 'error')
                 return redirect(url_for('users.manage_user_balance'))
             amount = -amount
-        new_balance = current_user.balance + amount
         try:
-            User.update_balance(current_user.userkey, amount, new_balance)
-            # flash('Balance updated successfully', 'success')
+            User.update_balance(current_user.user_key, amount)
         except Exception as e:
             flash(str(e), 'error')
         return redirect(url_for('users.manage_user_balance'))
     
-    weekly_expenditure = Order.get_weekly_expenditure(current_user.userkey)
-    monthly_expenditure = Order.get_monthly_expenditure(current_user.userkey)
+    weekly_expenditure = Order.get_weekly_expenditure(current_user.user_key)
+    monthly_expenditure = Order.get_monthly_expenditure(current_user.user_key)
 
     if weekly_expenditure and monthly_expenditure:
         filled_weekly_expenditure = fill_missing_weeks(weekly_expenditure)
@@ -327,9 +346,9 @@ def manage_user_balance():
         filled_monthly_expenditure = []
         
     return render_template('user_balance.html', 
-                        form=form, 
-                        filled_monthly_expenditure=filled_monthly_expenditure,
-                        filled_weekly_expenditure=filled_weekly_expenditure)
+                           form=form, 
+                           filled_monthly_expenditure=filled_monthly_expenditure,
+                           filled_weekly_expenditure=filled_weekly_expenditure)
 
 
 @bp.route('/update_spending_summary', methods=['GET'])
@@ -337,21 +356,19 @@ def manage_user_balance():
 def update_spending_summary():
     start_date = request.args.get('start', type=str)
     end_date = request.args.get('end', type=str)
-    current_app.logger.info(f"{start_date} {end_date}") 
+    # current_app.logger.info(f"{start_date} {end_date}") 
     if start_date and end_date:
         try:
             start_date = datetime.strptime(start_date, '%Y-%m-%d')
             end_date = datetime.strptime(end_date, '%Y-%m-%d')
-            spending_summary = Order.get_user_spending_summary(current_user.userkey, start_date, end_date)
+            spending_summary = Order.get_user_spending_summary(current_user.user_key, start_date, end_date)
             spending_summary = [{'category': ele[0], 'amount': float(ele[1])} for ele in spending_summary]
             spending_summary = sorted(spending_summary, key=lambda x: x['amount'], reverse=True)
             spending_sum = sum(ele['amount'] for ele in spending_summary[1:])
             for i in range(1,len(spending_summary)):
                 spending_summary[i]['percentage'] = round((spending_summary[i]['amount'] / spending_sum)*100, 1)
 
-            # total_spending, spending_summary = spending_summary[0], spending_summary[1:]
             # current_app.logger.info(f"{total_spending}") 
-            # current_app.logger.info(f"{spending_summary}")
             return jsonify(spending_summary)
         except Exception as e:
             current_app.logger.error(f'Error fetching spending summary: {e}')
@@ -361,28 +378,26 @@ def update_spending_summary():
 
 
 class BecomeSellerForm(FlaskForm):
-    companyname = StringField('Your company name:', validators=[DataRequired()])
+    company_name = StringField('Your company name:', validators=[DataRequired()])
     next = HiddenField()
     submit = SubmitField('Continue')
 
-# qanderson@example.net
+
 @bp.route('/become_a_seller', methods=['POST'])
 @login_required
 def become_a_seller():
     become_seller_form = BecomeSellerForm()
     if 'submit' in request.form:
-        User.update_address(userkey=current_user.userkey, companyname=become_seller_form.companyname.data)
-        if not Seller.get_sellerkey(current_user.userkey):  # Check if current user is not already a seller
+        if not Seller.get_sellerkey(current_user.user_key):  # if current user is not already a seller
             try:
+                User.update_address(user_key=current_user.user_key, company_name=become_seller_form.company_name.data)
                 nxt_sellerkey = Seller.find_max_sellerkey() + 1  # Get the next available seller key
-                companyname = become_seller_form.companyname.data
-                registrationdate = date.today() 
-                # User.update_address(userkey=current_user.userkey, companyname=companyname)
-                Seller.register(sellerkey=nxt_sellerkey, userkey=current_user.userkey, companyname=companyname, registrationdate=registrationdate)
+                Seller.register(sellerkey=nxt_sellerkey, userkey=current_user.user_key, 
+                                companyname=become_seller_form.company_name.data, registrationdate=date.today())
                 flash('You have successfully become a seller!', 'success')
             except Exception as e:
                 flash(str(e), 'error')
-        else:
+        else: # just in case. Usually users can't see this button if they are already sellers
             flash('You are already registered as a seller.', 'info')
     return redirect(become_seller_form.next.data)
 
@@ -390,9 +405,8 @@ def become_a_seller():
 @bp.route('/Switch_to_seller', methods=['GET','POST'])
 @login_required
 def switch_to_seller():
-    userkey = current_user.userkey
-    sellerkey = Seller.get_sellerkey(userkey)
-    if sellerkey is None: 
+    sellerkey = Seller.get_sellerkey(current_user.user_key)
+    if sellerkey is None: # just in case. Usually users can't see this button if they aren't sellers
         flash('You are not a seller. Register first.', 'info')
         return redirect(url_for('users.user_profile'))
     else:
@@ -417,15 +431,30 @@ def upload_profile_image():
     file = request.files['profile_image']
     if file and allowed_file(file.filename):  # Make sure the file exists and is of an allowed type
         unique_id = uuid.uuid4().hex  # Generates a random UUID
-        filename = f"user_profile_pic_{current_user.userkey}_{unique_id}{get_extension(file.filename)}"
+        filename = f"user_profile_pic_{current_user.user_key}_{unique_id}{get_extension(file.filename)}"
         filepath = os.path.join(current_app.root_path, 'static', 'img', filename)
         file.save(filepath)
         try:
-            User.update_imageurl(current_user.userkey, 'img/'+filename)
+            User.update_image_url(current_user.user_key, 'img/'+filename)
         except Exception as e:
             flash(str(e), 'error')
     return redirect(url_for('users.user_profile'))
 
+
+@bp.route('/public_view', methods=['GET','POST'])
+def public_user_profile():
+
+    user_key = 87
+
+    is_seller = True if Seller.get_sellerkey(user_key) else False
+    user_info = User.get_for_public_view(user_key, is_seller)
+    current_app.logger.info(f"{user_info} {is_seller}")
+
+    user_review = ProductReview.get_user_reviews(user_key)
+    seller_review = SellerReview.get_user_reviews(user_key)
+    current_app.logger.info(f"{user_review} {seller_review}")
+
+    return render_template('user_public_view.html', user_info=user_info, user_review=user_review, seller_review=seller_review)
 
 
 @bp.app_context_processor
@@ -433,6 +462,6 @@ def inject_user_status():
     if not current_user.is_authenticated:
         return {'is_seller': False}
     
-    is_seller = True if Seller.get_sellerkey(current_user.userkey) else False
+    is_seller = True if Seller.get_sellerkey(current_user.user_key) else False
     return dict(is_seller=is_seller, become_seller_form=BecomeSellerForm(obj=current_user))
 

@@ -14,8 +14,9 @@ def display_orders():
     per_page = 10
     offset = (page - 1) * per_page
 
-    pending_only = request.args.get('pending_only', 'false') == 'true'  # Get pending_only parameter and convert to boolean
+    mode = request.args.get('mode', 'all')
     time_frame = request.args.get('time_frame', 'all')
+    product_name = request.args.get('product_name', '')  # Retrieve product name from query parameters
     
     current_date = datetime.now()
     start_date = None
@@ -35,16 +36,16 @@ def display_orders():
         start_date = datetime(2022, 1, 1)
         end_date = datetime(2022, 12, 31)
 
-    orders, total_orders = Order.get_orders(current_user.userkey, offset, per_page, start_date, end_date, pending_only)
+    # Convert the product_name to a list if it is not empty
+    product_names = [product_name] if product_name else []
+
+    orders, total_orders = Order.get_orders(current_user.user_key, offset, per_page, start_date, end_date, mode, product_names)
     # current_app.logger.info(f'{len(orders)}, {total_orders}')
     total_pages = (total_orders + per_page - 1) // per_page  # Calculate the total number of pages
 
     return render_template('orders.html', orders=orders, page=page, total_pages=total_pages, 
-                           time_frame=time_frame, total_orders=total_orders
-                           )
-
-
-
+                           time_frame=time_frame, total_orders=total_orders, mode=mode,
+                           product_name=product_name)
 
 
     
@@ -75,5 +76,5 @@ def order_details():
 def inject_user_status():
     if not current_user.is_authenticated:
         return {'is_seller': False}
-    is_seller = True if Seller.get_sellerkey(current_user.userkey) else False
+    is_seller = True if Seller.get_sellerkey(current_user.user_key) else False
     return dict(is_seller=is_seller)

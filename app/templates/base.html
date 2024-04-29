@@ -149,7 +149,7 @@
     </a>
     <div style="color:aliceblue; text-align: right; margin-bottom: 25px">
       {% if current_user.is_authenticated %}
-      <span style="font-size: 24px; margin-right: 10px;">Hello {{ current_user.firstname }}!</span>
+      <span style="font-size: 24px; margin-right: 10px;">Hello {{ current_user.first_name }}!</span>
       <!-- <a href="{{ url_for('users.user_profile') }}" type="button" class="btn btn-light">Profile</a> -->
       <a href="{{ url_for('users.user_profile') }}" class="icon-button">
         <img src="{{ url_for('static', filename='img/user_icon.png') }}" alt="User Icon"

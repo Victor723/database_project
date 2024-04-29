@@ -108,27 +108,36 @@
     justify-content: start; /* Align cards to the start of the container */
     align-items: center;
     padding: 20px;
-    gap: 5px; /* Use the gap property to add space between flex items */
+    gap: 10px; /* Use the gap property to add space between flex items */
 }
 
+
+.order-card-link {
+    flex: 1; /* This makes each link fill the space evenly */
+    display: block; /* Makes the link block-level to contain the flex items */
+    text-decoration: none !important; /* Removes underline from links */
+    color: inherit; /* Inherit the text color so it doesn't change the color of contents */
+    margin: 0 10px; /* This will add space to the left and right of each card, if needed here */
+}
 
 .order-card {
     display: flex;
     align-items: center; /* Vertically center the items */
     justify-content: start; /* Align items to the start of the card */
-    flex-grow: 1;
-    margin: 0 10px; /* This will add space to the left and right of each card */
+    width: 100%; /* Ensure it fills the link */
     padding: 20px;
+    padding-left: 50px; /* Increase left padding to push content to the right */
     text-align: left; /* Align text to the left */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    background-color: #FFF; /* Default background, override in specific classes */
+    min-height: 130px; /* Set a minimum height */
 }
-
 
 .total-orders {
     background-color: #EAF6FE; /* Light blue */
 }
-/* #e9f5ff */
+
 .pending-orders {
     background-color: #FFF3EB; /* Light orange */
 }
@@ -177,4 +186,17 @@
     height: 1px;
     background-color: #dee2e6; /* Light grey color, adjust as needed */
     margin: 5px 20px; /* Adds some vertical space and horizontal padding */
+}
+
+.nav-link,
+.btn-switch,
+.input-field,
+.order-card {
+    transition: all 0.3s ease; /* Smooth transition for all interactive elements */
+}
+
+.input-field:hover,
+.input-field:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 8px rgba(0, 86, 179, 0.2);
 }

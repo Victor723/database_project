@@ -14,7 +14,7 @@ bp = Blueprint('myreview', __name__)
 @bp.route('/myreview', methods=['GET'])
 @login_required
 def get_myreview():
-    u_userkey = current_user.userkey
+    u_userkey = current_user.user_key
     productreviews = ProductReview.get_user_reviews(u_userkey)
     sellerreviews = SellerReview.get_user_reviews(u_userkey)
     # display all reviews written by the user

@@ -5,7 +5,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
         function validateCompanyForm() {
-            var companyName = document.getElementById('{{ become_seller_form.companyname.id }}').value;
+            var companyName = document.getElementById('{{ become_seller_form.company_name.id }}').value;
             var errorSpan = document.getElementById('companyNameError');
             if (!companyName.trim()) {
                 errorSpan.textContent = 'Company name cannot be empty.';
@@ -29,9 +29,6 @@
 
         <a class="nav-link {{ 'active' if active_page == 'details' }}"
             href="{{ url_for('users.user_details') }}">Account & Security</a>
-
-        <!-- <a class="nav-link {{ 'active' if active_page == 'cart' }}"
-            href="{{ url_for('cart.shopping_cart') }}">Shopping Cart</a> -->
 
         <a class="nav-link {{ 'active' if active_page == 'address' }}"
             href="{{ url_for('users.user_address') }}">Address</a>
@@ -79,8 +76,8 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        {{ become_seller_form.companyname.label(class="col-form-label") }}
-                        {{ become_seller_form.companyname(class="form-control") }}
+                        {{ become_seller_form.company_name.label(class="col-form-label") }}
+                        {{ become_seller_form.company_name(class="form-control") }}
                         <span class="text-danger" id="companyNameError"></span>
                     </div>
                     <div class="modal-footer">
