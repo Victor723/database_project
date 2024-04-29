@@ -112,14 +112,24 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('searchInput').value = savedSearchInput;
     }
 
-    // When 'topKForm' is submitted, save the value to local storage, clear other data, and submit the form
+    // When 'topKForm' is submitted, save the value to local storage, update URL, and submit the form
     document.getElementById('topKForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Stop the form from submitting in the traditional way
-        localStorage.setItem('topK', document.getElementById('topK').value);
+        const topKValue = document.getElementById('topK').value;
+        localStorage.setItem('topK', topKValue);
         localStorage.removeItem('searchInput'); // Clear the search input from local storage
         document.querySelector('.search-form').reset(); // Reset the search form
         document.getElementById('categorySelect').value = ""; // Reset the category selector
-        this.submit(); // Now, submit the form
+
+        // Update URL with topK parameter
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('topK', topKValue);
+
+        // Remove search parameter from URL
+        currentUrl.searchParams.delete('search');
+        currentUrl.searchParams.delete('category');
+        
+        window.location.href = currentUrl.toString();
     });
 
     // When 'search-form' is submitted, save the value to local storage, clear other data, and submit the form

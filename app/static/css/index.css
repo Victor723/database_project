@@ -70,3 +70,44 @@ div#formContainer {
     overflow: hidden;
     white-space: nowrap;
 }
+
+.add-to-cart-form {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.add-to-cart-form .form-label {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.add-to-cart-form input[type="number"] {
+    width: 120px; /* Fixed width for numeric inputs */
+    text-align: center;
+}
+
+.add-to-cart-form button {
+    background-color: #035dbe;
+    border: none;
+}
+
+.add-to-cart-form button:hover {
+    background-color: #2c8cf3;
+}
+
+.card-title {
+    color: #000000; /* Theme color for headings */
+}
+.add-to-cart-form .form-control, .add-to-cart-form .btn {
+    max-width: 250px; /* Limiting width for better form control display */
+}
+
+.add-to-cart-form .form-label {
+    white-space: nowrap; /* Prevents the label from wrapping */
+}
+
+.add-to-cart-form .btn {
+    margin-top: 10px; /* Provides some spacing between the input fields and the button */
+}
