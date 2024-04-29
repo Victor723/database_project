@@ -7,4 +7,5 @@
         <input type="text" id="search_query" name="search_query" placeholder="Enter product name">
         <button type="submit" name="action" value="search">Search</button>
     </form>
+    <a href="{{ url_for('sellers.create_product', s_sellerkey=seller_key) }}" class="btn btn-primary">Create</a>
 {% endblock %}

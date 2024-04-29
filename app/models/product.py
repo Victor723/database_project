@@ -1,6 +1,5 @@
 from flask import current_app as app
 
-
 class Product:
     def __init__(self, p_productkey, p_productname, p_price, p_catname, p_description=None, p_imageurl=None, p_link=None):
         self.p_productkey = p_productkey
@@ -106,3 +105,18 @@ AND p_productname LIKE :like_pattern OR p_description LIKE :like_pattern''',
         )
 
         return search_results
+    
+    @staticmethod
+    def create_product(product_key, product_name, product_price, product_description, product_image_url, category_key):
+        app.db.execute(
+                """
+                INSERT INTO Product (p_productkey, p_productname, p_price, p_description, p_imageurl, p_catkey)
+                VALUES (:product_key, :product_name, :product_price, :product_description, :product_image_url, :category_key)
+                """,
+                product_key=product_key,
+                product_name=product_name,
+                product_price=product_price,
+                product_description=product_description,
+                product_image_url=product_image_url,
+                category_key=category_key
+        )

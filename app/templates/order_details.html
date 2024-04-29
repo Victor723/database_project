@@ -29,28 +29,33 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th scope="col">PRODUCTS</th>
+                            <th scope="col">PRODUCT</th>
+                            <th scope="col">SELLER</th>
                             <th scope="col">PRICE</th>
                             <th scope="col">QUANTITY</th>
                             <th scope="col">SUB-TOTAL</th>
+                            <th scope="col">STATUS</th>
+                            <th scope="col">WRITE A REVIEW</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for product in order_details.products %}
                         <tr>
-                            <td>{{ product.name }}</td>
+                            <td>{{ product.product_name }}</td>
+                            <td>{{ product.seller_name }}</td>
                             <td>${{ '%.2f'|format(product.price) }}</td>
                             <td>x{{ product.quantity }}</td>
                             <td>${{ '%.2f'|format(product.subtotal) }}</td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-secondary review-button" data-product-id="{{ product.id }}">Review</button>
-                            </td>
+                           
                             <td>
                                 {% if product.fulfillment_date %}
-                                    Fulfilled on {{ product.fulfillment_date.strftime('%b %d, %Y') }}
+                                    Fulfilled on {{ product.fulfillment_date}}
                                 {% else %}
-                                    Not Fulfilled
+                                    Not Fulfilled Yet
                                 {% endif %}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-secondary review-button" data-product-id="{{ product.id }}">Review</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -58,7 +63,7 @@
                 </table>
             </div>
         
-        {% if order_details.is_fulfilled %}
+        {% if fulfilled_date %}
         <div class="alert alert-success" role="alert">
             This order is fully fulfilled.
         </div>

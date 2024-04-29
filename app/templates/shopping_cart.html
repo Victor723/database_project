@@ -15,6 +15,7 @@
                                 <th scope="col">Seller</th>
                                 <th scope="col">Price</th>
                                 <th scope="col">Quantity</th>
+                                <th scope="col">Subtotal</th>
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
@@ -35,6 +36,7 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td>${{ "%.2f"|format(item['subtotal']) }}</td>
                                 <td>
                                     <button class="btn btn-primary" type="button" onclick="moveToSaveForLater('{{ item.product_key }}', '{{ item.seller_key }}', this)">
                                         Save for Later
@@ -48,7 +50,7 @@
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="5" class="text-center">No items in the cart.</td>
+                                <td colspan="6" class="text-center">No items in the cart.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -102,7 +104,7 @@ function updateQuantity(productKey, sellerKey, inputElementId)  {
     }
     const newQuantity = quantityElement.value;
 
-    fetch('/update-quantity', {
+    fetch('/update-incart-quantity', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
