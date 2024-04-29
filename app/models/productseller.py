@@ -1,4 +1,5 @@
 from flask import current_app as app
+from datetime import date
 
 
 class ProductSeller():
@@ -155,3 +156,46 @@ class ProductSeller():
         sellerkeys = [sellerkey[0] for sellerkey in row]
         
         return sellerkeys
+ 
+    @staticmethod
+    def check_inventory_and_return_status(product_key, seller_key, quantity):
+        result = app.db.execute('''
+            SELECT ps_quantity FROM ProductSeller 
+            WHERE ps_productkey = :product_key AND ps_sellerkey = :seller_key
+        ''', 
+        product_key=product_key, 
+        seller_key=seller_key)
+
+        if not result or result[0][0] == 0:
+            return {"available": False, "message": "This product is not available."}
+        available_quantity = result[0][0]
+        
+        if available_quantity < quantity:
+            return {
+                "available": True,
+                "message": f"This seller has only {available_quantity} of these available. To see if more are available from another seller, go to the product detail page.",
+                "quantity": available_quantity,
+                "product_key": product_key  # Include product key for linking
+            }
+        
+        return {"available": True, "message": "Product available", "quantity": quantity}
+
+    @staticmethod
+    def create_productseller(product_key, seller_key, quantity, discount, price):
+        try:
+            app.db.execute(
+                """
+                INSERT INTO ProductSeller (ps_productkey, ps_sellerkey, ps_quantity, ps_price, ps_discount, ps_createtime)
+                VALUES (:product_key, :seller_key, :quantity, :price, :discount, :createtime)
+                """,
+                product_key=product_key,
+                seller_key=seller_key,
+                quantity=quantity,
+                discount=discount,
+                price=price,
+                createtime=date.today()  # Assuming current date
+            )
+            return True  # Indicate success
+        except Exception as e:
+            print(e)  # Handle exception, such as logging error
+            return False  # Indicate failure

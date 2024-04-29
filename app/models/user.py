@@ -31,7 +31,7 @@ class User(UserMixin):
     def get_balance(user_key):
         try:
             rows = app.db.execute("""
-                SELECT u_balance
+                SELECT ROUND(u_balance, 2)
                 FROM Users
                 WHERE u_userkey = :user_key
                 """,
@@ -252,7 +252,7 @@ class User(UserMixin):
         try:
             rows = app.db.execute("""
                 UPDATE Users
-                SET u_balance = u_balance + :amount
+                SET u_balance = ROUND(u_balance + :amount, 2)
                 WHERE u_userkey = :userkey
                 RETURNING u_userkey
                 """,
@@ -279,4 +279,5 @@ class User(UserMixin):
             return rows[0][0] == user_key
         except Exception as e:
             app.logger.error(f"An error occurred: {e}") 
+            return False
             return False

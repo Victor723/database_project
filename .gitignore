@@ -6,8 +6,9 @@ poetry.lock
 ./app/static/img/*.jpeg
 ./app/static/img/*.jpg
 ./app/static/img/*.png
+*.csv
 
 .flaskenv
 temp_backup.DS_Store
 
-db/.DS_Store
+db/.DS_Store.DS_Store
