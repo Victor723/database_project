@@ -1,6 +1,5 @@
 from flask import current_app as app
 
-
 class Category:
     def __init__(self, catkey, catname):
         self.catkey = catkey

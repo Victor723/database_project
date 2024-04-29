@@ -1,6 +1,5 @@
 from flask import current_app as app
-from app.models.productseller import ProductSeller    
-from app.models.seller import Seller
+
 class Order:
     def __init__(self, o_orderkey, o_userkey, o_totalprice, o_ordercreatedate):
         self.o_orderkey = o_orderkey
@@ -55,7 +54,7 @@ class Order:
         for order_result in app.db.execute(order_query, order_id=order_id):
             order_details['order_number'] = order_result[0]
             order_details['total_price'] = order_result[1]
-            order_details['order_date'] = order_result[2].strftime('%b %d, %Y %H:%M:%S')
+            order_details['order_date'] = order_result[2].strftime('%Y-%m-%d')
 
             break  # Break after the first (and only) iteration
 
@@ -64,7 +63,13 @@ class Order:
 
         # Fetch the line items for this order
         lineitems_query = """
-            SELECT p.p_productname, u.u_firstname, u.u_lastname, ps_sellerkey ,l.l_quantity, l.l_originalprice, (l.l_quantity * l.l_originalprice) AS subtotal
+            SELECT p.p_productname, 
+            u.u_firstname, u.u_lastname, 
+            ps_sellerkey, 
+            l.l_quantity, 
+            l.l_originalprice, 
+            l.l_fulfillmentdate,
+            (l.l_quantity * l.l_originalprice) AS subtotal
             FROM Lineitem l
             JOIN ProductSeller ps ON l.l_productkey = ps.ps_productkey AND l.l_sellerkey = ps.ps_sellerkey
             JOIN Product p ON ps.ps_productkey = p.p_productkey
@@ -79,9 +84,30 @@ class Order:
                 'seller_name': line_item[1] + ' ' + line_item[2],
                 'quantity': line_item[4],
                 'price': line_item[5],
-                'subtotal': line_item[6],
+                'fulfillment_date': line_item[6].strftime('%Y-%m-%d') if line_item[6] else None,
+                'subtotal': line_item[7],
             })
 
         order_details['products'] = products
-
         return order_details
+    
+    @staticmethod
+    def update_fullfilldate(order_id, date):
+        query = '''
+            UPDATE Orders
+            SET o_fulfillmentdate = :date
+            WHERE o_orderkey = :order_id
+            RETURNING o_fulfillmentdate;
+        ''' 
+        result = app.db.execute(query, order_id=order_id, date=date)
+        return result[0][0] if result else None
+    
+    @staticmethod
+    def get_fullfilldate(order_id):
+        query = '''
+            SELECT o_fulfillmentdate
+            FROM Orders
+            WHERE o_orderkey = :order_id;
+        ''' 
+        result = app.db.execute(query, order_id=order_id)
+        return result[0][0] if result else None

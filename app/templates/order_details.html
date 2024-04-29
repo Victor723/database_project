@@ -49,9 +49,9 @@
                            
                             <td>
                                 {% if product.fulfillment_date %}
-                                    Fulfilled on {{ product.fulfillment_date.strftime('%b %d, %Y') }}
+                                    Fulfilled on {{ product.fulfillment_date}}
                                 {% else %}
-                                    Not Fulfilled
+                                    Not Fulfilled Yet
                                 {% endif %}
                             </td>
                             <td>
@@ -63,7 +63,7 @@
                 </table>
             </div>
         
-        {% if is_fulfilled %}
+        {% if fulfilled_date %}
         <div class="alert alert-success" role="alert">
             This order is fully fulfilled.
         </div>

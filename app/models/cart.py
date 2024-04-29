@@ -56,7 +56,10 @@ class Cart():
         WHERE c.c_userkey = :c_userkey AND pc_savequantity > 0
         ''',
                                 c_userkey=c_userkey)
-        return rows if rows else None
+        
+        keys = ['product_key', 'p_productname', 'u_firstname', 'u_lastname', 'ps_price', 'seller_key', 'pc_savequantity']
+        save_items = [dict(zip(keys, row)) for row in rows]
+        return save_items
     
     @staticmethod
     def get_incart_total_cost_by_c_userkey(c_userkey):
@@ -98,7 +101,7 @@ class Cart():
             # Start by creating a new order and obtaining the order key
             insert_order_query = '''
                 INSERT INTO Orders (o_userkey, o_totalprice, o_ordercreatedate)
-                VALUES (:user_key, 0, CURRENT_DATE)
+                VALUES (:user_key, 0, CURRENT_TIMESTAMP)
                 RETURNING o_orderkey;
             '''
             # Execute the query and retrieve the new order key directly
@@ -123,7 +126,7 @@ class Cart():
                 ),
                 UpdatedOrder AS (
                     UPDATE Orders
-                    SET o_totalprice = (SELECT SUM(line_total) FROM MovedItems)
+                    SET o_totalprice = COALESCE((SELECT SUM(line_total) FROM MovedItems), 0)
                     WHERE o_orderkey = :order_key
                 )
                 UPDATE ProductCart

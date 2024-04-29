@@ -26,7 +26,7 @@
                                 <td>${{ "%.2f"|format(item.ps_price) }}</td>
                                 <td>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" value="{{ item.savequantity }}" min="1" id="quantityInput{{ loop.index }}">
+                                        <input type="number" class="form-control" value="{{ item.pc_savequantity }}" min="1" id="quantityInput{{ loop.index }}">
                                         <div class="input-group-append">
                                             <button class="btn btn-secondary" type="button"
                                                 onclick="updateQuantity('{{ item.product_key }}', '{{ item.seller_key }}', 'quantityInput{{ loop.index }}')">
