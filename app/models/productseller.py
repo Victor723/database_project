@@ -1,4 +1,5 @@
 from flask import current_app as app
+from datetime import date
 
 
 class ProductSeller():
@@ -155,7 +156,7 @@ class ProductSeller():
         sellerkeys = [sellerkey[0] for sellerkey in row]
         
         return sellerkeys
-    
+ 
     @staticmethod
     def check_inventory_and_return_status(product_key, seller_key, quantity):
         result = app.db.execute('''
@@ -178,3 +179,23 @@ class ProductSeller():
             }
         
         return {"available": True, "message": "Product available", "quantity": quantity}
+
+    @staticmethod
+    def create_productseller(product_key, seller_key, quantity, discount, price):
+        try:
+            app.db.execute(
+                """
+                INSERT INTO ProductSeller (ps_productkey, ps_sellerkey, ps_quantity, ps_price, ps_discount, ps_createtime)
+                VALUES (:product_key, :seller_key, :quantity, :price, :discount, :createtime)
+                """,
+                product_key=product_key,
+                seller_key=seller_key,
+                quantity=quantity,
+                discount=discount,
+                price=price,
+                createtime=date.today()  # Assuming current date
+            )
+            return True  # Indicate success
+        except Exception as e:
+            print(e)  # Handle exception, such as logging error
+            return False  # Indicate failure

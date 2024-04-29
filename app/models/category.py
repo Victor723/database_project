@@ -22,3 +22,23 @@ SELECT cat_catkey, cat_catname
 FROM Category
 ''')
         return [Category(*row) for row in rows]
+
+    def serialize(self):
+        return {
+            'catkey': self.catkey,
+            'catname': self.catname
+        }
+    
+    @staticmethod
+    def create_category(catname):
+        try:
+            app.db.execute('''
+                INSERT INTO Category (cat_catname)
+                VALUES (:catname)
+                ''',
+                catname=catname)
+            return True
+        except Exception as e:
+            # Rollback the transaction if there's an error
+            app.db.rollback()
+            raise e
