@@ -156,7 +156,29 @@ class ProductSeller():
         sellerkeys = [sellerkey[0] for sellerkey in row]
         
         return sellerkeys
+ 
+    @staticmethod
+    def check_inventory_and_return_status(product_key, seller_key, quantity):
+        result = app.db.execute('''
+            SELECT ps_quantity FROM ProductSeller 
+            WHERE ps_productkey = :product_key AND ps_sellerkey = :seller_key
+        ''', 
+        product_key=product_key, 
+        seller_key=seller_key)
 
+        if not result or result[0][0] == 0:
+            return {"available": False, "message": "This product is not available."}
+        available_quantity = result[0][0]
+        
+        if available_quantity < quantity:
+            return {
+                "available": True,
+                "message": f"This seller has only {available_quantity} of these available. To see if more are available from another seller, go to the product detail page.",
+                "quantity": available_quantity,
+                "product_key": product_key  # Include product key for linking
+            }
+        
+        return {"available": True, "message": "Product available", "quantity": quantity}
 
     @staticmethod
     def create_productseller(product_key, seller_key, quantity, discount, price):
