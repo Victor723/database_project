@@ -15,18 +15,20 @@ bp = Blueprint('myreview', __name__)
 @login_required
 def get_myreview():
     u_userkey = current_user.userkey
-    per_page = 10  # Number of items per page
+    per_page = 5  # Number of items per page
 
-    # Get the page number from the query string, or default to 1
-    page = request.args.get('page', 1, type=int)
+    # Get page numbers for product and seller reviews from the query string
+    product_page = request.args.get('product_page', 1, type=int)
+    seller_page = request.args.get('seller_page', 1, type=int)
 
     # Fetch all reviews
     all_product_reviews = ProductReview.get_user_reviews(u_userkey)
     all_seller_reviews = SellerReview.get_user_reviews(u_userkey)
 
-    # Manually implement pagination
-    productreviews = all_product_reviews[(page-1)*per_page : page*per_page]
-    sellerreviews = all_seller_reviews[(page-1)*per_page : page*per_page]
+    # Implement pagination for each
+    productreviews = all_product_reviews[(product_page-1)*per_page : product_page*per_page]
+    sellerreviews = all_seller_reviews[(seller_page-1)*per_page : seller_page*per_page]
+
 
     total_product_pages = (len(all_product_reviews) + per_page - 1) // per_page
     total_seller_pages = (len(all_seller_reviews) + per_page - 1) // per_page
@@ -37,7 +39,8 @@ def get_myreview():
         my_seller_reviews=sellerreviews,
         total_product_pages=total_product_pages,
         total_seller_pages=total_seller_pages,
-        current_page=page
+        current_product_page=product_page,
+        current_seller_page=seller_page
     )
 
 

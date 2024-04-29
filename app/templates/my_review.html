@@ -68,6 +68,12 @@
       {% endfor %}
     </tbody>
   </table>
+   <!-- Pagination for Product Reviews -->
+  <div class="pagination">
+    {% for i in range(1, total_product_pages + 1) %}
+      <a href="{{ url_for('myreview.get_myreview', product_page=i, seller_page=current_seller_page) }}" class="{{ 'active' if i == current_product_page else '' }}">{{ i }}</a>
+    {% endfor %}
+  </div>
   {% else %}
     <p>No product reviews available.</p>
   {% endif %}
@@ -120,6 +126,12 @@
       {% endfor %}
     </tbody>
   </table>
+   <!-- Pagination for Seller Reviews -->
+   <div class="pagination">
+    {% for i in range(1, total_seller_pages + 1) %}
+      <a href="{{ url_for('myreview.get_myreview', product_page=current_product_page, seller_page=i) }}" class="{{ 'active' if i == current_seller_page else '' }}">{{ i }}</a>
+    {% endfor %}
+  </div>
   {% else %}
     <p>No seller reviews available.</p>
   {% endif %}
