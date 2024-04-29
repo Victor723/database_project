@@ -1,164 +1,156 @@
 {% extends "base.html" %}
 
-{% block title %}My Review{% endblock %}
+{% block title %}My Reviews{% endblock %}
 
 {% block content %}
+<style>
+  body { font-family: Arial, sans-serif; }
+  .table { width: 90%; margin: 20px auto; border-collapse: collapse; }
+  th, td { padding: 8px; text-align: left; border-bottom: 1px solid #DDD; }
+  th { background-color: #f2f2f2; }
+  .btn { padding: 8px 15px; color: white; background-color: #007BFF; border: none; border-radius: 4px; cursor: pointer; }
+  .btn-danger { background-color: #dc3545; }
+  .btn-edit { background-color: #ffc107; color: black; }
+  .popup-container { position: fixed; width: 300px; padding: 20px; background: white; box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 8px; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; z-index: 100; }
+  .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; }
+  .pagination { padding: 10px 0; text-align: center; }
+  .pagination a { padding: 8px 16px; text-decoration: none; color: black; border: 1px solid #ddd; margin: 0 4px; }
+  .pagination a.active { background-color: #007BFF; color: white; border: 1px solid #007BFF; }
+  .pagination a:hover { background-color: #ddd; }
+</style>
 
 {% if current_user.is_authenticated %}
-  <!-- Display All Product Reviews in a Table -->
+  <!-- Product Reviews Section -->
   {% if my_products_reviews %}
-    <h2>Product Reviews</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Product Name</th>
-          <th>Review Date</th>
-          <th>Review</th>
-          <th>Rating</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for review in my_products_reviews %}
+  <h3>Product Reviews</h3>
+  <table class="table">
+    <thead>
       <tr>
-          <td>{{ review.pr_productname }}</td>
-          <td>{{ review.pr_reviewdate }}</td>
-          <td>{{ review.pr_review }}</td>
-          <td>{{ review.pr_rating }}</td>
-          <td>
-              <!-- Edit button -->
-              <button class="openPopup" onClick = "productReviewEdit(this)" product-popup-id="editProductPopup{{ loop.index }}">Edit</button>
+        <th>Product Name</th>
+        <th>Review Date</th>
+        <th>Review</th>
+        <th>Rating</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for review in my_products_reviews %}
+      <tr>
+        <td>{{ review.pr_productname }}</td>
+        <td>{{ review.pr_reviewdate }}</td>
+        <td>{{ review.pr_review }}</td>
+        <td>{{ review.pr_rating }}</td>
+        <td>
+          <button class="btn btn-edit openPopup" onClick="togglePopup('editProductPopup{{ loop.index }}')">Edit</button>
+          <div class="popup-container" id="editProductPopup{{ loop.index }}">
+            <form action="{{ url_for('myreview.edit_product_review', pr_userkey=review.pr_userkey, pr_productkey=review.pr_productkey) }}" method="POST">
+              <label for="userInput-{{ loop.index }}">Review:</label>
+              <input type="text" id="userInput-{{ loop.index }}" name="userInput" value="{{ review.pr_review }}" required>
 
-              <!-- Popup Form, initially hidden -->
-              <div class="popup-container" style="display: none;" id="editProductPopup{{ loop.index }}">
-                  <form class="inputForm" action="{{ url_for('myreview.edit_product_review', pr_userkey=review.pr_userkey, pr_productkey=review.pr_productkey) }}" method="POST">
-                      <label for="userInput-{{ loop.index }}">Enter New Product Review:</label>
-                      <input type="text" id="userInput-{{ loop.index }}" name="userInput" required>
+              <label for="userRating-{{ loop.index }}">Rating (1-5):</label>
+              <select id="userRating-{{ loop.index }}" name="userRating" required>
+                  <option value="1" {% if review.pr_rating == 1 %} selected {% endif %}>1</option>
+                  <option value="2" {% if review.pr_rating == 2 %} selected {% endif %}>2</option>
+                  <option value="3" {% if review.pr_rating == 3 %} selected {% endif %}>3</option>
+                  <option value="4" {% if review.pr_rating == 4 %} selected {% endif %}>4</option>
+                  <option value="5" {% if review.pr_rating == 5 %} selected {% endif %}>5</option>
+              </select>
 
-                      <label for="userRating-{{ loop.index }}">Rating (1-5):</label>
-                      <select id="userRating-{{ loop.index }}" name="userRating">
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
-                          <option value="5">5</option>
-                      </select>
-
-                      <button type="submit" onsubmit="handleSubmit(event, 'editProductPopup{{ loop.index }}')" class="submitBtn">Submit</button>
-                  </form>
-              </div>
-
-              <!-- Delete button -->
-              <form action="{{ url_for('myreview.delete_product_review', pr_userkey=review.pr_userkey, pr_productkey=review.pr_productkey) }}" method="POST">
-                  <button type="submit" class="btn btn-danger">Delete</button>
-              </form>
-          </td>
+              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="button" class="btn" onClick="togglePopup('editProductPopup{{ loop.index }}')">Cancel</button>
+            </form>
+          </div>
+          <form action="{{ url_for('myreview.delete_product_review', pr_userkey=review.pr_userkey, pr_productkey=review.pr_productkey) }}" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </td>
       </tr>
       {% endfor %}
-
-      </tbody>
-    </table>
+    </tbody>
+  </table>
+  {% else %}
+    <p>No product reviews available.</p>
   {% endif %}
 
-  <!-- Display All Seller Reviews in a Table -->
+  <!-- Seller Reviews Section -->
   {% if my_seller_reviews %}
-    <h2>Seller Reviews</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Seller Name</th>
-          <th>Review Date</th>
-          <th>Review</th>
-          <th>Rating</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for review in my_seller_reviews %}
-          <tr>
-            <td>{{ review.sr_sellername }}</td>
-            <td>{{ review.sr_reviewdate }}</td>
-            <td>{{ review.sr_review }}</td>
-            <td>{{ review.sr_rating }}</td>
-            <td>
-              <!-- Edit button -->
-              <button class="openPopup" onClick = "sellerReviewEdit(this)" seller-popup-id="editSellerPopup{{ loop.index }}">Edit</button>
+  <h3>Seller Reviews</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Seller Name</th>
+        <th>Review Date</th>
+        <th>Review</th>
+        <th>Rating</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for review in my_seller_reviews %}
+      <tr>
+        <td>{{ review.sr_sellername }}</td>
+        <td>{{ review.sr_reviewdate }}</td>
+        <td>{{ review.sr_review }}</td>
+        <td>{{ review.sr_rating }}</td>
+        <td>
+          <button class="btn btn-edit openPopup" onClick="togglePopup('editSellerPopup{{ loop.index }}')">Edit</button>
+          <div class="popup-container" id="editSellerPopup{{ loop.index }}">
+            <form action="{{ url_for('myreview.edit_seller_review', sr_userkey=review.sr_userkey, sr_sellerkey=review.sr_sellerkey) }}" method="POST">
+              <label for="userInput-{{ loop.index }}">Review:</label>
+              <input type="text" id="userInput-{{ loop.index }}" name="userInput" value="{{ review.sr_review }}" required>
 
-              <!-- Popup Form, initially hidden -->
-              <div class="popup-container" style="display: none;" id="editSellerPopup{{ loop.index }}">
-                  <form class="inputForm" action="{{ url_for('myreview.edit_seller_review', sr_userkey=review.sr_userkey, sr_sellerkey=review.sr_sellerkey) }}" method="POST">
-                      <label for="userInput-{{ loop.index }}">Enter New Seller Review:</label>
-                      <input type="text" id="userInput-{{ loop.index }}" name="userInput" required>
+              <label for="userRating-{{ loop.index }}">Rating (1-5):</label>
+              <select id="userRating-{{ loop.index }}" name="userRating" required>
+                  <option value="1" {% if review.sr_rating == 1 %} selected {% endif %}>1</option>
+                  <option value="2" {% if review.sr_rating == 2 %} selected {% endif %}>2</option>
+                  <option value="3" {% if review.sr_rating == 3 %} selected {% endif %}>3</option>
+                  <option value="4" {% if review.sr_rating == 4 %} selected {% endif %}>4</option>
+                  <option value="5" {% if review.sr_rating == 5 %} selected {% endif %}>5</option>
+              </select>
 
-                      <label for="userRating-{{ loop.index }}">Rating (1-5):</label>
-                      <select id="userRating-{{ loop.index }}" name="userRating">
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
-                          <option value="5">5</option>
-                      </select>
-
-                      <button type="submit" onsubmit="handleSubmit(event, 'editSellerPopup{{ loop.index }}')" class="submitBtn">Submit</button>
-                  </form>
-              </div>
-              <!-- Delete button -->
-              <form action="{{ url_for('myreview.delete_seller_review', sr_userkey=review.sr_userkey, sr_sellerkey=review.sr_sellerkey) }}" method="POST">
-                  <button type="submit" class="btn btn-danger">Delete</button>
-              </form>
-          </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="button" class="btn" onClick="togglePopup('editSellerPopup{{ loop.index }}')">Cancel</button>
+            </form>
+          </div>
+          <form action="{{ url_for('myreview.delete_seller_review', sr_userkey=review.sr_userkey, sr_sellerkey=review.sr_sellerkey) }}" method="POST" style="display: inline;">
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No seller reviews available.</p>
   {% endif %}
+
 {% else %}
-  <h2>Please log in to view reviews.</h2>
-  <!-- <a href="/login" class="btn btn-primary">Login</a> -->
+  <h4>Please log in to view reviews.</h4>
 {% endif %}
 
+<div class="overlay" id="overlay" onClick="closeAllPopups()"></div>
+
 <script>
-  window.productReviewEdit = function(element) {
-    var popupId = element.getAttribute('product-popup-id');
-    var popup = document.getElementById(popupId);
-    if (popup) {
-        popup.style.display = 'block';
+  function togglePopup(id) {
+    var popup = document.getElementById(id);
+    var overlay = document.getElementById('overlay');
+    var isVisible = popup.style.display === 'block';
+    if (isVisible) {
+      popup.style.display = 'none';
+      overlay.style.display = 'none';
     } else {
-        console.error("Popup element not found for ID:", popupId);
+      popup.style.display = 'block';
+      overlay.style.display = 'block';
     }
-  };
+  }
 
-  window.sellerReviewEdit = function(element) {
-    var popupId = element.getAttribute('seller-popup-id');
-    var popup = document.getElementById(popupId);
-    if (popup) {
-        popup.style.display = 'block';
-    } else {
-        console.error("Popup element not found for ID:", popupId);
-    }
-  };
-
-  function handleSubmit(event, popupId) {
-    event.preventDefault(); // Prevent default form submission
-    var form = event.target;
-    var url = form.action;
-    
-    fetch(url, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: {
-            'Accept': 'application/json',
-        }
-    }).then(response => {
-        document.getElementById(popupId).style.display = 'none'; // Close the popup
-        if (response.ok) {
-            return response.json(); // Or handle any other way
-        }
-        throw new Error('Something went wrong on api server!');
-    }).then(response => {
-        console.log(response);
-        alert('Review successfully added or updated.');
-    }).catch(error => {
-        console.error(error);
+  function closeAllPopups() {
+    var popups = document.querySelectorAll('.popup-container');
+    var overlay = document.getElementById('overlay');
+    popups.forEach(function(popup) {
+      popup.style.display = 'none';
     });
+    overlay.style.display = 'none';
   }
 </script>
 {% endblock %}

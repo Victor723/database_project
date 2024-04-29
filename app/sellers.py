@@ -280,11 +280,15 @@ def finish_order(s_sellerkey, o_orderkey, l_linenumber):
 @bp.route('/seller/<s_sellerkey>/review', methods=['GET'])
 @login_required
 def seller_review(s_sellerkey):
-    seller_review_counts = SellerReview.get_seller_review_counts(s_sellerkey)
-    seller_review_rating = SellerReview.get_seller_rating(s_sellerkey)
+    page = request.args.get('page', 1, type=int)
+    per_page = 10  # Number of reviews per page
     seller_reviews = SellerReview.get_seller_reviews(s_sellerkey)
-    return render_template('seller_review.html', seller_key=s_sellerkey, seller_reviews=seller_reviews, seller_rating = seller_review_rating, seller_review_counts = seller_review_counts)
+    seller_review_rating = SellerReview.get_seller_rating(s_sellerkey)
+    seller_review_counts = SellerReview.get_seller_review_counts(s_sellerkey)
 
+    total_pages = (seller_review_counts + per_page - 1) // per_page  # Calculate the total number of pages
+
+    return render_template('seller_review.html', seller_key=s_sellerkey, seller_reviews=seller_reviews, seller_rating=seller_review_rating, seller_review_counts=seller_review_counts, page_num=page, total_pages=total_pages)
 
 @bp.route('/seller/<s_sellerkey>/profile', methods=['GET', 'POST'])
 @login_required

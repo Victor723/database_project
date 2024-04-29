@@ -7,6 +7,7 @@ from .models.cart import Cart
 from .models.seller import Seller
 from .models.productreview import ProductReview
 from .models.productseller import ProductSeller
+from .models.lineitem import Lineitem
 
 from flask import Blueprint
 bp = Blueprint('product_details', __name__)
@@ -28,15 +29,14 @@ def product_details(product_id):
     else:
         user_key = None
 
-    # had_review = ProductReview.get(user_key, product_id)
-    # # bought = Order.get()
-    # can_add_review = not had_review # & bought
+    has_bought = Lineitem.check_product(user_key, product_id)
     return render_template('product.html',
                         product_details=product_details,
                         productseller_info=productseller_info,
                         product_reviews = product_reviews,
                         product_rating = product_rating,
                         product_review_counts = product_review_counts,
+                        has_bought = has_bought,
                         user_key = user_key)
 
 

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    .popup-container { position: fixed; width: 300px; padding: 20px; background: white; box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 8px; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; z-index: 100; }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; }
+</style>
 <div class="container mt-3">
     <div class="row">
         <div class="col-12">
@@ -43,7 +47,26 @@
                             <td>x{{ product.quantity }}</td>
                             <td>${{ '%.2f'|format(product.subtotal) }}</td>
                             <td>
-                                <button type="button" class="btn btn-sm btn-outline-secondary review-button" data-product-id="{{ product.id }}">Review</button>
+                                <!-- Add a New Review -->
+                                <button class="btn btn-edit openPopup" onClick="togglePopup('newSellerPopup{{ loop.index }}')">New Review</button>
+                                <div class="popup-container" id="newSellerPopup{{ loop.index }}">
+                                    <form action="{{ url_for('myreview.new_seller_review', sr_sellerkey=product.sellerkey, sr_userkey=user_key) }}" method="POST">
+                                    <label for="userInput-{{ loop.index }}">Review:</label>
+                                    <input type="text" id="userInput-{{ loop.index }}" name="userInput" required>
+
+                                    <label for="userRating-{{ loop.index }}">Rating (1-5):</label>
+                                    <select id="userRating-{{ loop.index }}" name="userRating" required>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="button" class="btn" onClick="togglePopup('newSellerPopup{{ loop.index }}')">Cancel</button>
+                                    </form>
+                                </div>
                             </td>
                             <td>
                                 {% if product.fulfillment_date %}
@@ -70,4 +93,31 @@
         </div>
     </div>
 </div>
+
+<div class="overlay" id="overlay" onClick="closeAllPopups()"></div>
+
+<script>
+    function togglePopup(id) {
+      var popup = document.getElementById(id);
+      var overlay = document.getElementById('overlay');
+      var isVisible = popup.style.display === 'block';
+      if (isVisible) {
+        popup.style.display = 'none';
+        overlay.style.display = 'none';
+      } else {
+        popup.style.display = 'block';
+        overlay.style.display = 'block';
+      }
+    }
+  
+    function closeAllPopups() {
+      var popups = document.querySelectorAll('.popup-container');
+      var overlay = document.getElementById('overlay');
+      popups.forEach(function(popup) {
+        popup.style.display = 'none';
+      });
+      overlay.style.display = 'none';
+    }
+</script>
+
 {% endblock %}

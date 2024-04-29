@@ -1,58 +1,60 @@
 {% block content %}
 
-  <!-- Display All Product Reviews in a Table -->
-  {% if product_reviews %}
-    {% if current_user.is_authenticated %}
-    <!-- Add a New Review -->
-    <button class="openPopup" onClick = "newProductReview(this)">New Review</button>
+<!-- Display All Product Reviews in a Table -->
+  {% if current_user.is_authenticated %}
+    {% if has_bought %}
+      <!-- Add a New Review -->
+      <button class="openPopup" onClick = "newProductReview(this)">New Review</button>
 
-    <!-- Popup Form, initially hidden -->
-    <div class="popup-container" style="display: none;" id="newProductPopup">
-        <form class="inputForm" action="{{ url_for('myreview.new_product_review', pr_userkey=user_key, pr_productkey=product_details.p_productkey) }}" method="POST">
-            <label>Enter New Product Review:</label>
-            <input type="text" id="userInput" name="userInput" required>
+      <!-- Popup Form, initially hidden -->
+      <div class="popup-container" style="display: none;" id="newProductPopup">
+          <form class="inputForm" action="{{ url_for('myreview.new_product_review', pr_productkey=product_details.p_productkey, pr_userkey=user_key) }}" method="POST">
+              <label>Enter New Product Review:</label>
+              <input type="text" id="userInput" name="userInput" required>
 
-            <label for="userRating">Rating (1-5):</label>
-            <select id="userRating" name="userRating">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>
+              <label for="userRating">Rating (1-5):</label>
+              <select id="userRating" name="userRating">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+              </select>
 
-            <button type="submit" onsubmit="handleSubmit(event, 'newProductPopup')" class="submitBtn">Submit</button>
-        </form>
-    </div>
+              <button type="submit" onsubmit="handleSubmit(event, 'newProductPopup')" class="submitBtn">Submit</button>
+          </form>
+      </div>
     {% else %}
-    <h2>Please log in to create reviews.</h2>
-    <!-- <a href="/login" class="btn btn-primary">Login</a> -->
+      <h2>You need to make a purchase of this product to create reviews.</h2>
     {% endif %}
-    <div>
-      <p>Average Rating: {{ product_rating }}</p>
-      <p>Review Counts: {{ product_review_counts }}</p>
-    </div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Reviewer</th>
-          <th>Review Date</th>
-          <th>Review</th>
-          <th>Rating</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for review in product_reviews %}
-          <tr>
-            <td>{{ review.pr_userkey }}</td>
-            <td>{{ review.pr_reviewdate }}</td>
-            <td>{{ review.pr_review }}</td>
-            <td>{{ review.pr_rating }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  {% else %}
+  <h2>Please log in to create reviews.</h2>
+  <!-- <a href="/login" class="btn btn-primary">Login</a> -->
   {% endif %}
+  <div>
+    <p>Average Rating: {{ product_rating if product_reviews else 'No ratings yet' }}</p>
+    <p>Review Counts: {{ product_review_counts if product_reviews else 'No reviews' }}</p>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Reviewer</th>
+        <th>Review Date</th>
+        <th>Review</th>
+        <th>Rating</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for review in product_reviews %}
+        <tr>
+          <td>{{ review.pr_userkey }}</td>
+          <td>{{ review.pr_reviewdate }}</td>
+          <td>{{ review.pr_review }}</td>
+          <td>{{ review.pr_rating }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
 
 <script>
