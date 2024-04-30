@@ -25,7 +25,7 @@ def product_details(product_id):
         productseller_info.append(ProductSeller.get_product_info(sid, product_id))
     
     if current_user.is_authenticated:
-        user_key = current_user.userkey
+        user_key = current_user.user_key
     else:
         user_key = None
 
@@ -46,7 +46,7 @@ def add_to_cart():
     productkey = request.form['product_id']
     # Iterate over each seller and check the quantity requested
     if current_user.is_authenticated:
-        userkey = current_user.userkey
+        userkey = current_user.user_key
         for key in request.form:
             if key.startswith('quantity_'):
                 sellerkey = key.split('_')[1]

@@ -3,20 +3,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script>
-        function validateCompanyForm() {
-            var companyName = document.getElementById('{{ become_seller_form.company_name.id }}').value;
-            var errorSpan = document.getElementById('companyNameError');
-            if (!companyName.trim()) {
-                errorSpan.textContent = 'Company name cannot be empty.';
-                return false;
-            }
-            errorSpan.textContent = ''; // Clear any existing error message
-            return true;
-        }
-    </script>
-</head>
 
+</head>
 
 <!-- Sidebar Navigation -->
 <aside class="sidebar">
@@ -25,7 +13,10 @@
             href="{{ url_for('users.user_profile') }}">Dashboard</a>
 
         <a class="nav-link {{ 'active' if active_page == 'orders' }}"
-        href="{{ url_for('orders.display_orders') }}">Orders</a>
+            href="{{ url_for('orders.display_orders') }}">Orders</a>
+
+        <a class="nav-link {{ 'active' if active_page == 'later' }}"
+            href="{{ url_for('cart.save_for_later') }}">Save for Later</a>
 
         <a class="nav-link {{ 'active' if active_page == 'details' }}"
             href="{{ url_for('users.user_details') }}">Account & Security</a>
@@ -33,60 +24,91 @@
         <a class="nav-link {{ 'active' if active_page == 'address' }}"
             href="{{ url_for('users.user_address') }}">Address</a>
 
-        <a class="nav-link {{ 'active' if active_page == 'review' }}" 
-            href="{{ url_for('myreview.get_myreview') }}">My Review</a>
+        <a class="nav-link {{ 'active' if active_page == 'review' }}" href="{{ url_for('myreview.get_myreview') }}">My
+            Review</a>
 
         <a class="nav-link {{ 'active' if active_page == 'wallet' }}"
             href="{{ url_for('users.manage_user_balance') }}">Balance & Spending</a>
 
         <div class="sidebar-divider"></div>
-        
+
         {% if is_seller %}
         <a class="nav-link" href="{{ url_for('users.switch_to_seller') }}">Switch to seller</a>
         {% else %}
-        <a href="#" class="nav-link" data-toggle="modal" data-target="#sellerModal">Become a seller</a>
+        <a href="#" class="nav-link" onclick="return checkAndRegisterSeller();">Become a seller</a>
         {% endif %}
 
         <div class="sidebar-divider"></div>
-        <a class="nav-link" onclick="return confirm('You are logging out.');" 
-            href="{{ url_for('users.logout') }}">Sign out</a>
+        <a class="nav-link" onclick="return confirm('You are logging out.');" href="{{ url_for('users.logout') }}">Sign
+            out</a>
     </nav>
 
-    <!-- {% if is_seller %}
-    <button type="button" class="btn-switch">Switch to seller</button>
-
-    {% else %} -->
-    <!-- Modal Trigger -->
-    <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sellerModal">Become a
-        seller</button> -->
-
-    <!-- Modal -->
-    <div class="modal fade" id="sellerModal" tabindex="-1" role="dialog" aria-labelledby="sellerModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+    <!-- Incomplete Address Modal -->
+    <div class="modal fade" id="incompleteAddressModal" tabindex="-1" role="dialog"
+        aria-labelledby="incompleteAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document"> <!-- Add modal-dialog-centered here -->
             <div class="modal-content">
-                <form method="POST" action="{{ url_for('users.become_a_seller') }}"
-                    onsubmit="return validateCompanyForm()">
-                    {{ become_seller_form.next(value=request.path) }}
-                    {{ become_seller_form.hidden_tag() }}
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="sellerModalLabel">Seller Registration</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        {{ become_seller_form.company_name.label(class="col-form-label") }}
-                        {{ become_seller_form.company_name(class="form-control") }}
-                        <span class="text-danger" id="companyNameError"></span>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        {{ become_seller_form.submit(class="btn btn-primary") }}
-                    </div>
-                </form>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="incompleteAddressModalLabel">Complete Your Profile</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Please complete your address details before becoming a seller.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-    <!-- {% endif %} -->
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document"> <!-- Add modal-dialog-centered here -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Registration Successful</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You have successfully registered as a seller!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </aside>
+
+<script>
+    function checkAndRegisterSeller() {
+        $.ajax({
+            type: "POST",
+            url: "{{ url_for('users.become_a_seller') }}",
+            success: function(response) {
+                if (response.success) {
+                    $('#successModal').find('.modal-body').text(response.message);
+                    $('#successModal').modal('show');
+                    // Set a timeout to reload the page, gives user time to read the message
+                    $('#successModal').on('hidden.bs.modal', function () {
+                        location.reload();  // Reloads the current page
+                    });
+                } else {
+                    $('#incompleteAddressModal').find('.modal-body').text(response.message);
+                    $('#incompleteAddressModal').modal('show');
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error while trying to register as a seller: ' + xhr.responseText);
+            }
+        });
+        return false;  // Prevent default link behavior
+    }
+</script>

@@ -12,7 +12,7 @@ bp = Blueprint('cart', __name__)
 @bp.route('/shopping-cart/', methods=['GET', 'POST'])
 @login_required
 def shopping_cart():
-    user_key = current_user.userkey
+    user_key = current_user.user_key
     cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=user_key)
     cart_items = Cart.get_incart_products_by_userkey(user_key)
     check_incart_quantity(cart_key, cart_items)
@@ -23,7 +23,7 @@ def shopping_cart():
 @bp.route('/save-for-later')
 @login_required
 def save_for_later():
-    userkey = current_user.userkey  # Assuming your user model has an 'id' attribute
+    userkey = current_user.user_key  # Assuming your user model has an 'id' attribute
     cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=userkey)
     saved_products = Cart.get_save_products_by_c_userkey(c_userkey = userkey) or []
     # Assuming that pc_savequantity > 0 means the item is saved for later
@@ -48,7 +48,7 @@ def update_incart_quantity():
         new_quantity = int(data['new_quantity'])
         product_key = data['product_key']
         seller_key = data['seller_key']
-        cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=current_user.userkey)
+        cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=current_user.user_key)
         has_inventory, message = check_inventory(seller_key, product_key, new_quantity)
         if has_inventory:
             updated_quantity = ProductCart.update_incart_quantity(cart_key, product_key, seller_key, new_quantity)
@@ -73,7 +73,7 @@ def update_save_quantity():
         new_quantity = int(data['new_quantity'])
         product_key = data['product_key']
         seller_key = data['seller_key']
-        cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=current_user.userkey)
+        cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=current_user.user_key)
         has_inventory, message = check_inventory(seller_key, product_key, new_quantity)
         if has_inventory:
             updated_quantity = ProductCart.update_save_quantity(cart_key, product_key, seller_key, new_quantity)
@@ -97,7 +97,7 @@ def remove_item():
         data = request.get_json()
         product_key = data.get('product_key')
         seller_key = data.get('seller_key')
-        cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=current_user.userkey)
+        cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=current_user.user_key)
         success = ProductCart.remove_item(cart_key, product_key, seller_key)
         if success:
             return jsonify({'success': True}), 200
@@ -119,7 +119,7 @@ def move_to_save_for_later():
         data = request.get_json()
         product_key = data.get('product_key')
         seller_key = data.get('seller_key')
-        cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=current_user.userkey)
+        cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=current_user.user_key)
         new_quantity = ProductCart.get_incart_quantity(cart_key, product_key, seller_key) + ProductCart.get_save_quantity(cart_key, product_key, seller_key)
 
         has_inventory, message = check_inventory(seller_key, product_key, new_quantity)
@@ -146,7 +146,7 @@ def move_to_incart():
         data = request.get_json()
         product_key = data.get('product_key')
         seller_key = data.get('seller_key')
-        cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=current_user.userkey)
+        cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=current_user.user_key)
         new_quantity = ProductCart.get_incart_quantity(cart_key, product_key, seller_key) + ProductCart.get_save_quantity(cart_key, product_key, seller_key)
 
         has_inventory, message = check_inventory(seller_key, product_key, new_quantity)
@@ -165,7 +165,7 @@ def move_to_incart():
 @bp.route('/checkout', methods=['POST'])
 @login_required
 def checkout():
-    user_key = current_user.userkey
+    user_key = current_user.user_key
     cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=user_key)
     cart_items = Cart.get_incart_products_by_userkey(user_key)
     check_incart_quantity(cart_key, cart_items)
