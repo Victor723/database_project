@@ -19,18 +19,17 @@
 
     <div class="main-content">
 
-
         <div class="profile-container">
 
             <div class="wallet-balance">
 
                 <div class="balance-info">
-                    <i class="fi fi-ts-wallet"></i>
-                    <span>${{ current_user.balance }}</span>
-                    <p>My Wallet Balance</p>
+                    <img src="{{ url_for('static', filename='img/user_balance_wallet.png') }}" alt="wallet">
+                    <span class="balance-amount">My Wallet Balance: ${{ current_user.balance }}</span>
                 </div>
 
                 <div class="balance-actions">
+                    
                     <!-- Add money Modal Trigger -->
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add
                         Money</button>
@@ -64,12 +63,11 @@
                         </div>
                     </div>
                     
-
-                    <!-- Add money Modal Trigger -->
+                    <!-- withdraw money Modal Trigger -->
                     <button type="button" class="btn btn-primary" data-toggle="modal"
                         data-target="#withdrawModal">Withdraw</button>
 
-                    <!-- Add money Modal -->
+                    <!-- withdraw money Modal -->
                     <div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog"
                         aria-labelledby="withdrawModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">

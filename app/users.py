@@ -139,7 +139,7 @@ class UserDetailsForm(FlaskForm):
     first_name = StringField('First Name', validators=[])
     last_name = StringField('Last Name', validators=[])
     email = StringField('Email', validators=[Email(), Optional()])
-    submit_details = SubmitField('Save Changes')
+    submit_details = SubmitField('Save')
 
     def validate_email(self, email):
         if User.email_exists(email.data):
@@ -149,7 +149,7 @@ class ChangePasswordForm(FlaskForm):
     current_password = PasswordField('Current Password', validators=[DataRequired()])
     new_password = PasswordField('New Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('new_password')])
-    submit_password = SubmitField('Save Password')
+    submit_password = SubmitField('Save')
 
 
 @bp.route('/user_details', methods=['GET', 'POST'])
@@ -232,7 +232,7 @@ class ChangeAddressForm(FlaskForm):
             message='Invalid phone number; Format must be XXX-XXX-XXXX or +1 XXX-XXX-XXXX; "-" is optional'
         )
     ])
-    submit = SubmitField('Save Changes')
+    submit = SubmitField('Save')
 
 
 @bp.route('/user_address', methods=['GET', 'POST'])
