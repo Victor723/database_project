@@ -3,6 +3,7 @@
     flex-direction: row;
     gap: 2rem;
     /* This adds spacing between the sidebar and the profile content */
+    width: 100%; /* Full width to allow inner elements like containers to expand */
 }
 
 .sidebar {
@@ -13,13 +14,6 @@
     background-color: #f5f5f5;
     overflow-y: auto;
     /* Scrollable */
-}
-
-.profile-page {
-    display: flex;
-    flex-direction: row;
-    gap: 2rem;
-    /* This adds spacing between the sidebar and the profile content */
 }
 
 .nav-link {
@@ -70,11 +64,11 @@
     border-bottom: 2px solid #DEE2E6; /* Light gray bottom border */
     font-size: 16px; /* Adjust as necessary */
     padding-left: 0; /* Remove padding if present */
-    margin-bottom: 0; /* Align with bottom border if needed */
+    margin-bottom: 25px !important; /* Align with bottom border if needed */
 }
 
 .nav-item-custom {
-    margin-right: 5px; /* Space between tabs */
+    margin-right: 30px; /* Space between tabs */
 }
 
 .nav-link-custom {
@@ -93,7 +87,7 @@
 .nav-link-custom:focus {
     border: none !important;  /* No border */
     background-color: transparent !important;  /* No background color change */
-    color: #e14646 !important;  /* Text color changes to orange */
+    color: #C35817 !important;  /* Text color changes to orange */
     text-decoration: none !important;  /* No underline or other text decorations */
     box-shadow: none !important;  /* No shadow */
 }
@@ -110,3 +104,175 @@
 }
 
 /* tab bar */
+
+
+
+/* Pagination css */
+
+/* Space between pagination items */
+.pagination .page-item {
+    margin: 0 1px; /* Add horizontal margin between page numbers */
+}
+
+/* Pagination link colors */
+.pagination a.page-link {
+    color: black; /* This sets the text color to black for all pagination links */
+    border-radius: 5px; /* Rounded corners for pagination links */
+
+    display: inline-block; /* Allows us to specify width and height */
+    width: 2.5em; /* Width of the square */
+    height: 2.5em; /* Height of the square, equal to width for a square */
+    line-height: 2.5em; /* Centers the text vertically */
+
+    /* Additional adjustments for padding */
+    padding: 0; /* Override any default padding */
+    margin-left: 4px; /* Optional: Adjust spacing between squares */
+    margin-right: 4px; /* Optional: Adjust spacing between squares */
+    text-align: center; /* Ensures the text is centered horizontally */
+}
+
+/* Ensure 'Previous' and 'Next' buttons fit their content */
+.pagination .page-item.previous .page-link,
+.pagination .page-item.next .page-link {
+    width: auto;  /* Allow width to adjust based on content */
+    padding: 0 10px;  /* Horizontal padding for better spacing */
+}
+
+/* Active page number color */
+.pagination .page-item.active .page-link {
+    color: rgb(73, 104, 111); /* Usually, active page number has a different background, so text color is set to white */
+    background-color: #EEFDFF; /* Bootstrap primary color for active page */
+    border-color: #08787F;
+}
+
+/* Hover states for pagination links */
+.pagination a.page-link:hover {
+    color: #101111; /* Darker shade of blue for hover state */
+    background-color: #F7FAF7;
+}
+
+/* Inactive page number border color */
+.pagination .page-item .page-link {
+    border-color: #6D6C6C; /* Set this to your preferred color for inactive page numbers */
+}
+/* Pagination css */
+
+
+
+
+/* table width */
+.container {
+    max-width: 70% !important; /* Adjust this to a higher percentage or remove to allow more horizontal space */
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.table-responsive {
+    width: 100%; /* Ensure the responsive table container takes up all the horizontal space */
+    overflow-x: auto; /* Allows scrolling on small screens if the table is wider than the screen */
+}
+
+.table {
+    width: 100%; /* Set the table width to fill the container */
+    table-layout: fixed; /* Forces the browser to follow your width settings more strictly */
+    min-width: 900px; /* Optional: Ensure a minimum width for your table if needed */
+
+}
+
+th, td {
+    min-width: 250px; /* Increase minimum width of cells to make the table wider */
+}
+/* table width */
+
+
+/* breadcrumb element and the title */
+.breadcrumb {
+    max-width: 70%; /* or your preferred max-width */
+    margin: auto; /* centers the breadcrumb */
+    min-width: 900px; /* Optional: Ensure a minimum width for your table if needed */
+}
+
+/* Increase font size of Order History heading with more specificity */
+.profile-page .container .row .col-12 h2.duke-blue {
+    width: 100%; /* Ensures the heading uses the full width if needed */
+    font-size: 36px !important; /* Increase the font size and ensure it is applied */
+    margin-top: 1.5rem;
+    margin-bottom: 0; /* Adjust spacing below the heading */
+    text-align: center !important; /* Centers the text */
+}
+/* breadcrumb element and the title */
+
+
+
+
+
+
+
+
+/* drop down menu */
+/* General dropdown button styling */
+select {
+    width:auto;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background-color: #EFF2F3; /* Light blue background, change as needed */
+    color: #333;
+    margin-left: 5px !important;
+    text-align: center;
+    overflow: hidden;
+    cursor: pointer; /* To signify that this is an interactive element */
+    box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.2); /* Adds shadow around the dropdown */
+}
+/* drop down menu */
+
+
+/* product search text box and button */
+input[type="text"] {
+    padding: 8px;                /* Same padding as select */
+    font-size: 14px;             /* Consistent font size */
+    border: 1px solid #ccc;      /* Consistent border */
+    border-radius: 10px;         /* Rounded corners */
+    background-color: #fff;      /* Typically white for inputs */
+    color: #333;                 /* Text color matching the select */
+    display: inline-block;
+    margin: 0 10px;              /* Margin for spacing, adjust as needed */
+    box-shadow: none;            /* No shadow for the input field */
+}
+
+input[type="text"]:hover {
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2); /* Adds shadow around the dropdown */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
+}
+
+button {
+    background-color: #007bff;   /* Bootstrap's primary blue */
+    color: white;                /* White text for visibility */
+    border-color: #007bff;       /* Matching border color */
+    cursor: pointer;             /* Indicates button is clickable */
+    border-radius: 20px !important;         /* Fully rounded corners */
+}
+
+button:hover {
+    background-color: #0056b3; /* A darker blue for hover effect */
+    box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.3); /* Deeper shadow on hover */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
+}
+/* product search text box and button */
+
+.table-responsive .table tbody tr td:first-child {
+    color: #50759d; /* Replace with your desired color */
+}
+
+.table-responsive .table tbody tr td:last-child .btn-link {
+    color: #50759d; /* Replace with your desired color */
+}
+
+.table-responsive .table tbody tr td:last-child .btn-link:hover {
+    color: #C35817; /* Hover state color, e.g., Lime Green */
+    box-shadow: none;  /* Ensure no shadow appears on hover */
+}
+
+.breadcrumb .breadcrumb-item a:hover {
+    color: #C35817; /* Example hover color: Lime Green */
+}

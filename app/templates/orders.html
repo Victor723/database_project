@@ -1,10 +1,12 @@
+<!DOCTYPE html>
 {% extends "base.html" %}
 {% block content %}
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/orders.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/orders.css') }}?v=1.1">
+
 
 <div class="profile-page">
     <!-- Sidebar Navigation -->
@@ -12,12 +14,22 @@
     {% include '_user_sidebar.html' %}
     {% endwith %}
 
-    <div class="container mt-3">
+    <div class="container mt-3 order-history-container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('orders.display_orders') }}">Order History</a></li>
+                    </ol>
+                </nav>
+                <h2 class="mb-4 duke-blue">Order History</h2>
+            </div>
+        </div>
         <div class="row">
             <!-- Order History Column -->
             <div class="col-12">
 
-                <h2 class="mb-4 duke-blue">Order History</h2>
+                <!-- <h2 class="mb-4 duke-blue">Order History</h2> -->
 
                 <div class="container mt-3">
                     <ul class="nav nav-tabs nav-tabs-custom">
@@ -38,7 +50,7 @@
                     <div class="tab-content">
                         <div class="filter-orders mb-3">
                             <form action="{{ url_for('orders.display_orders') }}" method="GET">
-                                <label for="time_frame"><strong>{{total_orders}} orders</strong> placed in: </label>
+                                <label for="time_frame"><strong>{{total_orders}} orders</strong> placed in</label>
                                 <select name="time_frame" onchange="this.form.submit()">
                                     <option value="all" {% if time_frame=='all' %}selected{% endif %}>All Time
                                     </option>
@@ -57,10 +69,10 @@
 
                                 {% if mode == 'all' %}
                                 <div style="margin-left: 10px; display: inline-block;">
-                                    <label for="product_name">and contain:</label>
+                                    <label for="product_name">and contain</label>
                                     <input type="text" name="product_name" id="product_name"
-                                        placeholder="Enter a product"
-                                        value="{{ request.args.get('product_name', '') }}" style="margin-left: 10px; margin-right: 10px;">
+                                        placeholder="Enter a product" value="{{ request.args.get('product_name', '') }}"
+                                        style="margin-left: 10px; margin-right: 10px;">
                                     <button type="submit" class="btn btn-primary">Search orders</button>
                                 </div>
                                 {% endif %}
@@ -72,20 +84,20 @@
                             <table class="table">
                                 <thead>
                                     <tr class="duke-blue-bg white-text">
-                                        <th scope="col">Order ID</th>
-                                        <th scope="col">Product Names</th>
-                                        <th scope="col">Total Price</th>
-                                        <th scope="col">Order Date</th>
-                                        <th scope="col">Action</th>
+                                        <th scope="col" style="width: 55% !important;">Product Names</th>
+                                        <th scope="col" style="width: 10%!important;">Total</th>
+                                        <th scope="col" style="width: 15%!important;">Order Placed</th>
+                                        <th scope="col" style="width: 10%!important;">Order #</th>
+                                        <th scope="col" style="width: 10%!important;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for order in orders %}
                                     <tr>
-                                        <td>{{ order.o_orderkey }}</td>
                                         <td>{{ order.product_names }}</td>
                                         <td>${{ "%.2f"|format(order.total_price) }}</td>
                                         <td>{{ order['o_ordercreatedate'] }}</td>
+                                        <td>{{ order.o_orderkey }}</td>
                                         <td>
                                             <!-- Adjust this to match the correct endpoint -->
                                             <form action="{{ url_for('orders.order_details') }}" method="POST">
@@ -104,10 +116,10 @@
                         </div>
 
                         <!-- Pagination here -->
-                        <nav>
-                            <ul class="pagination">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
                                 {% if page > 1 %}
-                                <li class="page-item"><a
+                                <li class="page-item previous"><a
                                         href="{{ url_for('orders.display_orders', page=page-1, time_frame=time_frame, mode=mode) }}"
                                         class="page-link">Previous</a></li>
                                 {% endif %}
@@ -118,7 +130,7 @@
                                         class="page-link">{{ i }}</a></li>
                                 {% endfor %}
 
-                                {% if page < total_pages %} <li class="page-item"><a
+                                {% if page < total_pages %} <li class="page-item next"><a
                                         href="{{ url_for('orders.display_orders', page=page+1, time_frame=time_frame, mode=mode) }}"
                                         class="page-link">Next</a></li>
                                     {% endif %}
@@ -155,6 +167,25 @@
         </div>
     </div>
 </div>
-
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const selectElement = document.querySelector('select');
+    function adjustWidth() {
+        const tempOption = document.createElement('span');
+        tempOption.textContent = selectElement.selectedOptions[0].textContent;
+        tempOption.style.fontFamily = getComputedStyle(selectElement).fontFamily;
+        tempOption.style.fontSize = getComputedStyle(selectElement).fontSize;
+        tempOption.style.padding = '8px';
+        tempOption.style.visibility = 'hidden';
+        document.body.appendChild(tempOption);
+        selectElement.style.width = `${tempOption.offsetWidth + 45}px`;
+        document.body.removeChild(tempOption);
+    }
+    // Adjust width on page load
+    adjustWidth();
+    // Adjust width whenever the selected option changes
+    selectElement.addEventListener('change', adjustWidth);
+});
+</script>
 
 {% endblock %}

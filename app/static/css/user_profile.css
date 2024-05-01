@@ -57,33 +57,45 @@
     /* Space inside the box */
     margin: 20px;
     /* Space outside the box */
-    flex-grow: 0.6;
+    height: auto;
 }
 
 .profile-header {
     display: flex;
     align-items: center; /* Center items vertically */
-
     border-bottom: 1px solid #eee;
     /* A light line to separate the header */
-    padding-bottom: 20px;
+    padding-bottom: 50px;
     /* Space below the header */
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     /* Space below the header before the next content starts */
+    margin-top: 40px;
 }
 
 .profile-header img {
-    width: 100px; /* Adjust according to your design */
-    height: 100px; /* Ensure the image is a circle if desired */
+    width: 200px; /* Adjust according to your design */
+    height: auto; /* Ensure the image is a circle if desired */
     border-radius: 50%; /* Makes the image circular */
     margin-right: 20px; /* Space between the image and the user info */
     cursor: pointer; /* Indicates the image can be clicked */
+}
+
+.user-info h2 {
+    font-size: 46px; /* Adjust the size as needed */
+    font-weight: bold; /* Optional: make the text bold for better visibility */
+    color: #333; /* Dark color for better readability */
+}
+
+.user-info p {
+    font-size: 24px; /* Adjust the size as needed */
+    color: #555; /* Slightly lighter color for distinction */
 }
 
 .profile-header .user-info {
     display: flex;
     flex-direction: column; /* Stack name and email vertically */
     justify-content: center; /* Aligns content centrally in the column */
+    margin-left: 30px;
 }
 
 .info-label {
@@ -116,7 +128,7 @@
     flex: 1; /* This makes each link fill the space evenly */
     display: block; /* Makes the link block-level to contain the flex items */
     text-decoration: none !important; /* Removes underline from links */
-    color: inherit; /* Inherit the text color so it doesn't change the color of contents */
+    color: inherit !important; /* Inherit the text color so it doesn't change the color of contents */
     margin: 0 10px; /* This will add space to the left and right of each card, if needed here */
 }
 
@@ -147,19 +159,19 @@
 }
 
 .order-card img {
-    width: 50px;
+    width: 60px;
     height: auto;
-    margin-right: 15px; /* Add space between the image and the text */
+    margin-right: 35px; /* Add space between the image and the text */
 }
 
 .order-card .number {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: bold;
     margin-right: 5px; /* Optional: add space between the number and the label */
 }
 
 .order-card .label {
-    font-size: 16px;
+    font-size: 20px;
 }
 
 .order-card .text-group {
@@ -199,4 +211,31 @@
 .input-field:focus {
     border-color: #0056b3;
     box-shadow: 0 0 8px rgba(0, 86, 179, 0.2);
+}
+
+.profile-header,
+.profile-info {
+    margin-left: 50px; /* Adjust this value as needed */
+}
+
+.profile-info {
+    margin-top: 50px;
+    margin-bottom: 30px;
+}
+
+.order-card-link:hover .order-card {
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.19); /* Adjust shadow as needed */
+    transition: box-shadow 0.3s ease-in-out; /* Smooth transition for the shadow effect */
+}
+
+.info-label {
+    font-size: 18px; /* Adequate size for labels */
+    margin-bottom: 15px;
+    color: #333; /* Dark color for better readability */
+}
+
+.info-value {
+    font-size: 16px; /* Matches the label size for consistency */
+    margin-bottom: 15px;
+    color: #666; /* Lighter color to differentiate from labels */
 }
