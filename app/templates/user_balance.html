@@ -18,10 +18,7 @@
     {% endwith %}
 
     <div class="main-content">
-
-        <div class="profile-container">
-
-            <div class="wallet-balance">
+        <div class="profile-container id="wallet-profile-container"">
 
                 <div class="balance-info">
                     <img src="{{ url_for('static', filename='img/user_balance_wallet.png') }}" alt="wallet">
@@ -29,7 +26,7 @@
                 </div>
 
                 <div class="balance-actions">
-                    
+
                     <!-- Add money Modal Trigger -->
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add
                         Money</button>
@@ -96,7 +93,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+
         </div>
         
         {% if filled_monthly_expenditure and filled_weekly_expenditure %}
@@ -104,8 +101,8 @@
             <canvas id="expenditureChart"></canvas>
         </div>
 
-        <div class="profile-container">
-            <h3>Select a date range to for spending summary by category</h3>
+        <div class="profile-container" id="summary-container">
+            <div class="date-range-title">Select a date range for spending summary by category</div>
             <form id="dateRangeForm">
                 <label for="startDate">Start Date:</label>
                 <input type="date" id="startDate" name="startDate" required>
@@ -119,8 +116,6 @@
             <div id="totalSpendingDisplay" class="total-spending"></div>
         </div>
         {% endif %}
-
-
     </div>
 </div>
 
@@ -219,7 +214,10 @@
                 },
                 title: {
                     display: true,
-                    text: 'Monthly and weekly spending over the last year'
+                    text: 'Monthly and weekly spending over the last year',
+                    font: {
+                    size: 20 // Increase the font size here
+                }
                 }
             },
             responsive: true,
@@ -236,8 +234,6 @@
         const endDate = document.getElementById('endDate').value;
         updateSpendingSummary(startDate, endDate);
     });
-
-
     function updateSpendingSummary(startDate, endDate) {
     fetch(`/update_spending_summary?start=${startDate}&end=${endDate}`)
         .then(response => {
@@ -277,6 +273,8 @@ function updatePieChart(data) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
+        aspectRatio: 1,  // Maintain aspect ratio 1:1
             plugins: {
                 legend: {
                     position: 'top',

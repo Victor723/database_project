@@ -225,21 +225,42 @@
     /* A subtle shadow */
     padding: 20px;
     /* Space inside the box */
-    margin: auto;
-    /* Space outside the box */
-    flex-grow: 0.8;
+    margin-left: auto;
+    margin-right: auto;
     width: 90%; /* Sets width to 40% of its grid area */
     max-width: 1200px; /* Adjust max width as needed */
     margin-top: 30px; /* Fixed space from the bottom of the header */
 }
 
-div.profile-container:has(#expenditureChart) {
-    height: 500px;  /* Fixed height */
+
+
+.profile-page .profile-container:nth-child(1) {
+    max-height: 300px;  /* Set the maximum height */
+    min-height: 300px;  /* Set the maximum height */
+    overflow: auto;     /* Adds scrollbars if content exceeds the container size */
 }
 
-div.profile-container:has(#spendingPieChart) {
-    height: 700px;  /* Fixed height */
+.profile-page .profile-container:nth-child(2) {
+    max-height: 600px;  /* Set the maximum height */
+    min-height: 600px;  /* Set the maximum height */
+    overflow: auto;     /* Adds scrollbars if content exceeds the container size */
 }
+
+.profile-page .profile-container:nth-child(3) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically */
+    align-items: center; /* Aligns children in the center horizontally */
+    background-color: #fff;  /* Specific background color for this container */
+    margin: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 30px; /* Fixed space from the bottom of the header */
+    padding-top: 0;
+    height: 1500px;  /* Set the maximum height */
+}
+
+
 
 .sidebar-divider {
     height: 1px;
@@ -267,6 +288,10 @@ div.profile-container:has(#spendingPieChart) {
 }
 
 .balance-actions .btn {
-
     min-width: 200px; /* Minimum width for smaller content */
+}
+
+.date-range-title {
+    font-size: 24px; /* Increase font size as needed */
+    margin-bottom: 0px; /* Adds space between the title and the form */
 }
