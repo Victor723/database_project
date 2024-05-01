@@ -1,61 +1,100 @@
 {% block content %}
 
-  <!-- Display All Product Reviews in a Table -->
-  {% if product_reviews %}
-    {% if current_user.is_authenticated %}
-    <!-- Add a New Review -->
-    <button class="openPopup" onClick = "newProductReview(this)">New Review</button>
+<style>
+  .star-rating {
+    font-size: 25px; /* Adjust size as needed */
+    display: inline-block; /* Ensures alignment */
+    position: relative;
+    white-space: nowrap; /* Keeps stars in one line */
+  }
+  .background-stars,
+  .foreground-stars {
+    display: inline-block;
+    font-family: Arial, "Lucida Grande", sans-serif; /* Ensures consistent font */
+  }
+  .background-stars {
+    color: #ccc; /* Light gray - empty part of stars */
+    position: absolute;
+  }
+  .foreground-stars {
+    color: #ffc107; /* Gold color - filled part of stars */
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden; /* Ensures foreground doesn't spill out */
+    white-space: nowrap; /* Ensures stars don't wrap */
+  }
+</style>
 
-    <!-- Popup Form, initially hidden -->
-    <div class="popup-container" style="display: none;" id="newProductPopup">
-        <form class="inputForm" action="{{ url_for('myreview.new_product_review', pr_userkey=user_key, pr_productkey=product_details.p_productkey) }}" method="POST">
-            <label>Enter New Product Review:</label>
-            <input type="text" id="userInput" name="userInput" required>
+<!-- Display All Product Reviews in a Table -->
+  {% if current_user.is_authenticated %}
+    {% if has_bought %}
+      <!-- Add a New Review -->
+      <button class="openPopup" onClick = "newProductReview(this)">New Review</button>
 
-            <label for="userRating">Rating (1-5):</label>
-            <select id="userRating" name="userRating">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>
+      <!-- Popup Form, initially hidden -->
+      <div class="popup-container" style="display: none;" id="newProductPopup">
+          <form class="inputForm" action="{{ url_for('myreview.new_product_review', pr_productkey=product_details.p_productkey, pr_userkey=user_key) }}" method="POST">
+              <label>Enter New Product Review:</label>
+              <input type="text" id="userInput" name="userInput" required>
 
-            <button type="submit" onsubmit="handleSubmit(event, 'newProductPopup')" class="submitBtn">Submit</button>
-        </form>
-    </div>
+              <label for="userRating">Rating (1-5):</label>
+              <select id="userRating" name="userRating">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+              </select>
+
+              <button type="submit" onsubmit="handleSubmit(event, 'newProductPopup')" class="submitBtn">Submit</button>
+          </form>
+      </div>
     {% else %}
-    <h2>Please log in to create reviews.</h2>
-    <!-- <a href="/login" class="btn btn-primary">Login</a> -->
+      <h4>You need to make a purchase of this product to create reviews.</h4>
     {% endif %}
-    <div>
-      <p>Average Rating: {{ product_rating }}</p>
-      <p>Review Counts: {{ product_review_counts }}</p>
-    </div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Reviewer</th>
-          <th>Review Date</th>
-          <th>Review</th>
-          <th>Rating</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for review in product_reviews %}
-          <tr>
-            <td>{{ review.pr_userkey }}</td>
-            <td>{{ review.pr_reviewdate }}</td>
-            <td>{{ review.pr_review }}</td>
-            <td>{{ review.pr_rating }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  {% else %}
+  <h2>Please log in to create reviews.</h2>
+  <!-- <a href="/login" class="btn btn-primary">Login</a> -->
   {% endif %}
+  <div>
+    <p class="star-rating">
+      Rating:
+      <span class="background-stars">
+        ★★★★★
+        <span class="foreground-stars" style="width: {{ (product_rating if product_reviews else 0) * 20 }}%;">
+          ★★★★★
+        </span>
+      </span>
+    </p>
+    <p class="review-counts">Review Count: {{ product_review_counts if product_reviews else 'No reviews' }}</p>
+  </div>
+
+  
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Reviewer</th>
+        <th>Review Date</th>
+        <th>Review</th>
+        <th>Rating</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for review in product_reviews %}
+        <tr>
+          <td><a href="/public_user_profile/{{ review.pr_userkey }}"></a>{{ review.pr_userkey }}</td>
+          <td>{{ review.pr_reviewdate }}</td>
+          <td>{{ review.pr_review }}</td>
+          <td>{{ review.pr_rating }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
 
 <script>
+
   window.newProductReview = function(element) {
     var popup = document.getElementById("newProductPopup");
     if (popup) {

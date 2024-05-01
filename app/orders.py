@@ -65,9 +65,10 @@ def order_details():
                     flash('Failed to update the fulfillment date.', 'error')
             fulfilled_date = Order.get_fullfilldate(order_id)
             if order_details:
+                user_key = current_user.userkey
                 # Render the order details template with the order data
-                print(order_details)
-                return render_template('order_details.html', order_details=order_details, fulfilled_date = fulfilled_date)
+                print(order_details['products'])
+                return render_template('order_details.html', order_details=order_details, user_key = user_key)
             else:
                 flash('Order not found.', 'error')
                 return redirect(url_for('orders.display_orders'))
