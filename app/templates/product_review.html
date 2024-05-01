@@ -1,5 +1,31 @@
 {% block content %}
 
+<style>
+  .star-rating {
+    font-size: 25px; /* Adjust size as needed */
+    display: inline-block; /* Ensures alignment */
+    position: relative;
+    white-space: nowrap; /* Keeps stars in one line */
+  }
+  .background-stars,
+  .foreground-stars {
+    display: inline-block;
+    font-family: Arial, "Lucida Grande", sans-serif; /* Ensures consistent font */
+  }
+  .background-stars {
+    color: #ccc; /* Light gray - empty part of stars */
+    position: absolute;
+  }
+  .foreground-stars {
+    color: #ffc107; /* Gold color - filled part of stars */
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden; /* Ensures foreground doesn't spill out */
+    white-space: nowrap; /* Ensures stars don't wrap */
+  }
+</style>
+
 <!-- Display All Product Reviews in a Table -->
   {% if current_user.is_authenticated %}
     {% if has_bought %}
@@ -25,16 +51,26 @@
           </form>
       </div>
     {% else %}
-      <h2>You need to make a purchase of this product to create reviews.</h2>
+      <h4>You need to make a purchase of this product to create reviews.</h4>
     {% endif %}
   {% else %}
   <h2>Please log in to create reviews.</h2>
   <!-- <a href="/login" class="btn btn-primary">Login</a> -->
   {% endif %}
   <div>
-    <p>Average Rating: {{ product_rating if product_reviews else 'No ratings yet' }}</p>
-    <p>Review Counts: {{ product_review_counts if product_reviews else 'No reviews' }}</p>
+    <p class="star-rating">
+      Rating:
+      <span class="background-stars">
+        ★★★★★
+        <span class="foreground-stars" style="width: {{ (product_rating if product_reviews else 0) * 20 }}%;">
+          ★★★★★
+        </span>
+      </span>
+    </p>
+    <p class="review-counts">Review Count: {{ product_review_counts if product_reviews else 'No reviews' }}</p>
   </div>
+
+  
   <table class="table">
     <thead>
       <tr>
@@ -47,7 +83,7 @@
     <tbody>
       {% for review in product_reviews %}
         <tr>
-          <td>{{ review.pr_userkey }}</td>
+          <td><a href="/public_user_profile/{{ review.pr_userkey }}"></a>{{ review.pr_userkey }}</td>
           <td>{{ review.pr_reviewdate }}</td>
           <td>{{ review.pr_review }}</td>
           <td>{{ review.pr_rating }}</td>
@@ -58,6 +94,7 @@
 
 
 <script>
+
   window.newProductReview = function(element) {
     var popup = document.getElementById("newProductPopup");
     if (popup) {

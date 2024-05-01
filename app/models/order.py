@@ -70,7 +70,7 @@ class Order:
         );
         '''
         result = app.db.execute(query, {'userkey': userkey, 'sellerkey': sellerkey}).scalar()
-        return result;
+        return result
 
     @staticmethod
     def get_order_details(order_id):
