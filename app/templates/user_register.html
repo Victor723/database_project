@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user_register.css') }}">
+
+<div class="login-container">
+  <form class="login-form" action="" method="post">
+
+    <h1>Create new account</h1>
+    {{ form.hidden_tag() }}
+
+    <div class="form-row" style="margin-top: 50px;">
+      <div class="form-group col-md-6">
+        {{ form.first_name.label }}
+        <div class="input-group">
+          {{ form.first_name(class="form-control", placeholder="") }}
+        </div>
+        {% for error in form.first_name.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+      <div class="form-group col-md-6">
+        {{ form.last_name.label }}
+        <div class="input-group">
+          {{ form.last_name(class="form-control", placeholder="") }}
+        </div>
+        {% for error in form.last_name.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.email.label }}
+      <div class="input-group">
+        {{ form.email(class_="form-control", placeholder="") }}
+      </div>
+      {% for error in form.email.errors %}
+      <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ form.password.label }}
+      <div class="input-group">
+        {{ form.password(class_="form-control password", placeholder="") }}
+        <div class="input-group-append">
+          <button class="toggle-password" type="button" onclick="togglePasswordVisibility('password')">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      {% for error in form.password.errors %}
+      <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ form.password2.label }}
+      <div class="input-group">
+        {{ form.password2(class_="form-control password", placeholder="") }}
+        <div class="input-group-append">
+          <button class="toggle-password" type="button" onclick="togglePasswordVisibility('password2')">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      {% for error in form.password2.errors %}
+      <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}
+    </div>
+
+    <div id="additionalFields" class="hidden">
+      <!-- Additional fields for registration -->
+
+      <div class="form-group">
+        {{ form.street_address.label }}
+        <div class="input-group">
+          {{ form.street_address(class="form-control", placeholder="") }}
+        </div>
+        {% for error in form.street_address.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          {{ form.city.label }}
+          <div class="input-group">
+            {{ form.city(class="form-control", placeholder="") }}
+          </div>
+          {% for error in form.city.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+        </div>
+        <div class="form-group col-md-6">
+          {{ form.state_region.label }}
+          <div class="input-group">
+            {{ form.state_region(class="form-control", placeholder="") }}
+          </div>
+          {% for error in form.state_region.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          {{ form.zip_code.label }}
+          <div class="input-group">
+            {{ form.zip_code(class="form-control", placeholder="") }}
+          </div>
+          {% for error in form.zip_code.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+        </div>
+        <div class="form-group col-md-6">
+          {{ form.country.label(class="form-label") }}
+          <div class="input-group">
+            <select class="form-control" id="{{ form.country.id }}" name="{{ form.country.name }}">
+              {% for code, name in form.country.choices %}
+              <option value="{{ code }}" {{ 'selected' if code == form.country.data else '' }}>{{ name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% for error in form.country.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        {{ form.phone_number.label }}
+        <div class="input-group">
+          {{ form.phone_number(class="form-control", placeholder="") }}
+        </div>
+        {% for error in form.phone_number.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.company_name.label }}
+        <div class="input-group">
+          {{ form.company_name(class="form-control", placeholder="") }}
+        </div>
+        {% for error in form.company_name.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+
+    </div>
+
+    <div class="form-group" style="margin-top: 20px;">
+      <input type="checkbox" id="register_as_seller" name="register_as_seller" onclick="toggleFields()" {{ 'checked' if
+        form.register_as_seller.data else '' }}>
+      <label for="register_as_seller">Register me also as a seller</label>
+    </div>
+
+    <p style="margin-top: 10px;">{{ form.submit(class_="btn btn-primary") }}</p>
+    <h2 style="font-size: 12px; text-align: center;">By creating an account, you agree to our <span
+        style="text-decoration: underline;">Terms of Use</span> and <span style="text-decoration: underline;">Privacy
+        Policy</span>.</h2>
+</div>
+
+<script>
+  function togglePasswordVisibility(passwordFieldId) {
+    var passwordInput = document.getElementById(passwordFieldId);
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+    } else {
+      passwordInput.type = 'password';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+  toggleFields();  // Ensure fields are shown or hidden correctly on page load
+});
+  function toggleFields() {
+    var checkBox = document.getElementById('register_as_seller');
+    var additionalFields = document.getElementById('additionalFields');
+    if (checkBox.checked === true) {
+      additionalFields.classList.replace('hidden', 'visible');
+    } else {
+      additionalFields.classList.replace('visible', 'hidden');
+    }
+  }
+</script>
+{% endblock %}

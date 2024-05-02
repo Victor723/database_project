@@ -17,15 +17,15 @@
                 <h2 class="h3 mb-3 font-weight-normal">Account Setting</h2>
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        {{ user_details_form.firstname.label(class="form-label") }}
-                        {{ user_details_form.firstname(class="form-control",
-                        placeholder=current_user.firstname)
+                        {{ user_details_form.first_name.label(class="form-label") }}
+                        {{ user_details_form.first_name(class="form-control",
+                        placeholder=current_user.first_name)
                         }}
                     </div>
                     <div class="form-group col-md-6">
-                        {{ user_details_form.lastname.label(class="form-label") }}
-                        {{ user_details_form.lastname(class="form-control",
-                        placeholder=current_user.lastname)
+                        {{ user_details_form.last_name.label(class="form-label") }}
+                        {{ user_details_form.last_name(class="form-control",
+                        placeholder=current_user.last_name)
                         }}
                     </div>
                 </div>
@@ -41,6 +41,8 @@
                 </div>
             </div>
         </form>
+        
+        <hr class="form-divider">
 
         <form method="post">
             {{ password_form.hidden_tag() }}

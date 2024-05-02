@@ -29,7 +29,7 @@
                                     <div class="input-group">
                                         <input type="number" class="form-control" value="{{ item.pc_incartquantity }}" min="1" id="quantityInput{{ loop.index }}">
                                         <div class="input-group-append">
-                                            <button class="btn btn-secondary" type="button"
+                                            <button class="btn btn-secondary btn-block" type="button" 
                                                 onclick="updateQuantity('{{ item.product_key }}', '{{ item.seller_key }}', 'quantityInput{{ loop.index }}')">
                                                 Update
                                             </button>
@@ -96,11 +96,11 @@
 </div>
 
 <script>
-function updateQuantity(productKey, sellerKey, inputElementId)  {
+function updateQuantity(productKey, sellerKey, inputElementId) {
     const quantityElement = document.getElementById(inputElementId);
     if (!quantityElement) {
         console.error(`Element with ID ${inputElementId} not found`);
-        return; // Exit the function if element not found
+        return;
     }
     const newQuantity = quantityElement.value;
 
@@ -119,9 +119,11 @@ function updateQuantity(productKey, sellerKey, inputElementId)  {
     .then(data => {
         if (data.error) {
             alert('Failed to update quantity: ' + data.error);
+            setTimeout(() => window.location.reload(), 500);
         } else {
             alert('Quantity updated to ' + data.new_quantity);
-            setTimeout(() => window.location.reload(), 500);
+            quantityElement.value = data.new_quantity;  // Confirm the field reflects the updated quantity
+            setTimeout(() => window.location.reload(), 500);  // Optionally refresh the page
         }
     })
     .catch(error => {
@@ -129,6 +131,7 @@ function updateQuantity(productKey, sellerKey, inputElementId)  {
         alert('Failed to update quantity.');
     });
 }
+
 
 function removeItem(productKey, sellerKey, element) {
     console.log(element);

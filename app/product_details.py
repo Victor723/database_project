@@ -8,6 +8,7 @@ from .models.productcart import ProductCart
 from .models.seller import Seller
 from .models.productreview import ProductReview
 from .models.productseller import ProductSeller
+from .models.lineitem import Lineitem
 
 from flask import Blueprint
 bp = Blueprint('product_details', __name__)
@@ -28,16 +29,18 @@ def product_details(product_id):
         productseller_info.append(ps_info)
 
     if current_user.is_authenticated:
-        user_key = current_user.userkey
+        user_key = current_user.user_key
     else:
         user_key = None
 
-    return render_template('product_details.html',
+    has_bought = Lineitem.check_product(user_key, product_id)
+    return render_template('product.html',
                         product_details=product_details,
                         productseller_info=productseller_info,
                         product_reviews = product_reviews,
                         product_rating = product_rating,
                         product_review_counts = product_review_counts,
+                        has_bought = has_bought,
                         user_key = user_key)
 
 
@@ -46,7 +49,7 @@ def add_to_cart():
     productkey = request.form['product_id']
     # Iterate over each seller and check the quantity requested
     if current_user.is_authenticated:
-        userkey = current_user.userkey
+        userkey = current_user.user_key
         for key in request.form:
             if key.startswith('quantity_'):
                 sellerkey = key.split('_')[1]

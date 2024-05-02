@@ -61,16 +61,16 @@ ORDER BY sr_reviewdate DESC
     @staticmethod
     def get_seller_rating(sr_sellerkey):
         rows = app.db.execute('''
-SELECT ROUND(AVG(sr_rating), 2)
+SELECT ROUND(AVG(sr_rating), 1)
 FROM SellerReview
 WHERE sr_sellerkey = :sr_sellerkey
 GROUP BY sr_sellerkey
 ''',
                               sr_sellerkey = sr_sellerkey)
         if rows:
-            return rows[0]
+            return rows[0][0]
         else:
-            return 0
+            return 0.0
     
     @staticmethod
     def get_seller_review_counts(sr_sellerkey):
@@ -80,7 +80,7 @@ FROM SellerReview
 WHERE sr_sellerkey = :sr_sellerkey
 ''',
                               sr_sellerkey = sr_sellerkey)
-        return rows[0]
+        return rows[0][0]
     
     
     @staticmethod
@@ -104,7 +104,7 @@ WHERE sr_sellerkey = :sr_sellerkey AND sr_userkey = :sr_userkey
     @staticmethod
     def new_seller_review(sr_sellerkey, sr_userkey, sr_sellername, sr_reviewdate, sr_review, sr_rating):
         app.db.execute('''
-INSERT INTO ProductReview(sr_sellerkey, sr_userkey, sr_sellername, sr_reviewdate, sr_review, sr_rating)
+INSERT INTO SellerReview(sr_sellerkey, sr_userkey, sr_sellername, sr_reviewdate, sr_review, sr_rating)
 VALUES (:sr_sellerkey, :sr_userkey, :sr_sellername, :sr_reviewdate, :sr_review, :sr_rating)
 ''',
                               sr_sellerkey = sr_sellerkey, sr_userkey = sr_userkey, sr_sellername = sr_sellername, sr_reviewdate = sr_reviewdate, sr_review = sr_review, sr_rating = sr_rating)

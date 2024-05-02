@@ -153,3 +153,17 @@
     position: relative;
     /* To prevent shifting when the border changes */
 }
+
+
+.hidden {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+.visible {
+    max-height: 500px; /* Adjust this value based on your content's actual height */
+    opacity: 1;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}

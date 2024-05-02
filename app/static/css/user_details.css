@@ -39,6 +39,19 @@
     font-size: 18px;
 }
 
+form {
+    margin-bottom: 10px; /* Reduced bottom margin */
+}
+
+.form-group {
+    margin-bottom: 10px; /* Reduced spacing between form fields */
+}
+
+input, button {
+    height: auto;
+    padding: 8px 12px; /* Adjust padding to control height */
+}
+
 /* Adjust colors, hover effects, etc., as per the design */
 .login-form .btn-primary {
     background-color: #007bff;
@@ -48,6 +61,21 @@
 .sign-up-link {
     text-align: center;
     display: block;
+    margin-top: 20px;
+}
+
+.btn {
+    width: auto; /* Change from 100% if needed */
+    padding: 10px 30px; /* Increase horizontal padding */
+    font-size: 18px; /* Keep or adjust font size as needed */
+    border-radius: 20px;
+}
+
+/* If you want the button to take a minimum width, you can also use min-width */
+.btn {
+    min-width: 100px; /* Ensures the button is at least 200px wide */
+    padding: 10px 30px; /* More padding can make the button appear larger */
+    margin-right: 20px;
     margin-top: 20px;
 }
 
@@ -165,10 +193,11 @@
 }
 
 .profile-page {
-    display: flex;
-    flex-direction: row;
-    gap: 2rem;
-    /* This adds spacing between the sidebar and the profile content */
+    display: grid;
+    grid-template-columns: 250px 1fr; /* Sidebar takes the width it needs, and the profile container takes the rest */
+    align-items: start; /* Align items to the start of the grid row */
+    height: 100vh; /* Full viewport height */
+    width: 100%; /* Full width of the viewport */
 }
 
 .nav-link {
@@ -205,6 +234,9 @@
 }
 
 .profile-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically */
     background-color: #fff;
     /* White background */
     border-radius: 8px;
@@ -213,13 +245,24 @@
     /* A subtle shadow */
     padding: 20px;
     /* Space inside the box */
-    margin: 20px;
+    margin: auto;
     /* Space outside the box */
-    flex-grow: 0.6;
+    flex-grow: 0.8;
+    width: 70%; /* Sets width to 40% of its grid area */
+    max-width: 1200px; /* Adjust max width as needed */
+    margin-top: 30px; /* Fixed space from the bottom of the header */
 }
 
 .sidebar-divider {
     height: 1px;
     background-color: #dee2e6; /* Light grey color, adjust as needed */
     margin: 5px 20px; /* Adds some vertical space and horizontal padding */
+}
+
+.form-divider {
+    border: 0;
+    height: 1px;
+    background: #adadad; /* Dark grey line */
+    background-image: linear-gradient(to right, #ccc, #adadad, #ccc);
+    margin: 35px 0; /* Spacing around the divider */
 }

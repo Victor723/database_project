@@ -11,7 +11,7 @@ class ProductReview:
         self.pr_rating = pr_rating
 
     @staticmethod
-    def get(pr_userkey, pr_productkey):
+    def get(pr_productkey, pr_userkey):
         rows = app.db.execute('''
 SELECT pr_productkey, pr_userkey, pr_productname, pr_reviewdate, pr_review, pr_rating
 FROM ProductReview
@@ -49,7 +49,7 @@ ORDER BY pr_reviewdate DESC
     @staticmethod
     def get_product_rating(pr_productkey):
         rows = app.db.execute('''
-SELECT ROUND(AVG(pr_rating), 2)
+SELECT ROUND(AVG(pr_rating), 1)
 FROM ProductReview
 WHERE pr_productkey = :pr_productkey
 GROUP BY pr_productkey
@@ -68,7 +68,7 @@ FROM ProductReview
 WHERE pr_productkey = :pr_productkey
 ''',
                               pr_productkey = pr_productkey)
-        return rows[0]
+        return rows[0][0]
 
     @staticmethod
     def get_top5_user_reviews(pr_userkey):

@@ -48,8 +48,20 @@ class Lineitem:
                 WHERE o.o_userkey = :userkey AND l.l_productkey = :productkey
             );
         '''
+        results = app.db.execute(query, l_orderkey=l_orderkey)
+    
+    @staticmethod
+    def check_product(user_key, product_key):
+        query = '''
+            SELECT EXISTS(
+                SELECT 1
+                FROM Orders o
+                JOIN Lineitem l ON o.o_orderkey = l.l_orderkey
+                WHERE o.o_userkey = :userkey AND l.l_productkey = :productkey
+            );
+        '''
         result = app.db.execute(query, userkey=user_key, productkey=product_key)
-        return result[0] if result else False
+        return result[0][0] if result else False
 
     @staticmethod
     def check_seller(user_key, seller_key):
@@ -62,4 +74,4 @@ class Lineitem:
             );
         '''
         result = app.db.execute(query, userkey=user_key, sellerkey=seller_key)
-        return result[0] if result else False
+        return result[0][0] if result else False
