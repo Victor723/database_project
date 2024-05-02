@@ -103,7 +103,6 @@ AND (p_productname LIKE :like_pattern OR p_description LIKE :like_pattern)''',
             print(f"An error occurred: {e}")
             return None
 
-    
     @staticmethod
     def create_product(product_key, product_name, product_price, product_description, product_image_url, category_key):
         app.db.execute(
