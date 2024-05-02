@@ -58,9 +58,9 @@ class User(UserMixin):
         if not rows:  # email not found
             app.logger.info('Invalid login credentials.')
             return None
-        # elif not check_password_hash(rows[0][0], password):  # incorrect password
-        #     app.logger.info('Invalid login credentials.')
-        #     return None
+        elif not check_password_hash(rows[0][0], password):  # incorrect password
+            app.logger.info('Invalid login credentials.')
+            return None
         else:  # return a newly instantiated user instance
             # Since the password is the first element and not needed in the User constructor,
             # we skip the first element (password) and unpack the rest
