@@ -44,6 +44,7 @@ def seller_homepage(s_sellerkey):
     if user_info:
         seller_name = user_info[0]['first_name'] + user_info[0]['last_name']
         total_income = Seller.get_fulfilled_order_total_price(s_sellerkey)
+        total_income = total_income if total_income else 0
         # Get monthly income data based on the selected period
         monthly_income_data = Seller.get_monthly_income(s_sellerkey, start_date, end_date)
         months = list(monthly_income_data.keys())
@@ -187,6 +188,7 @@ def add_product(s_sellerkey):
     if request.method == 'POST':
         search_query = request.form.get('search_query')
         search_results = Product.search_products_by_name(search_query)
+        print(search_results)
         return render_template('search_results.html', seller_key=s_sellerkey, search_results=search_results, search_query=search_query)
     else:
         return render_template('add_product.html', seller_key=s_sellerkey)
