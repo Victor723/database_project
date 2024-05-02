@@ -1,8 +1,9 @@
-from flask import Blueprint, jsonify, render_template, redirect, url_for, flash, request
+from flask import Blueprint, jsonify, render_template, flash, request
 from .models.cart import Cart
 from .models.productseller import ProductSeller
 from .models.user import User
 from .models.productcart import ProductCart
+from .models.order import Order
 from flask_login import current_user, login_required
 from decimal import Decimal, ROUND_HALF_UP
 
@@ -34,7 +35,6 @@ def save_for_later():
         has_inventory, message = check_inventory(seller_key, product_key, save_quantity)
         if not has_inventory:
             flash(f'Only {message} Please update the quantity.', 'warning')
-
     return render_template('save_for_later.html', saved_items=saved_items)
 
 @bp.route('/update-incart-quantity', methods=['POST'])
@@ -155,19 +155,21 @@ def checkout():
     total_cost = Cart.get_incart_total_cost_by_c_userkey(c_userkey=user_key)
     total_cost = Decimal(total_cost)
     rounded_cost = total_cost.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    # print(f'Rounded cost: {rounded_cost}')
     has_balance, message = check_balance(user_key, rounded_cost)
-    if has_balance:
-        new_balance = User.get_balance(user_key) - rounded_cost
-        if User.update_balance(user_key, -rounded_cost, new_balance):
+    if has_balance: 
+        if User.update_balance(user_key, -rounded_cost):
             if Cart.create_order_from_cart(user_key, cart_key):
-                # flash(f'Order created successfully! Your new balance is ${new_balance:.2f}', 'success')
+                new_balance = User.get_balance(user_key)
+                # print(f'Order created successfully! Your new balance is ${new_balance:.2f}')
                 return jsonify({'success': f'Order created successfully! Your new balance is ${new_balance:.2f}'}), 200
             else:
                 return jsonify({'error': 'Failed to create order'}), 500
+            
         else:
             return jsonify({'error': 'Failed to update balance'}), 500
+        
     else:
-        # flash(message, 'error')
         return jsonify({'error': message}), 200
 
 def check_inventory(seller_key, product_key, quantity):

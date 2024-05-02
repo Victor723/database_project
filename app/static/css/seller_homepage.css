@@ -1,0 +1,72 @@
+/* base.html */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* main-content */
+.main-content {
+    margin-top: 20px;
+    position: absolute;
+    left: 300px; /* Adjusted to leave space for navigation */
+    width: calc(100% - 300px); /* Adjusted width to fill the remaining space */
+    top: 20%; /* Adjusted top position */
+}
+
+h1 {
+    font-size: 24px;
+}
+
+h3 {
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+p {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+form {
+    margin-bottom: 20px;
+    display: flex; /* Added flex display */
+    align-items: center; /* Center items vertically */
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="date"] {
+    padding: 5px;
+    margin-right: 10px; /* Added right margin for separation */
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+canvas {
+    margin-top: 20px;
+}
+
+#monthlyIncomeChartContainer {
+    padding-right: 10%; /* 10% space on the right */
+    padding-bottom: 10%; /* 10% space at the bottom */
+}

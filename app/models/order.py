@@ -1,4 +1,5 @@
 from flask import current_app as app
+from .seller import Seller
 
 class Order:
     def __init__(self, o_orderkey, o_userkey, o_totalprice, o_ordercreatedate):
@@ -131,6 +132,7 @@ class Order:
             products.append({
                 'product_name': line_item[0],
                 'seller_name': line_item[1] + ' ' + line_item[2],
+                'seller_key': line_item[3], # Seller key
                 'quantity': line_item[4],
                 'price': line_item[5],
                 'fulfillment_date': line_item[6].strftime('%Y-%m-%d') if line_item[6] else None,
@@ -160,8 +162,54 @@ class Order:
         ''' 
         result = app.db.execute(query, order_id=order_id)
         return result[0][0] if result else None
+    
 
-##### Used in user balance page #####
+    @staticmethod
+    def update_seller_inventory(order_key):
+        # Initialize the list to store out of stock products
+        out_of_stock_product = []
+
+        # Retrieve line items for the order
+        lineitems = app.db.execute("""
+            SELECT l_sellerkey, l_orderkey, l_linenumber, l_productkey, p_productname, l_quantity
+            FROM Lineitem l
+            JOIN Product p ON l.l_productkey = p.p_productkey
+            WHERE l_orderkey = :order_key
+        """, order_key=order_key)
+
+        # Iterate through each line item
+        for lineitem in lineitems:
+            seller_key = lineitem[0]
+            order_key = lineitem[1]
+            linenumber = lineitem[2]
+            product_key = lineitem[3]
+            product_name = lineitem[4]
+            quantity = lineitem[5]
+
+            # Check if there is enough quantity in seller's inventory
+            inventory = Seller.check_quantity(seller_key, order_key, linenumber, product_key)
+
+            # If there is not enough inventory, add the product to the out_of_stock_product list
+            if inventory is None:
+                out_of_stock_product.append(product_name)
+
+        # If there are any out of stock products, return a message
+        if out_of_stock_product:
+            message = ", ".join(out_of_stock_product) + " are out of stock"
+            return message
+        else:
+            # Update the inventory and mark the order as fulfilled for each line item
+            for lineitem in lineitems:
+                seller_key = lineitem[0]
+                order_key = lineitem[1]
+                linenumber = lineitem[2]
+                product_key = lineitem[3]
+                inventory = Seller.check_quantity(seller_key, order_key, linenumber, product_key)
+                Seller.update_quantity(seller_key, product_key, inventory)
+           
+            return "Checkout successfully"
+
+
     @staticmethod
     def get_monthly_expenditure(userkey):
         try:
@@ -280,4 +328,4 @@ class Order:
         except Exception as e:
             app.logger.error(f"Failed to fetch order counts for user {userkey}: {str(e)}")
             return None
-##### Used in user_balance #####
+

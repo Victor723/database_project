@@ -32,31 +32,7 @@
 </style>
 
 <!-- Display All Product Reviews in a Table -->
-  {% if current_user.is_authenticated %}
-    {% if has_bought %}
-      <!-- Add a New Review -->
-      <button class="btn btn-edit openPopup" onClick="togglePopup('newProductPopup')">New Review</button>
-      <div class="popup-container" id="newProductPopup">
-          <form action="{{ url_for('myreview.new_product_review', pr_productkey=product_details.p_productkey, pr_userkey=user_key) }}" method="POST">
-          <label for="userInput">Review:</label>
-          <input type="text" id="userInput" name="userInput" required style="width: 290px; height: 80px; margin-bottom: 20px;">
-
-          <label for="userRating">Rating (1-5):</label>
-          <select id="userRating" name="userRating" required>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-          </select>
-
-          <button type="submit" class="btn btn-primary" style="margin-left: 50px; margin-right: 5px;">Submit</button>
-          <button type="button" class="btn btn-cancel" onClick="togglePopup('newProductPopup')">Cancel</button>
-          </form>
-      </div>
-    {% else %}
-      <h4>You need to make a purchase of this product to create reviews.</h4>
-    {% endif %}
+  {% if current_user.is_authenticated %} 
   {% else %}
   <h2>Please log in to create reviews.</h2>
   <!-- <a href="/login" class="btn btn-primary">Login</a> -->
@@ -70,6 +46,32 @@
           ★★★★★
         </span>
       </span>
+      <span style="margin-left: 120px">
+        {% if has_bought %}
+        <!-- Add a New Review -->
+        <button class="btn btn-edit openPopup" onClick="togglePopup('newProductPopup')">New Review</button>
+        <div class="popup-container" id="newProductPopup">
+            <form action="{{ url_for('myreview.new_product_review', pr_productkey=product_details.p_productkey, pr_userkey=user_key) }}" method="POST">
+            <label for="userInput">Review:</label>
+            <input type="text" id="userInput" name="userInput" required style="width: 290px; height: 80px; margin-bottom: 20px;">
+
+            <label for="userRating">Rating (1-5):</label>
+            <select id="userRating" name="userRating" required>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary" style="margin-left: 50px; margin-right: 5px;">Submit</button>
+            <button type="button" class="btn btn-cancel" onClick="togglePopup('newProductPopup')">Cancel</button>
+            </form>
+        </div>
+      </span>
+    {% else %}
+      <h4>You need to make a purchase of this product to create reviews.</h4>
+    {% endif %}
     </p>
     <p class="review-counts">Review Count: {{ product_review_counts if product_reviews else 'No reviews' }}</p>
   </div>
