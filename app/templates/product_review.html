@@ -83,7 +83,7 @@
     <tbody>
       {% for review in product_reviews %}
         <tr>
-          <td><a href="/public_user_profile/{{ review.pr_userkey }}"></a>{{ review.pr_userkey }}</td>
+          <td><a href="/public_user_profile/{{ review.pr_userkey }}">{{ review.pr_userkey }}</a></td>
           <td>{{ review.pr_reviewdate }}</td>
           <td>{{ review.pr_review }}</td>
           <td>{{ review.pr_rating }}</td>

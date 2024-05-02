@@ -458,11 +458,9 @@ def upload_profile_image():
     return redirect(url_for('users.user_profile'))
 
 
-@bp.route('/public_view', methods=['GET','POST'])
-def public_user_profile():
-
-    user_key = 3
-
+@bp.route('/public_user_profile/<int:user_key>', methods=['GET','POST'])
+def public_user_profile(user_key):
+    # current_app.logger.info(f'{user_key}')
     is_seller = True if Seller.get_sellerkey(user_key) else False
     user_info = User.get_for_public_view(user_key, is_seller)
     # current_app.logger.info(f"{user_info} {is_seller}")
@@ -478,8 +476,6 @@ def public_user_profile():
 def inject_user_status():
     if not current_user.is_authenticated:
         return {'is_seller': False}
-    
     is_seller = True if Seller.get_sellerkey(current_user.user_key) else False
-    # return dict(is_seller=is_seller, become_seller_form=BecomeSellerForm(obj=current_user))
     return dict(is_seller=is_seller)
 
