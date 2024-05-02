@@ -3,10 +3,11 @@ from flask_login import current_user
 import datetime
 
 from .models.product import Product
-from .models.cart import Cart
+from .models.productcart import ProductCart
 from .models.seller import Seller
 from .models.productreview import ProductReview
 from .models.productseller import ProductSeller
+from .models.lineitem import Lineitem
 
 from flask import Blueprint
 bp = Blueprint('product_details', __name__)
@@ -30,14 +31,15 @@ def product_details(product_id):
         user_key = current_user.user_key
     else:
         user_key = None
-
+    has_bought = Lineitem.check_product(user_key, product_id)   
     return render_template('product_details.html',
                         product_details=product_details,
                         productseller_info=productseller_info,
                         product_reviews = product_reviews,
                         product_rating = product_rating,
                         product_review_counts = product_review_counts,
-                        user_key = user_key)
+                        user_key = user_key,
+                        has_bought = has_bought)
 
 
 @bp.route('/add_to_cart', methods=['POST'])
@@ -52,7 +54,7 @@ def add_to_cart():
                 quantity = int(request.form[key])
                 if quantity > 0:
                     # add quantity of product from seller to cart
-                    Cart.add_to_cart(userkey, productkey, sellerkey, quantity)
+                    ProductCart.add_to_cart(userkey, productkey, sellerkey, quantity)
     else:
         return redirect(url_for('users.login'))  # Redirect to the cart page or another appropriate page
     return redirect(url_for('cart.shopping_cart'))  # Redirect to the cart page or another appropriate page

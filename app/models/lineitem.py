@@ -37,29 +37,6 @@ class Lineitem:
         # Return the newest fulfillment date or False if it doesn't exist
         return newest_fulfillmentdate if newest_fulfillmentdate else False
     
-    @staticmethod
-    def check_product(user_key, product_key):
-        query = '''
-            SELECT EXISTS(
-                SELECT 1
-                FROM Orders o
-                JOIN Lineitem l ON o.o_orderkey = l.l_orderkey
-                WHERE o.o_userkey = :userkey AND l.l_productkey = :productkey
-            );
-        '''
-        results = app.db.execute(query, l_orderkey=l_orderkey)
-    
-    @staticmethod
-    def check_product(user_key, product_key):
-        query = '''
-            SELECT EXISTS(
-                SELECT 1
-                FROM Orders o
-                JOIN Lineitem l ON o.o_orderkey = l.l_orderkey
-                WHERE o.o_userkey = :userkey AND l.l_productkey = :productkey
-            );
-        '''
-        results = app.db.execute(query, l_orderkey=l_orderkey)
     
     @staticmethod
     def check_product(user_key, product_key):
