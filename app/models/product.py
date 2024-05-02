@@ -1,5 +1,7 @@
 from flask import current_app as app
 
+
+
 class Product:
     def __init__(self, p_productkey, p_productname, p_price, p_catname, p_description=None, p_imageurl=None, p_rating=None, p_discount=None):
         self.p_productkey = p_productkey
@@ -16,7 +18,7 @@ class Product:
         rows = app.db.execute('''
 SELECT p_productkey, p_productname, p_price, cat_catname, p_description, p_imageurl
 FROM Product, Category
-WHERE p_productkey = :p_productkey
+WHERE p_productkey = :p_productkey AND p_catkey = cat_catkey
 ''',
                       p_productkey=p_productkey)
         return Product(*(rows[0])) if rows is not None else None
@@ -84,37 +86,16 @@ AND (p_productname LIKE :like_pattern OR p_description LIKE :like_pattern)''',
         ''')
         return row[0][0] if row is not None else None
 
-
     @staticmethod
     def search_products_by_name(search_query):
-        try:
-            # Perform a search based on the search query
-            # This query will search for similar product names in the Product table
-            search_results = app.db.execute(
-                """
-                SELECT p_productkey, p_productname, p_price, p_description, p_imageurl, p_catkey, cat_catname
-                FROM Product, Category
-                WHERE p_catkey = cat_catkey AND p_productname LIKE :search_query
-                """,
-                search_query=f'%{search_query}%'
-            )
-            return search_results
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            return None
-
-    
-    @staticmethod
-    def create_product(product_key, product_name, product_price, product_description, product_image_url, category_key):
-        app.db.execute(
-                """
-                INSERT INTO Product (p_productkey, p_productname, p_price, p_description, p_imageurl, p_catkey)
-                VALUES (:product_key, :product_name, :product_price, :product_description, :product_image_url, :category_key)
-                """,
-                product_key=product_key,
-                product_name=product_name,
-                product_price=product_price,
-                product_description=product_description,
-                product_image_url=product_image_url,
-                category_key=category_key
+        # Perform a search based on the search query
+        # This query will search for similar product names in the Product table
+        search_results = app.db.execute(
+            """
+            SELECT p_productkey, p_productname, p_price, p_description, p_imageurl
+            FROM Product
+            WHERE p_productname LIKE :search_query
+            """,
+            search_query=f'%{search_query}%'
         )
+        return search_results

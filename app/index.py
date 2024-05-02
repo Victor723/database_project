@@ -28,6 +28,9 @@ def index():
     if selected_catkey:
         # Filter products by selected category
         products = Product.get_all_by_category(selected_catkey)
+    else:
+        # If no category is selected, display all products
+        products = Product.get_all()
 
     # Search by Keywords
     search_term = request.args.get('search', '')
