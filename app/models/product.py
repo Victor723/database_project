@@ -98,5 +98,4 @@ AND (p_productname LIKE :like_pattern OR p_description LIKE :like_pattern)''',
             """,
             search_query=f'%{search_query}%'
         )
-
         return search_results
