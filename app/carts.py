@@ -148,7 +148,6 @@ def move_to_incart():
 @bp.route('/checkout', methods=['POST'])
 @login_required
 def checkout():
-    """Process the checkout, creating an order and updating user balance."""
     user_key = current_user.user_key
     cart_key = Cart.get_or_create_cartkey_by_user(c_userkey=user_key)
     cart_items = Cart.get_incart_products_by_userkey(user_key)
@@ -156,19 +155,22 @@ def checkout():
     total_cost = Cart.get_incart_total_cost_by_c_userkey(c_userkey=user_key)
     total_cost = Decimal(total_cost)
     rounded_cost = total_cost.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+    # print(f'Rounded cost: {rounded_cost}')
     has_balance, message = check_balance(user_key, rounded_cost)
-    if has_balance:
+    if has_balance: 
+        
         if User.update_balance(user_key, -rounded_cost):
             if Cart.create_order_from_cart(user_key, cart_key):
                 new_balance = User.get_balance(user_key)
-                # flash(f'Order created successfully! Your new balance is ${new_balance:.2f}', 'success')
+                # print(f'Order created successfully! Your new balance is ${new_balance:.2f}')
                 return jsonify({'success': f'Order created successfully! Your new balance is ${new_balance:.2f}'}), 200
             else:
                 return jsonify({'error': 'Failed to create order'}), 500
+            
         else:
             return jsonify({'error': 'Failed to update balance'}), 500
+        
     else:
-        # flash(message, 'error')
         return jsonify({'error': message}), 200
 
 def check_inventory(seller_key, product_key, quantity):
