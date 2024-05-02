@@ -4,6 +4,7 @@ import datetime
 
 from .models.product import Product
 from .models.cart import Cart
+from .models.productcart import ProductCart
 from .models.seller import Seller
 from .models.productreview import ProductReview
 from .models.productseller import ProductSeller
@@ -50,9 +51,12 @@ def add_to_cart():
             if key.startswith('quantity_'):
                 sellerkey = key.split('_')[1]
                 quantity = int(request.form[key])
+                # print(f"Quantity: {quantity} for seller {sellerkey}")
                 if quantity > 0:
                     # add quantity of product from seller to cart
-                    Cart.add_to_cart(userkey, productkey, sellerkey, quantity)
+                    print(f"Adding {quantity} of product {productkey} from seller {sellerkey} to cart")
+                    ProductCart.add_to_cart(userkey, productkey, sellerkey, quantity)
+
     else:
         return redirect(url_for('users.login'))  # Redirect to the cart page or another appropriate page
     return redirect(url_for('cart.shopping_cart'))  # Redirect to the cart page or another appropriate page

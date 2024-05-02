@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from .models.order import Order
-from datetime import datetime
+from .models.lineitem import Lineitem
+
 bp = Blueprint('orders', __name__)
 
 @bp.route('/orders/', methods=['GET'])
@@ -25,9 +26,16 @@ def order_details():
         order_id = request.form.get('order_id')
         if order_id:
             order_details = Order.get_order_details(order_id)
+            is_fullfilled = Lineitem.is_fulfilled(order_id)
+            if(is_fullfilled != False):
+                success = Order.update_fulfillment_date(order_id, is_fullfilled)
+                if not success:
+                    flash('Failed to update the fulfillment date.', 'error')
+            fulfilled_date = Order.get_fullfilldate(order_id)
             if order_details:
                 # Render the order details template with the order data
-                return render_template('order_details.html', order_details=order_details)
+                print(order_details)
+                return render_template('order_details.html', order_details=order_details, fulfilled_date = fulfilled_date)
             else:
                 flash('Order not found.', 'error')
                 return redirect(url_for('orders.display_orders'))

@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-{# {% if current_user.is_authenticated %} #}
 <div class="container mt-3">
     <div class="row">
         <!-- Cart Items Column -->
@@ -27,17 +26,20 @@
                                 <td>${{ "%.2f"|format(item.ps_price) }}</td>
                                 <td>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" value="{{ item.pc_save }}" min="1" id="quantityInput{{ loop.index }}">
+                                        <input type="number" class="form-control" value="{{ item.pc_savequantity }}" min="1" id="quantityInput{{ loop.index }}">
                                         <div class="input-group-append">
                                             <button class="btn btn-secondary" type="button"
-                                                onclick="updateQuantity('{{ item.product_key }}', '{{ item.seller_key }}', document.getElementById('quantityInput{{ loop.index }}'))">
+                                                onclick="updateQuantity('{{ item.product_key }}', '{{ item.seller_key }}', 'quantityInput{{ loop.index }}')">
                                                 Update
                                             </button>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <button class="btn btn-primary" type="button">Move to Cart</button>
+                                    <button class="btn btn-primary" type="button"
+                                    onclick="moveToCart('{{ item.product_key }}', '{{ item.seller_key }}', this)">
+                                    
+                                    Move to Cart</button>
                                    <!-- 'Remove' Button with a Red Color -->
                                    <button class="btn btn-danger" type="button"
                                         onclick="removeItem('{{ item.product_key }}', '{{ item.seller_key }}', this)">
@@ -58,67 +60,118 @@
                 <h2 class="text-center mt-5">Your Save for Later Cart is empty.</h2>
             {% endif %}
         </div>
-    </div>
-    <div class="mt-3">
-        <a href="{{ url_for('cart.shopping_cart') }}" class="btn btn-secondary btn-block">
-            Go to Shopping cart
-        </a>
-    </div>
+        <div class="mt-3">
+            <a href="{{ url_for('cart.shopping_cart') }}" class="btn btn-secondary btn-block">
+                Go to Shopping cart
+            </a>
+        </div>
     </div>
 </div>
+
+
 <script>
-    function updateQuantity(productKey, sellerKey, quantityInput) {
-        // Get the new quantity value
-        let newQuantity = quantityInput.value;
-        // Redirect to the update quantity route
-        
-    }
 
-    function moveToCart(productKey, sellerKey, button) {
-        // Redirect to the move to save for later route
+function updateQuantity(productKey, sellerKey, inputElementId)  {
+    const quantityElement = document.getElementById(inputElementId);
+    if (!quantityElement) {
+        console.error(`Element with ID ${inputElementId} not found`);
+        return; // Exit the function if element not found
+    }
+    const newQuantity = quantityElement.value;
+    if (newQuantity < 1) {
+        alert('Quantity must be at least 1');
+        return;
+    }
+    fetch('/update-save-quantity', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_key: productKey,
+            seller_key: sellerKey,
+            new_quantity: newQuantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert('Failed to update quantity: ' + data.error);
+        } else {
+            alert('Quantity updated to ' + data.new_quantity);
+            setTimeout(() => window.location.reload(), 500);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update quantity.');
+    });
+
+}
+function moveToCart(productKey, sellerKey) {  
+    fetch('/move-to-incart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_key: productKey,
+            seller_key: sellerKey
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Item saved for later successfully');
+            setTimeout(() => window.location.reload(), 500);
+        } else {
+            alert('Failed to save item for later: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to save item for later: ' + error.message);
+    });
+}
        
-    }
+    
 
-    function removeItem(productKey, sellerKey, element) {
-    console.log(element);
-    if (confirm('Are you sure you want to remove this item?')) {
-        fetch('/remove-item', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                product_key: productKey,
-                seller_key: sellerKey
-            })
+function removeItem(productKey, sellerKey, element) {
+console.log(element);
+if (confirm('Are you sure you want to remove this item?')) {
+    fetch('/remove-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_key: productKey,
+            seller_key: sellerKey
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Item removed successfully');
-                let ancestor = element.parentElement;
-                while (ancestor && ancestor.tagName !== 'TR') {
-                    ancestor = ancestor.parentElement;
-                }
-
-                if (ancestor && ancestor.tagName === 'TR') {
-                    ancestor.remove();
-                }
-                setTimeout(() => window.location.reload(), 500);
-            } else {
-                alert('Failed to remove item: ' + (data.error || 'Unknown error'));
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Item removed successfully');
+            let ancestor = element.parentElement;
+            while (ancestor && ancestor.tagName !== 'TR') {
+                ancestor = ancestor.parentElement;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to remove item: ' + error.message);
-        });
-    }
+
+            if (ancestor && ancestor.tagName === 'TR') {
+                ancestor.remove();
+            }
+            setTimeout(() => window.location.reload(), 500);
+        } else {
+            alert('Failed to remove item: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to remove item: ' + error.message);
+    });
+}
 }
 </script>
 {% endblock %}
 
- {# {% else %} #}
-    <!-- <p>You must be logged in to view this page.</p> -->
-    <!-- <a href="{{ url_for('users.login') }}" class="btn btn-primary">Login</a> -->
- {# {% endif %} #}
