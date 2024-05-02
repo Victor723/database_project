@@ -94,16 +94,21 @@ AND p_productname LIKE :like_pattern OR p_description LIKE :like_pattern''',
 
     @staticmethod
     def search_products_by_name(search_query):
-        # Perform a search based on the search query
-        # This query will search for similar product names in the Product table
-        search_results = app.db.execute(
-            """
-            SELECT p_productkey, p_productname, p_price, p_description, p_imageurl, p_catkey, cat_catname
-            FROM Product, Category
-            WHERE p_catkey = cat_catkey AND p_productname LIKE :search_query
-            """,
-            search_query=f'%{search_query}%'
-        )
+        try:
+            # Perform a search based on the search query
+            # This query will search for similar product names in the Product table
+            search_results = app.db.execute(
+                """
+                SELECT p_productkey, p_productname, p_price, p_description, p_imageurl, p_catkey, cat_catname
+                FROM Product, Category
+                WHERE p_catkey = cat_catkey AND p_productname LIKE :search_query
+                """,
+                search_query=f'%{search_query}%'
+            )
+            return search_results
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
 
         return search_results
     

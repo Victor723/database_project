@@ -425,3 +425,50 @@ class Seller():
             monthly_income_data[month] += income
 
         return monthly_income_data
+    
+
+    @staticmethod
+    def update_product(product_key, product_name, product_price, product_description, product_imageurl, product_category):
+        """
+        Update the Product table with the provided information.
+        """
+        app.db.execute(
+            """
+            UPDATE Product
+            SET p_productname = :product_name,
+                p_price = :product_price,
+                p_description = :product_description,
+                p_imageurl = :product_imageurl,
+                p_catkey = :product_category
+            WHERE p_productkey = :product_key
+            """,
+            product_name=product_name,
+            product_key=product_key,
+            product_price=product_price,
+            product_description=product_description,
+            product_imageurl=product_imageurl,
+            product_category=product_category
+    )
+
+
+    @staticmethod
+    def update_product_seller(product_key, seller_key, product_price, product_quantity, product_discount, current_time):
+        """
+        Update the ProductSeller table with the provided information.
+        """
+        app.db.execute(
+            """
+            UPDATE ProductSeller
+            SET ps_price = :product_price,
+                ps_quantity = :product_quantity,
+                ps_discount = :product_discount,
+                ps_createtime = :current_time
+            WHERE ps_productkey = :product_key AND ps_sellerkey = :seller_key
+            """,
+            product_price=product_price,
+            product_key=product_key,
+            seller_key=seller_key,
+            product_quantity=product_quantity,
+            product_discount=product_discount,
+            current_time=current_time
+    )

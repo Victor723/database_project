@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from werkzeug.urls import url_parse
+import json
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
@@ -43,18 +44,21 @@ def seller_homepage(s_sellerkey):
     if user_info:
         seller_name = user_info[0]['first_name'] + user_info[0]['last_name']
         total_income = Seller.get_fulfilled_order_total_price(s_sellerkey)
+        total_income = total_income if total_income else 0
         # Get monthly income data based on the selected period
         monthly_income_data = Seller.get_monthly_income(s_sellerkey, start_date, end_date)
         months = list(monthly_income_data.keys())
         monthly_incomes = list(monthly_income_data.values())
 
     else:
+        # Handle case where user_info is empty or invalid seller key
         seller_name = "User Not Found"
     
     # Render the HTML template with the fetched data
     return render_template('seller_homepage.html', seller_name=seller_name, seller_key=s_sellerkey, 
                            total_income=total_income, months=months, monthly_incomes=monthly_incomes, 
-                           start_date=start_date, end_date=end_date)  # Pass start_date and end_date variables to pre-fill the form
+                           start_date=start_date, end_date=end_date) 
+
 
 
 @bp.route('/seller/<s_sellerkey>/inventory', methods=['GET', 'POST'])
@@ -129,50 +133,20 @@ def modify_product(s_sellerkey, p_productkey):
         product_imageurl = request.form['product_imageurl']
         product_quantity = request.form['product_quantity']
         product_discount = request.form['product_discount']
+        product_category = request.form['product_category']
         current_time = datetime.now()
 
-        # Update Product table
-        app.db.execute(
-            """
-            UPDATE Product
-            SET p_productname = :product_name,
-                p_price = :product_price,
-                p_description = :product_description,
-                p_imageurl = :product_imageurl
-            WHERE p_productkey = :product_key
-            """,
-            product_name=product_name,
-            product_key=p_productkey,
-            product_price=product_price,
-            product_description=product_description,
-            product_imageurl=product_imageurl
-        )
-
-        # Update ProductSeller table if necessary
-        app.db.execute(
-            """
-            UPDATE ProductSeller
-            SET ps_price = :product_price,
-                ps_quantity = :product_quantity,
-                ps_discount = :product_discount,
-                ps_createtime = :current_time
-            WHERE ps_productkey = :product_key AND ps_sellerkey = :seller_key
-            """,
-            product_price=product_price,
-            product_key=p_productkey,
-            seller_key=s_sellerkey,
-            product_quantity=product_quantity,
-            product_discount=product_discount,
-            current_time=current_time
-        )
+        Seller.update_product(p_productkey, product_name, product_price, product_description, product_imageurl, product_category)
+        Seller.update_product_seller(p_productkey, s_sellerkey, product_price, product_quantity, product_discount, current_time)
 
         # Redirect to inventory page after modification
         return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
     else:
         # Retrieve product information for pre-filling the form
         product_info = ProductSeller.get_product_info(s_sellerkey, p_productkey)
+        categories = Category.get_all()
         if product_info:
-            return render_template('modify_product.html', seller_key=s_sellerkey, product_key=p_productkey, product_info=product_info)
+            return render_template('modify_product.html', seller_key=s_sellerkey, product_key=p_productkey, product_info=product_info, categories=categories)
         else:
             flash('Product not found.', 'error')
             return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
@@ -184,6 +158,7 @@ def add_product(s_sellerkey):
     if request.method == 'POST':
         search_query = request.form.get('search_query')
         search_results = Product.search_products_by_name(search_query)
+        print(search_results)
         return render_template('search_results.html', seller_key=s_sellerkey, search_results=search_results, search_query=search_query)
     else:
         return render_template('add_product.html', seller_key=s_sellerkey)

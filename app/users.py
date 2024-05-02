@@ -14,6 +14,7 @@ from .models.seller import Seller
 from.models.order import Order
 from .models.productreview import ProductReview
 from .models.sellerreview import SellerReview
+from .sellers import seller_homepage
 
 from flask import Blueprint
 bp = Blueprint('users', __name__)
@@ -423,13 +424,12 @@ def become_a_seller():
 @login_required
 def switch_to_seller():
     sellerkey = Seller.get_sellerkey(current_user.user_key)
-    if sellerkey is None: # just in case. Usually users can't see this button if they aren't sellers
+    if sellerkey is None:  # Just in case. Usually users can't see this button if they aren't sellers
         flash('You are not a seller. Register first.', 'info')
         return redirect(url_for('users.user_profile'))
     else:
-        seller_info = Seller.get_seller_information(sellerkey)
-        seller_name = seller_info[0]['first_name'] + seller_info[0]['last_name']
-        return render_template('seller_homepage.html', seller_name=seller_name, seller_key=sellerkey)
+        # Redirect to the seller homepage
+        return redirect(url_for('sellers.seller_homepage', s_sellerkey=sellerkey))
 
 
 @bp.route('/upload_profile_image', methods=['POST'])
