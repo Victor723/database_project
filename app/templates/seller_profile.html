@@ -3,18 +3,23 @@
 {% block title %}Seller Profile{% endblock %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_profile.css') }}">
     {% include "seller_navigation.html" %}
     <div class="main-content">
         <h1>Seller Profile</h1>
-        {% if seller_profile %}
-            <p><strong>Seller Name:</strong> {{ seller_profile[0]['first_name'] }} {{ seller_profile[0]['last_name'] }}</p>
-            <p><strong>Email:</strong> {{ seller_profile[0]['email'] }}</p>
-            <p><strong>Company Name:</strong> {{ seller_profile[0]['company_name'] }}</p>
-            <p><strong>Address:</strong> {{ seller_profile[0]['street_address'] }}, {{ seller_profile[0]['city'] }}, {{ seller_profile[0]['state_region'] }}, {{ seller_profile[0]['zipcode'] }}, {{ seller_profile[0]['country'] }}</p>
-            <p><strong>Phone Number:</strong> {{ seller_profile[0]['phone_number'] }}</p>
-            <!-- Add any other seller information you want to display -->
-        {% else %}
-            <p>Seller profile not found.</p>
-        {% endif %}
+        <div class="seller-profile">
+            {% if seller_profile %}
+                <p><strong>Seller Name:</strong> {{ seller_profile[0]['first_name'] }} {{ seller_profile[0]['last_name'] }}</p>
+                <p><strong>Email:</strong> {{ seller_profile[0]['email'] }}</p>
+                <p><strong>Company Name:</strong> {{ seller_profile[0]['company_name'] }}</p>
+                <p><strong>Address:</strong> {{ seller_profile[0]['street_address'] }}, {{ seller_profile[0]['city'] }}, {{ seller_profile[0]['state_region'] }}, {{ seller_profile[0]['zipcode'] }}, {{ seller_profile[0]['country'] }}</p>
+                <p><strong>Phone Number:</strong> {{ seller_profile[0]['phone_number'] }}</p>
+                <!-- Add any other seller information you want to display -->
+                <button class="modify-button" id="modifyButton">Modify</button>
+            {% else %}
+                <p>Seller profile not found.</p>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

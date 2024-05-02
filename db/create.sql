@@ -46,8 +46,8 @@ CREATE TABLE ProductSeller (
     ps_discount DOUBLE PRECISION,
     ps_createtime DATE NOT NULL,
     PRIMARY KEY (ps_productkey, ps_sellerkey),
-    FOREIGN KEY (ps_productkey) REFERENCES Product(p_productkey),
-    FOREIGN KEY (ps_sellerkey) REFERENCES Seller(s_sellerkey)
+    FOREIGN KEY (ps_productkey) REFERENCES Product(p_productkey) ON DELETE CASCADE,
+    FOREIGN KEY (ps_sellerkey) REFERENCES Seller(s_sellerkey) ON DELETE CASCADE
 );
 
 CREATE TABLE Orders (
@@ -97,9 +97,9 @@ CREATE TABLE ProductCart (
     pc_sellerkey BIGINT NOT NULL, 
     pc_savequantity BIGINT NOT NULL,
     pc_incartquantity BIGINT NOT NULL,
-    PRIMARY KEY(pc_prodcartkey), -- Composite primary key
-    FOREIGN KEY(pc_cartkey) REFERENCES Cart(c_cartkey),
-    FOREIGN KEY(pc_productkey, pc_sellerkey) REFERENCES ProductSeller(ps_productkey, ps_sellerkey)
+    PRIMARY KEY(pc_prodcartkey),
+    FOREIGN KEY(pc_cartkey) REFERENCES Cart(c_cartkey) ON DELETE CASCADE,
+    FOREIGN KEY(pc_productkey, pc_sellerkey) REFERENCES ProductSeller(ps_productkey, ps_sellerkey) ON DELETE CASCADE
 );
 
 CREATE TABLE Lineitem (
@@ -114,6 +114,6 @@ CREATE TABLE Lineitem (
     l_tax DOUBLE PRECISION NOT NULL,
     PRIMARY KEY(l_linenumber, l_orderkey),
     FOREIGN KEY(l_orderkey) REFERENCES Orders(o_orderkey),
-    FOREIGN KEY(l_productkey, l_sellerkey) REFERENCES ProductSeller(ps_productkey, ps_sellerkey)
+    FOREIGN KEY(l_productkey, l_sellerkey) REFERENCES ProductSeller(ps_productkey, ps_sellerkey) ON DELETE CASCADE
 );
 

@@ -42,3 +42,25 @@ FROM Category
             # Rollback the transaction if there's an error
             app.db.rollback()
             raise e
+
+
+    @staticmethod
+    def check_category(catname):
+        """
+        Checks if a category name already exists in the database.
+
+        Args:
+            catname (str): The category name to check.
+
+        Returns:
+            bool: True if the category name already exists, False otherwise.
+        """
+        row = app.db.execute('''
+            SELECT COUNT(*)
+            FROM Category
+            WHERE cat_catname = :catname
+        ''', catname=catname)
+        if row[0][0] > 0:
+            return True
+        else:
+            return False
