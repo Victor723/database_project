@@ -393,6 +393,7 @@ class Seller():
         else:
             return None
 
+
     @staticmethod
     def get_fulfilled_order_total_price(sellerkey):
         rows = app.db.execute("""
