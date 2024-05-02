@@ -97,6 +97,7 @@ function updateQuantity(productKey, sellerKey, inputElementId)  {
     .then(data => {
         if (data.error) {
             alert('Failed to update quantity: ' + data.error);
+            setTimeout(() => window.location.reload(), 500);
         } else {
             alert('Quantity updated to ' + data.new_quantity);
             setTimeout(() => window.location.reload(), 500);
