@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Add Product</h1>
+    <form method="post" action="{{ url_for('sellers.add_product', s_sellerkey=seller_key) }}">
+        <label for="search_query">Search Product:</label>
+        <input type="text" id="search_query" name="search_query" placeholder="Enter product name">
+        <button type="submit" name="action" value="search">Search</button>
+    </form>
+    <a href="{{ url_for('sellers.create_product', s_sellerkey=seller_key) }}" class="btn btn-primary">Create</a>
+{% endblock %}

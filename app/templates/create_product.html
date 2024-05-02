@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Create Product</h1>
+    <form id="createProductForm" method="post" action="{{ url_for('sellers.create_product', s_sellerkey=seller_key) }}">
+        <label for="product_name">Product Name:</label>
+        <input type="text" id="product_name" name="product_name" required>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" step="0.01" min="0" required>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea>
+        <label for="imageurl">Image URL:</label>
+        <input type="url" id="imageurl" name="imageurl" required>
+        <label for="category_key">Category:</label>
+        <select id="category_key" name="category_key" required>
+            <option value="" disabled selected>Select Category</option>
+            {% for category in categories %}
+                <option value="{{ category.catkey }}">{{ category.catname }}</option>
+            {% endfor %}
+            <option value="new_category">Add New Category</option>
+        </select>
+        <div id="newCategoryForm" class="new-category-form" style="display: none;">
+            <h2>Add New Category</h2>
+            <label for="new_category_name">New Category Name:</label>
+            <input type="text" id="new_category_name" name="new_category_name" required>
+            <button type="button" id="confirmNewCategory">Confirm</button>
+            <button type="button" id="cancelNewCategory">Cancel</button>
+        </div>
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" min="1" required>
+        <label for="discount">Discount (between 0 and 1):</label>
+        <input type="number" id="discount" name="discount" step="0.01" min="0" max="1" required>
+        <button type="submit">Create Product</button>
+    </form>
+
+    <script>
+        // Fetch categories from the server and populate the dropdown menu
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/categories')
+                .then(response => response.json())
+                .then(data => {
+                    const categorySelect = document.getElementById('category_key');
+                    data.categories.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.catkey;
+                        option.textContent = category.catname;
+                        categorySelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching categories:', error));
+        });
+
+        // Show/hide new category form based on selection
+        const categorySelect = document.getElementById('category_key');
+        const newCategoryForm = document.getElementById('newCategoryForm');
+        categorySelect.addEventListener('change', function() {
+            if (categorySelect.value === 'new_category') {
+                newCategoryForm.style.display = 'block';
+            } else {
+                newCategoryForm.style.display = 'none';
+            }
+        });
+
+        // Handle new category confirmation
+        const confirmNewCategoryBtn = document.getElementById('confirmNewCategory');
+        confirmNewCategoryBtn.addEventListener('click', function() {
+            const newCategoryName = document.getElementById('new_category_name').value;
+            if (newCategoryName.trim() !== '') {
+                fetch('/create_category', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ category_name: newCategoryName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Category created successfully, refresh the category options
+                        fetch('/categories')
+                            .then(response => response.json())
+                            .then(data => {
+                                categorySelect.innerHTML = '<option value="" disabled selected>Select Category</option>';
+                                data.categories.forEach(category => {
+                                    const option = document.createElement('option');
+                                    option.value = category.catkey;
+                                    option.textContent = category.catname;
+                                    categorySelect.appendChild(option);
+                                });
+                                newCategoryForm.style.display = 'none'; // Hide the new category form
+                            })
+                            .catch(error => console.error('Error fetching categories:', error));
+                    } else {
+                        console.error('Error creating category:', data.error);
+                        alert('Error creating category. Please try again.');
+                    }
+                })
+                .catch(error => console.error('Error creating category:', error));
+            } else {
+                alert('Please enter a category name.');
+            }
+        });
+    </script>
+{% endblock %}

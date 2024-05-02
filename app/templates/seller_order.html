@@ -3,18 +3,44 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_order.css') }}">
     {% include "seller_navigation.html" %}
     <div class="main-content">
         <h1>Orders</h1>
-        <table>
+        <!-- Add search form -->
+        <form action="{{ url_for('sellers.seller_order', s_sellerkey=seller_key) }}" method="GET" class="search-form">
+            <input type="text" name="search_query" placeholder="Search by customer_name, product_name or order_key">
+            <button type="submit">Search</button>
+        </form>
+        <table class="order-table">
             <thead>
                 <tr>
                     <th>Order ID</th>
                     <th>Product Name</th>
-                    <th>Date</th>
+                    <th>
+                        Date
+                        <a href="{{ url_for('sellers.seller_order', s_sellerkey=seller_key, date_order='ASC' if date_order == 'DESC' else 'DESC', status_order=status_order) }}">
+                            {% if date_order == 'ASC' %}
+                                ASC
+                            {% else %}
+                                DESC
+                            {% endif %}
+                        </a>
+                    </th>
                     <th>Customer Name</th>
                     <th>Total Price</th>
-                    <th>Status</th>
+                    <th>
+                        Status
+                        <a href="{{ url_for('sellers.seller_order', s_sellerkey=seller_key, date_order=date_order, status_order='ASC' if status_order == 'DESC' else 'DESC') }}">
+                            {% if status_order == 'ASC' %}
+                                ASC
+                            {% else %}
+                                DESC
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,9 +52,28 @@
                     <td>{{ order.customer_name }}</td>
                     <td>{{ order.total_price }}</td>
                     <td>{{ order.status }}</td>
+                    <td>
+                        <a href="{{ url_for('sellers.order_details', s_sellerkey=seller_key, o_orderkey=order.order_id, l_linenumber=order.lineitem_id) }}" class="btn btn-info">Detail</a>
+                        {% if order.status == 'Pending' %}
+                            <a href="{{ url_for('sellers.finish_order', s_sellerkey=seller_key, o_orderkey=order.order_id, l_linenumber=order.lineitem_id) }}" class="btn btn-success">Finish</a>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+
+        <!-- Pagination controls -->
+        <div class="pagination">
+            <span>Page {{ current_page }} of {{ total_pages }}</span>
+            <a href="?page=1">First</a>
+            {% if current_page > 1 %}
+                <a href="?page={{ current_page - 1 }}">Previous</a>
+            {% endif %}
+            {% if current_page < total_pages %}
+                <a href="?page={{ current_page + 1 }}">Next</a>
+            {% endif %}
+            <a href="?page={{ total_pages }}">Last</a>
+        </div>
     </div>
 {% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <!-- Product Details and Image -->
+  <div class="row">
+    <div class="col-md-6">
+      {% if product_details.p_imageurl %}
+        <img src="{{ product_details.p_imageurl }}" alt="{{ product_details.p_productname }}" class="img-fluid">
+      {% else %}
+        <p>No Image Available</p>
+      {% endif %}
+    </div>
+    <div class="col-md-6">
+      <h2>{{ product_details.p_productname }}</h2>
+      <!-- <p><strong>Product Name:</strong> </p> -->
+      <p><strong>Price:</strong> {{ product_details.p_price }}</p>
+      <p><strong>Category:</strong> {{ product_details.p_catname }}</p>
+      <p><strong>Description:</strong> {{ product_details.p_description }}</p>
+    </div>
+  </div>
+
+  <br> <br>
+  <!-- Placeholder for Add to Cart -->
+  <div class="row mt-4">
+    <div class="col">
+      <h3>Add to Cart</h3>
+        <form action="/add_to_cart" method="post">
+          <input type="hidden" name="product_id" value="{{ product_details.p_productkey }}">
+          {% for ps in productseller_info %}
+            <div class="mb-3">
+              <label>{{ ps.sellername }} (Stock: {{ ps.quantity }})</label>
+              <input type="number" name="quantity_{{ ps.sellerkey }}" min="0" max="{{ ps.quantity }}" value="0">
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-primary">Add to Cart</button>
+        </form>
+    </div>
+  </div>
+
+  <br> <br>
+
+  <!-- Review Section -->
+  <div class="row mt-4">
+    <div class="col">
+      <h3>Product Reviews </h3>
+      {% include "product_review.html" %}
+    </div>
+  </div>
+</div>
+{% endblock %}

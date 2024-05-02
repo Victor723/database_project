@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .total-spending {
+        font-size: 20px; /* Large font size for visibility */
+        color: #333; /* Dark color for readability */
+        text-align: center; /* Center-align the text */
+        margin-top: 20px; /* Space above the total spending display */
+    }
+</style>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user_balance.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="profile-page">
+    {% with active_page='wallet', is_seller=is_seller %}
+    {% include '_user_sidebar.html' %}
+    {% endwith %}
+
+    <div class="main-content">
+        <div class="profile-container id="wallet-profile-container"">
+
+                <div class="balance-info">
+                    <img src="{{ url_for('static', filename='img/user_balance_wallet.png') }}" alt="wallet">
+                    <span class="balance-amount">My Wallet Balance: ${{ current_user.balance }}</span>
+                </div>
+
+                <div class="balance-actions">
+
+                    <!-- Add money Modal Trigger -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add
+                        Money</button>
+
+                    <!-- Add money Modal -->
+                    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <form method="POST" action="{{ url_for('users.manage_user_balance') }}"
+                                    onsubmit="return validateAmountForm('addAmountId','amountAddError')">
+                                    {{ form.action(value='add') }}
+                                    {{ form.hidden_tag() }}
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addModalLabel">Add Money</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ form.amount.label(class="col-form-label") }}
+                                        {{ form.amount(class="form-control", id='addAmountId', placeholder="Enter an amount you want to add:") }}
+                                        <span class="text-danger" id="amountAddError"></span>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        {{ form.submit(class="btn btn-primary") }}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- withdraw money Modal Trigger -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                        data-target="#withdrawModal">Withdraw</button>
+
+                    <!-- withdraw money Modal -->
+                    <div class="modal fade" id="withdrawModal" tabindex="-1" role="dialog"
+                        aria-labelledby="withdrawModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <form method="POST" action="{{ url_for('users.manage_user_balance') }}"
+                                    onsubmit="return validateAmountForm('withdrawAmountId','amountWithdrawError')">
+                                    {{ form.action(value='withdraw') }}
+                                    {{ form.hidden_tag() }}
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="withdrawModalLabel">Withdraw</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ form.amount.label(class="col-form-label") }}
+                                        {{ form.amount(class="form-control", id='withdrawAmountId', placeholder="Enter an amount you want to withdraw:") }}
+                                        <span class="text-danger" id="amountWithdrawError"></span>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        {{ form.submit(class="btn btn-primary") }}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+        
+        {% if filled_monthly_expenditure and filled_weekly_expenditure %}
+        <div class="profile-container">
+            <canvas id="expenditureChart"></canvas>
+        </div>
+
+        <div class="profile-container" id="summary-container">
+            <div class="date-range-title">Select a date range for spending summary by category</div>
+            <form id="dateRangeForm">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required>
+                
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" required>
+                
+                <button type="submit">Update Chart</button>
+            </form>
+            <canvas id="spendingPieChart"></canvas>
+            <div id="totalSpendingDisplay" class="total-spending"></div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function validateAmountForm(inputId, errorId) {
+        var amount = document.getElementById(inputId).value;
+        var errorSpan = document.getElementById(errorId);
+        // Regex to allow up to two decimal places
+        var regex = /^\d+(\.\d{0,2})?$/; 
+
+        // Check if the input is empty
+        if (!amount.trim()) {
+            errorSpan.textContent = 'Amount cannot be empty.';
+            return false;
+        }
+        // Check if the input is not numeric
+        if (!regex.test(amount)) {
+            errorSpan.textContent = 'Please enter a valid numeric amount.';
+            return false;
+        }
+        // Clear the error message if input passes the checks
+        errorSpan.textContent = '';
+        return true;
+    }
+</script>
+
+
+<script>
+    var chartData = {
+        monthly: {
+            labels: {{ filled_monthly_expenditure|map(attribute='1')|list|tojson }},
+            datasetLabel: 'Monthly Expenditure',
+            data: {{ filled_monthly_expenditure|map(attribute='2')|list|tojson }},
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+        },
+        weekly: {
+            labels: {{ filled_weekly_expenditure|map(attribute='1')|list|tojson }},
+            datasetLabel: 'Weekly Expenditure',
+            data: {{ filled_weekly_expenditure|map(attribute='2')|list|tojson }},
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+        }
+    };
+
+    // Initialize the chart with the monthly data
+    var currentDatasetType = 'monthly';
+    var ctx = document.getElementById('expenditureChart').getContext('2d');
+    var expenditureChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: chartData[currentDatasetType].labels,
+            datasets: [{
+                label: chartData[currentDatasetType].datasetLabel,
+                data: chartData[currentDatasetType].data,
+                backgroundColor: chartData[currentDatasetType].backgroundColor,
+                borderColor: chartData[currentDatasetType].borderColor,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Month'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Expenditure ($)'
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    onClick: function(e, legendItem, legend) {
+                        // Toggle dataset type
+                        currentDatasetType = (currentDatasetType === 'monthly') ? 'weekly' : 'monthly';
+                        var newChartData = chartData[currentDatasetType];
+                        
+                        // Update the chart
+                        expenditureChart.data.labels = newChartData.labels;
+                        expenditureChart.data.datasets[0].label = newChartData.datasetLabel;
+                        expenditureChart.data.datasets[0].data = newChartData.data;
+                        expenditureChart.data.datasets[0].backgroundColor = newChartData.backgroundColor;
+                        expenditureChart.data.datasets[0].borderColor = newChartData.borderColor;
+
+                        // Update x-axis label based on the dataset type
+                        expenditureChart.options.scales.x.title.text = (currentDatasetType === 'monthly') ? 'Month' : 'Week';
+
+                        expenditureChart.update();
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly and weekly spending over the last year',
+                    font: {
+                    size: 20 // Increase the font size here
+                }
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+
+<!-- Script for Pie Chart -->
+<script>
+    document.getElementById('dateRangeForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        updateSpendingSummary(startDate, endDate);
+    });
+    function updateSpendingSummary(startDate, endDate) {
+    fetch(`/update_spending_summary?start=${startDate}&end=${endDate}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            updatePieChart(data);
+
+        })
+        .catch(error => {
+            console.error('Error fetching spending summary:', error);
+            alert('Failed to fetch spending data. ' + error.message);
+        });
+}
+
+
+function updatePieChart(data) {
+    const ctx = document.getElementById('spendingPieChart').getContext('2d');
+    // Extract and remove the total spending entry
+    const totalSpending = data.shift(); // Removes the first element and saves it
+    // Check if the pie chart already exists and is a Chart instance
+    if (window.spendingPieChart && typeof window.spendingPieChart.destroy === 'function') {
+        window.spendingPieChart.destroy();  // Destroy the existing chart if present
+    }
+    window.spendingPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: data.map(item => item.category),
+            datasets: [{
+                data: data.map(item => item.amount),
+                backgroundColor: data.map((_, index) => `hsl(${index * 360 / data.length}, 70%, 85%)`),
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+        aspectRatio: 1,  // Maintain aspect ratio 1:1
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label;
+                            const amount = context.raw;
+                            const percentage = data[context.dataIndex].percentage; // Accessing percentage from the data
+                            return `${label}: $${amount.toFixed(2)} (${percentage.toFixed(2)}%)`;
+                        }
+                    }
+                },
+                // title: {
+                //     display: true,
+                //     text: 'Spending Summary by Category',
+                //     font: {
+                //         size: 16
+                //     }
+                // }
+            }
+        }
+    });
+    // Display the total spending in the designated div
+    document.getElementById('totalSpendingDisplay').textContent = `Total Spending: $${totalSpending.amount.toFixed(2)}`;
+}
+</script>
+
+{% endblock %}

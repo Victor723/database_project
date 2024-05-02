@@ -1,31 +1,65 @@
-<!-- seller_review.html -->
-
 {% extends "base.html" %}
+
+{% block title %}Seller Review{% endblock %}
 
 {% block content %}
     {% include "seller_navigation.html" %}
-    <h1>Seller Review</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Custom Name</th>
-                <th>Custom ID</th>
+
+    <div class="container mt-5">
+        <h2 class="mb-3">Seller Reviews</h2>
+        <div class="mb-3">
+            <p><strong>Average Rating:</strong> {{ seller_rating if seller_reviews else 'No ratings yet' }}</p>
+            <p><strong>Review Counts:</strong> {{ seller_review_counts if seller_reviews else 'No reviews' }}</p>
+        </div>
+        
+        {% if seller_reviews %}
+        <!-- Display All Seller Reviews in a Table -->
+        <table class="table table-hover">
+            <thead class="thead-dark">
+              <tr>
+                <th>Reviewer</th>
                 <th>Review Date</th>
                 <th>Review</th>
                 <th>Rating</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for review in seller_review %}
-            <tr>
-                <td>{{ review.user_name }}</td>
-                <td>{{ review.user_key }}</td>
-                <td>{{ review.date }}</td>
-                <td>{{ review.review }}</td>
-                <td>{{ review.rating }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+              </tr>
+            </thead>
+            <tbody>
+              {% for review in seller_reviews %}
+                <tr>
+                  <td>{{ review.sr_userkey }}</td>
+                  <td>{{ review.sr_reviewdate }}</td>
+                  <td>{{ review.sr_review }}</td>
+                  <td>{{ review.sr_rating }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <!-- Pagination Controls -->
+          <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              <li class="page-item {% if page_num <= 1 %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ page_num - 1 }}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                  <span class="sr-only">Previous</span>
+                </a>
+              </li>
+              {% for num in range(1, total_pages + 1) %}
+              <li class="page-item {% if num == page_num %}active{% endif %}"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+              {% endfor %}
+              <li class="page-item {% if page_num >= total_pages %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ page_num + 1 }}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                  <span class="sr-only">Next</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        {% else %}
+          <p>No reviews available.</p>
+          <!-- You can add a login link or button here if it's needed -->
+          <!-- <a href="/login" class="btn btn-primary">Login</a> -->
+        {% endif %}
+    </div>
+
 {% endblock %}

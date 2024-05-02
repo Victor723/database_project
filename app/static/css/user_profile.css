@@ -1,0 +1,241 @@
+.profile-page {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    /* This adds spacing between the sidebar and the profile content */
+}
+
+.sidebar {
+    flex: 0 0 250px;
+    height: 100vh;
+    /* Fixed height */
+    padding: 25px;
+    background-color: #f5f5f5;
+}
+
+.nav-link {
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+    display: block;
+    margin: 5px 0;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background-color: #e7e7e7;
+}
+
+.btn-switch {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-switch:hover {
+    background-color: #0056b3;
+}
+
+.profile-container {
+    background-color: #fff;
+    /* White background */
+    border-radius: 8px;
+    /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* A subtle shadow */
+    padding: 20px;
+    /* Space inside the box */
+    margin: 20px;
+    /* Space outside the box */
+    height: auto;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    border-bottom: 1px solid #eee;
+    /* A light line to separate the header */
+    padding-bottom: 50px;
+    /* Space below the header */
+    margin-bottom: 30px;
+    /* Space below the header before the next content starts */
+    margin-top: 40px;
+}
+
+.profile-header img {
+    width: 200px; /* Adjust according to your design */
+    height: auto; /* Ensure the image is a circle if desired */
+    border-radius: 50%; /* Makes the image circular */
+    margin-right: 20px; /* Space between the image and the user info */
+    cursor: pointer; /* Indicates the image can be clicked */
+}
+
+.user-info h2 {
+    font-size: 46px; /* Adjust the size as needed */
+    font-weight: bold; /* Optional: make the text bold for better visibility */
+    color: #333; /* Dark color for better readability */
+}
+
+.user-info p {
+    font-size: 24px; /* Adjust the size as needed */
+    color: #555; /* Slightly lighter color for distinction */
+}
+
+.profile-header .user-info {
+    display: flex;
+    flex-direction: column; /* Stack name and email vertically */
+    justify-content: center; /* Aligns content centrally in the column */
+    margin-left: 30px;
+}
+
+.info-label {
+    display: inline-block;
+    /* Change from flexbox to inline for label */
+    width: 150px;
+    /* Give it a fixed width */
+    margin-right: 10px;
+    /* Spacing between label and value */
+    color: #888;
+    /* A lighter color for labels */
+    font-weight: normal;
+}
+
+.info-value {
+    display: inline-block;
+    /* Allow the value to be inline with the label */
+}
+
+.order-status-container {
+    display: flex;
+    justify-content: start; /* Align cards to the start of the container */
+    align-items: center;
+    padding: 20px;
+    gap: 10px; /* Use the gap property to add space between flex items */
+}
+
+
+.order-card-link {
+    flex: 1; /* This makes each link fill the space evenly */
+    display: block; /* Makes the link block-level to contain the flex items */
+    text-decoration: none !important; /* Removes underline from links */
+    color: inherit !important; /* Inherit the text color so it doesn't change the color of contents */
+    margin: 0 10px; /* This will add space to the left and right of each card, if needed here */
+}
+
+.order-card {
+    display: flex;
+    align-items: center; /* Vertically center the items */
+    justify-content: start; /* Align items to the start of the card */
+    width: 100%; /* Ensure it fills the link */
+    padding: 20px;
+    padding-left: 50px; /* Increase left padding to push content to the right */
+    text-align: left; /* Align text to the left */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #FFF; /* Default background, override in specific classes */
+    min-height: 130px; /* Set a minimum height */
+}
+
+.total-orders {
+    background-color: #EAF6FE; /* Light blue */
+}
+
+.pending-orders {
+    background-color: #FFF3EB; /* Light orange */
+}
+
+.completed-orders {
+    background-color: #EAF7E9; /* Light green */
+}
+
+.order-card img {
+    width: 60px;
+    height: auto;
+    margin-right: 35px; /* Add space between the image and the text */
+}
+
+.order-card .number {
+    font-size: 28px;
+    font-weight: bold;
+    margin-right: 5px; /* Optional: add space between the number and the label */
+}
+
+.order-card .label {
+    font-size: 20px;
+}
+
+.order-card .text-group {
+    display: flex;
+    flex-direction: column; /* Stack number and label vertically */
+    justify-content: center; /* Aligns content centrally in the column */
+}
+
+/* Additional wrapper for the right side content */
+.main-content {
+    display: flex;
+    flex-direction: column; /* This will stack the order status and profile content vertically */
+    flex-grow: 1; /* This ensures that the main content area takes up the remaining space */
+}
+
+.order-status-container {
+    display: flex;
+    justify-content: space-between;
+    /* ... other styles ... */
+    margin-bottom: 20px; /* Add some space below the order status cards */
+}
+
+.sidebar-divider {
+    height: 1px;
+    background-color: #dee2e6; /* Light grey color, adjust as needed */
+    margin: 5px 20px; /* Adds some vertical space and horizontal padding */
+}
+
+.nav-link,
+.btn-switch,
+.input-field,
+.order-card {
+    transition: all 0.3s ease; /* Smooth transition for all interactive elements */
+}
+
+.input-field:hover,
+.input-field:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 8px rgba(0, 86, 179, 0.2);
+}
+
+.profile-header,
+.profile-info {
+    margin-left: 50px; /* Adjust this value as needed */
+}
+
+.profile-info {
+    margin-top: 50px;
+    margin-bottom: 30px;
+}
+
+.order-card-link:hover .order-card {
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.19); /* Adjust shadow as needed */
+    transition: box-shadow 0.3s ease-in-out; /* Smooth transition for the shadow effect */
+}
+
+.info-label {
+    font-size: 18px; /* Adequate size for labels */
+    margin-bottom: 15px;
+    color: #333; /* Dark color for better readability */
+}
+
+.info-value {
+    font-size: 16px; /* Matches the label size for consistency */
+    margin-bottom: 15px;
+    color: #666; /* Lighter color to differentiate from labels */
+}
