@@ -32,6 +32,10 @@
     background-color: #f9f9f9;
 }
 
+.custom-details-btn {
+    background-color: #3858D6;
+}
+
 /* Style for pagination controls */
 .pagination {
     margin-left: 20%;
