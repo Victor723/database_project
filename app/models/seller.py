@@ -21,6 +21,17 @@ class Seller():
         sellerkey = rows[0][0] if rows else None
         return sellerkey
     
+    @staticmethod
+    def get_userkey(sellerkey):
+        rows = app.db.execute("""
+            SELECT s_userkey
+            FROM Seller
+            WHERE s_sellerkey = :sellerkey
+            """,
+            sellerkey=sellerkey)
+        userkey = rows[0][0] if rows else None
+        return userkey
+    
 
     @staticmethod
     def get_seller_information(sellerkey):
