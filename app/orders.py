@@ -15,8 +15,8 @@ def display_orders():
     per_page = 10
     offset = (page - 1) * per_page
 
-    mode = request.args.get('mode', 'all')
-    time_frame = request.args.get('time_frame', 'all')
+    mode = request.args.get('mode', 'all') # order fulfillment status (all, pending, and completed), default all (order)
+    time_frame = request.args.get('time_frame', 'all') # selected time frame to filter orders
     product_name = request.args.get('product_name', '')  # Retrieve product name from query parameters
     
     current_date = datetime.now()
@@ -41,7 +41,6 @@ def display_orders():
     product_names = [product_name] if product_name else []
 
     orders, total_orders = Order.get_orders(current_user.user_key, offset, per_page, start_date, end_date, mode, product_names)
-    # current_app.logger.info(f'{len(orders)}, {total_orders}')
     total_pages = (total_orders + per_page - 1) // per_page  # Calculate the total number of pages
 
     return render_template('orders.html', orders=orders, page=page, total_pages=total_pages, 

@@ -10,7 +10,7 @@ class Order:
 
     @staticmethod
     def get_orders(o_userkey, offset=0, per_page=10, start_date=None, end_date=None, mode='all', product_names=[]):
-        condition_filter = ""
+        condition_filter = "" # add the conditional part so we can filter orders by additional conditions
         params = {'o_userkey': o_userkey, 'offset': offset, 'per_page': per_page}
         if start_date:
             condition_filter += " AND o.o_ordercreatedate >= :start_date"
