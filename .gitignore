@@ -2,7 +2,7 @@
 **/__pycache__
 **/.venv
 poetry.lock
-./db/data/ *.csv
+./db/data/*.csv
 ./app/static/img/*.jpeg
 ./app/static/img/*.jpg
 ./app/static/img/*.png
