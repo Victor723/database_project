@@ -80,3 +80,34 @@
     top: 60%;
     color: #3858D6;
 }
+
+.sidebar {
+    flex: 0 0 250px;
+    height: 100vh;
+    /* Fixed height */
+    padding: 25px;
+    background-color: #f5f5f5;
+    overflow-y: auto;
+    /* Scrollable */
+}
+
+.nav-link {
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+    display: block;
+    margin: 5px 0;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background-color: #e7e7e7;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background-color: #dee2e6; /* Light grey color, adjust as needed */
+    margin: 5px 20px; /* Adds some vertical space and horizontal padding */
+}
