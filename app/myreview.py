@@ -14,7 +14,7 @@ bp = Blueprint('myreview', __name__)
 @bp.route('/myreview', methods=['GET'])
 @login_required
 def get_myreview():
-    u_userkey = current_user.userkey
+    u_userkey = current_user.user_key
     per_page = 5  # Number of items per page
 
     # Get page numbers for product and seller reviews from the query string
@@ -33,6 +33,8 @@ def get_myreview():
     total_product_pages = (len(all_product_reviews) + per_page - 1) // per_page
     total_seller_pages = (len(all_seller_reviews) + per_page - 1) // per_page
 
+    is_seller = True if Seller.get_sellerkey(current_user.user_key) else False
+
     return render_template(
         'my_review.html',
         my_products_reviews=productreviews,
@@ -40,7 +42,8 @@ def get_myreview():
         total_product_pages=total_product_pages,
         total_seller_pages=total_seller_pages,
         current_product_page=product_page,
-        current_seller_page=seller_page
+        current_seller_page=seller_page,
+        is_seller=is_seller
     )
 
 
