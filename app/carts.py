@@ -158,7 +158,6 @@ def checkout():
     # print(f'Rounded cost: {rounded_cost}')
     has_balance, message = check_balance(user_key, rounded_cost)
     if has_balance: 
-        
         if User.update_balance(user_key, -rounded_cost):
             if Cart.create_order_from_cart(user_key, cart_key):
                 new_balance = User.get_balance(user_key)
