@@ -67,8 +67,8 @@ def order_details():
             if order_details:
                 user_key = current_user.user_key
                 # Render the order details template with the order data
-                print(order_details['products'])
-                return render_template('order_details.html', order_details=order_details, user_key = user_key)
+                print(order_details)
+                return render_template('order_details.html', order_details=order_details, fulfilled_date = fulfilled_date, user_key = user_key)
             else:
                 flash('Order not found.', 'error')
                 return redirect(url_for('orders.display_orders'))

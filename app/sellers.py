@@ -51,7 +51,6 @@ def seller_homepage(s_sellerkey):
         monthly_incomes = list(monthly_income_data.values())
 
     else:
-        # Handle case where user_info is empty or invalid seller key
         seller_name = "User Not Found"
     
     # Render the HTML template with the fetched data

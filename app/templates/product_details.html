@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Product Details and Image -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            {% if product_details.p_imageurl %}
+                <img src="{{ product_details.p_imageurl }}" alt="{{ product_details.p_productname }}" class="img-fluid" style="width: 500px; height: 500px; object-fit: cover;">
+            {% else %}
+                <p class="text-muted">No Image Available</p>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <h1>{{ product_details.p_productname }}</h1>
+            <p class="text-muted"><strong>Price:</strong> ${{ product_details.p_price }}</p>
+            <p class="text-muted"><strong>Category:</strong> {{ product_details.p_catname }}</p>
+            <p class="text-muted"><strong>Description:</strong> {{ product_details.p_description }}</p>
+        </div>
+    </div>
+
+    <!-- Add to Cart Section -->
+    <div class="card border-0 shadow-sm mb-4"> <!-- Added mb-4 class for margin bottom -->
+      <div class="card-body">
+          <h3 class="card-title">Add to Cart</h3>
+          <form action="/add_to_cart" method="post" class="add-to-cart-form">
+              <input type="hidden" name="product_id" value="{{ product_details.p_productkey }}">
+              {% if not productseller_info %}
+                  <p>This product is unavailable right now.</p>
+              {% else %}
+                  {% for ps in productseller_info %}
+                  <div class="mb-3 d-flex justify-content-between align-items-center">
+                      <label for="quantity_{{ ps.sellerkey }}" class="form-label" style="margin-right: 5px;">
+                        <a href="/public_user_profile/{{ps.userkey}}">{{ ps.sellername }}</a> (Stock: {{ ps.quantity }})
+                      </label>
+                      <input type="number" name="quantity_{{ ps.sellerkey }}" id="quantity_{{ ps.sellerkey }}"
+                          class="form-control" min="0" max="{{ ps.quantity }}" value="0" style="width: 100px;">
+                  </div>
+                  {% endfor %}
+                  <div class="text-right mt-3"> <!-- Added mt-3 for margin-top -->
+                      <button type="submit" class="btn btn-primary" style="width: 200px;">Add to Cart</button>
+                  </div>
+              {% endif %}
+          </form>
+      </div>
+    </div>
+  
+
+    <!-- Review Section -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body">
+            <h3 class="card-title">Product Reviews</h3>
+            {% include "product_review.html" %}
+        </div>
+    </div>
+</div>
+{% endblock %}
