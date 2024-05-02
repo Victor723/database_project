@@ -21,6 +21,7 @@ def display_orders():
 @bp.route('/order-details/', methods=['GET', 'POST'])
 @login_required
 def order_details():
+    user_key = current_user.userkey
     if request.method == 'POST':
         # Retrieve order_id from the form data
         order_id = request.form.get('order_id')
@@ -35,7 +36,7 @@ def order_details():
             if order_details:
                 # Render the order details template with the order data
                 print(order_details)
-                return render_template('order_details.html', order_details=order_details, fulfilled_date = fulfilled_date)
+                return render_template('order_details.html', order_details=order_details, fulfilled_date = fulfilled_date, user_key = user_key)
             else:
                 flash('Order not found.', 'error')
                 return redirect(url_for('orders.display_orders'))
