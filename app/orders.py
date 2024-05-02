@@ -4,7 +4,6 @@ from .models.order import Order
 from .models.seller import Seller
 from .models.lineitem import Lineitem
 from datetime import datetime, timedelta
-from flask import current_app
 
 bp = Blueprint('orders', __name__)
 
