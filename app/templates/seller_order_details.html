@@ -3,39 +3,28 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_order_details.css') }}">
+    {% include "seller_navigation.html" %}
     <div class="main-content">
         <h1>Order Details</h1>
-        <table class="order-details-table">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Line Item ID</th>
-                    <th>Product Name</th>
-                    <th>Date</th>
-                    <th>Customer Name</th>
-                    <th>Original Price</th>
-                    <th>Discount</th>
-                    <th>Tax</th>
-                    <th>Quantity</th>
-                    <th>Total Price</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ lineitem_info.order_id }}</td>
-                    <td>{{ lineitem_info.lineitem_id }}</td>
-                    <td>{{ lineitem_info.product_name }}</td>
-                    <td>{{ lineitem_info.date }}</td>
-                    <td>{{ lineitem_info.customer_name }}</td>
-                    <td>{{ lineitem_info.origin_price }}</td>
-                    <td>{{ lineitem_info.discount }}</td>
-                    <td>{{ lineitem_info.tax }}</td>
-                    <td>{{ lineitem_info.quantity }}</td>
-                    <td>{{ lineitem_info.total_price }}</td>
-                    <td>{{ lineitem_info.status }}</td>
-                </tr>
-            </tbody>
-        </table>
+        {% if lineitem_info %}
+            <div class="order-info">
+                <p><strong>Order ID:</strong> {{ lineitem_info.order_id }}</p>
+                <p><strong>Lineitem ID:</strong> {{ lineitem_info.lineitem_id }}</p>
+                <p><strong>Product Key:</strong> {{ lineitem_info.product_key }}</p>
+                <p><strong>Product Name:</strong> {{ lineitem_info.product_name }}</p>
+                <p><strong>Date:</strong> {{ lineitem_info.date }}</p>
+                <p><strong>Customer Name:</strong> {{ lineitem_info.customer_name }}</p>
+                <p><strong>Original Price:</strong> {{ lineitem_info.origin_price }}</p>
+                <p><strong>Discount:</strong> {{ lineitem_info.discount }}</p>
+                <p><strong>Tax:</strong> {{ lineitem_info.tax }}</p>
+                <p><strong>Quantity:</strong> {{ lineitem_info.quantity }}</p>
+                <p><strong>Total Price:</strong> {{ lineitem_info.total_price }}</p>
+                <p><strong>Status:</strong> {{ lineitem_info.status }}</p>
+            </div>
+        {% else %}
+            <p>No information available for this lineitem.</p>
+        {% endif %}
     </div>
 {% endblock %}

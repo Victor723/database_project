@@ -1,0 +1,93 @@
+/* create_product.css */
+
+/* Main heading */
+h1 {
+    margin-left: 20%; /* Adjust as needed */
+    margin-bottom: 20px;
+}
+
+/* Form container */
+#createProductForm {
+    max-width: 600px;
+    margin: 0 auto;
+    margin-left: 20%; /* Align form to the left */
+}
+
+/* Form labels */
+#createProductForm label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* Form input fields */
+#createProductForm input[type="text"],
+#createProductForm input[type="number"],
+#createProductForm textarea,
+#createProductForm select,
+#createProductForm input[type="url"] { /* Add styling for URL input */
+    width: calc(100% - 16px); /* Adjust width to account for padding */
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+/* Form buttons */
+#createProductForm button[type="submit"],
+#createProductForm button[type="button"] {
+    padding: 10px 20px;
+    background-color: #3858D6;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#createProductForm button[type="submit"]:hover,
+#createProductForm button[type="button"]:hover {
+    background-color: #2e4ecf;
+}
+
+/* New category form */
+.new-category-form {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    display: none;
+}
+
+.new-category-form h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.new-category-form label {
+    margin-bottom: 5px;
+}
+
+.new-category-form input[type="text"] {
+    width: calc(100% - 16px); /* Adjust width to account for padding */
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+.new-category-form button {
+    padding: 8px 16px;
+    background-color: #f0ad4e;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.new-category-form button:hover {
+    background-color: #ec971f;
+}
