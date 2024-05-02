@@ -133,50 +133,20 @@ def modify_product(s_sellerkey, p_productkey):
         product_imageurl = request.form['product_imageurl']
         product_quantity = request.form['product_quantity']
         product_discount = request.form['product_discount']
+        product_category = request.form['product_category']
         current_time = datetime.now()
 
-        # Update Product table
-        app.db.execute(
-            """
-            UPDATE Product
-            SET p_productname = :product_name,
-                p_price = :product_price,
-                p_description = :product_description,
-                p_imageurl = :product_imageurl
-            WHERE p_productkey = :product_key
-            """,
-            product_name=product_name,
-            product_key=p_productkey,
-            product_price=product_price,
-            product_description=product_description,
-            product_imageurl=product_imageurl
-        )
-
-        # Update ProductSeller table if necessary
-        app.db.execute(
-            """
-            UPDATE ProductSeller
-            SET ps_price = :product_price,
-                ps_quantity = :product_quantity,
-                ps_discount = :product_discount,
-                ps_createtime = :current_time
-            WHERE ps_productkey = :product_key AND ps_sellerkey = :seller_key
-            """,
-            product_price=product_price,
-            product_key=p_productkey,
-            seller_key=s_sellerkey,
-            product_quantity=product_quantity,
-            product_discount=product_discount,
-            current_time=current_time
-        )
+        Seller.update_product(p_productkey, product_name, product_price, product_description, product_imageurl, product_category)
+        Seller.update_product_seller(p_productkey, s_sellerkey, product_price, product_quantity, product_discount, current_time)
 
         # Redirect to inventory page after modification
         return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
     else:
         # Retrieve product information for pre-filling the form
         product_info = ProductSeller.get_product_info(s_sellerkey, p_productkey)
+        categories = Category.get_all()
         if product_info:
-            return render_template('modify_product.html', seller_key=s_sellerkey, product_key=p_productkey, product_info=product_info)
+            return render_template('modify_product.html', seller_key=s_sellerkey, product_key=p_productkey, product_info=product_info, categories=categories)
         else:
             flash('Product not found.', 'error')
             return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
