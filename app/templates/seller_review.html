@@ -4,6 +4,40 @@
 
 {% block content %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_navigation.css') }}">
+    <style>
+      .container.mt-5 {
+          margin-left: 20%;
+          margin-bottom: 20px;
+      }
+
+      /* Style for the table with class 'inventory-table' */
+      .table.table-hover {
+          width: 75%;
+          margin-left: 20%;
+          border-collapse: collapse;
+          margin-bottom: 20px;
+          margin-top: 20px;
+      }
+
+      /* Style for table header */
+      .thead-dark {
+          background-color: #f2f2f2;
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: left;
+      }
+
+      /* Style for table body */
+      .table.table-hover tbody td {
+          border: 1px solid #ddd;
+          padding: 8px;
+      }
+
+      /* Alternate row background color */
+      .table.table-hover tbody tr:nth-child(even) {
+          background-color: #f9f9f9;
+      }
+    </style>
     {% include "seller_navigation.html" %}
 
     <div class="container mt-5">
