@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from werkzeug.urls import url_parse
+import json
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
@@ -49,12 +50,14 @@ def seller_homepage(s_sellerkey):
         monthly_incomes = list(monthly_income_data.values())
 
     else:
+        # Handle case where user_info is empty or invalid seller key
         seller_name = "User Not Found"
     
     # Render the HTML template with the fetched data
     return render_template('seller_homepage.html', seller_name=seller_name, seller_key=s_sellerkey, 
                            total_income=total_income, months=months, monthly_incomes=monthly_incomes, 
-                           start_date=start_date, end_date=end_date)  # Pass start_date and end_date variables to pre-fill the form
+                           start_date=start_date, end_date=end_date) 
+
 
 
 @bp.route('/seller/<s_sellerkey>/inventory', methods=['GET', 'POST'])
