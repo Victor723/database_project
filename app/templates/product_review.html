@@ -1,6 +1,11 @@
 {% block content %}
 
 <style>
+
+  .popup-container { position: fixed; width: 400px; padding: 20px; background: white; box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 8px; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; z-index: 100; }
+  .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; }
+  .btn-cancel { background-color: #9d9b94; color: black; }
+
   .star-rating {
     font-size: 25px; /* Adjust size as needed */
     display: inline-block; /* Ensures alignment */
@@ -30,24 +35,23 @@
   {% if current_user.is_authenticated %}
     {% if has_bought %}
       <!-- Add a New Review -->
-      <button class="openPopup" onClick = "newProductReview(this)">New Review</button>
+      <button class="btn btn-edit openPopup" onClick="togglePopup('newProductPopup')">New Review</button>
+      <div class="popup-container" id="newProductPopup">
+          <form action="{{ url_for('myreview.new_product_review', pr_productkey=product_details.p_productkey, pr_userkey=user_key) }}" method="POST">
+          <label for="userInput">Review:</label>
+          <input type="text" id="userInput" name="userInput" required style="width: 290px; height: 80px; margin-bottom: 20px;">
 
-      <!-- Popup Form, initially hidden -->
-      <div class="popup-container" style="display: none;" id="newProductPopup">
-          <form class="inputForm" action="{{ url_for('myreview.new_product_review', pr_productkey=product_details.p_productkey, pr_userkey=user_key) }}" method="POST">
-              <label>Enter New Product Review:</label>
-              <input type="text" id="userInput" name="userInput" required>
+          <label for="userRating">Rating (1-5):</label>
+          <select id="userRating" name="userRating" required>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+          </select>
 
-              <label for="userRating">Rating (1-5):</label>
-              <select id="userRating" name="userRating">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-              </select>
-
-              <button type="submit" onsubmit="handleSubmit(event, 'newProductPopup')" class="submitBtn">Submit</button>
+          <button type="submit" class="btn btn-primary" style="margin-left: 50px; margin-right: 5px;">Submit</button>
+          <button type="button" class="btn btn-cancel" onClick="togglePopup('newProductPopup')">Cancel</button>
           </form>
       </div>
     {% else %}
@@ -93,41 +97,30 @@
   </table>
 
 
-<script>
+  <div class="overlay" id="overlay" onClick="closeAllPopups()"></div>
 
-  window.newProductReview = function(element) {
-    var popup = document.getElementById("newProductPopup");
-    if (popup) {
-        popup.style.display = 'block';
-    } else {
-        console.error("Popup element not found");
-    }
-  };
-
-  function handleSubmit(event, popupId) {
-    event.preventDefault(); // Prevent default form submission
-    var form = event.target;
-    var url = form.action;
+  <script>
+      function togglePopup(id) {
+        var popup = document.getElementById(id);
+        var overlay = document.getElementById('overlay');
+        var isVisible = popup.style.display === 'block';
+        if (isVisible) {
+          popup.style.display = 'none';
+          overlay.style.display = 'none';
+        } else {
+          popup.style.display = 'block';
+          overlay.style.display = 'block';
+        }
+      }
     
-    fetch(url, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: {
-            'Accept': 'application/json',
-        }
-    }).then(response => {
-        document.getElementById(popupId).style.display = 'none'; // Close the popup
-        if (response.ok) {
-            return response.json(); // Or handle any other way
-        }
-        throw new Error('Something went wrong on api server!');
-    }).then(response => {
-        console.log(response);
-        alert('Review successfully added or updated.');
-    }).catch(error => {
-        console.error(error);
-    });
-  }
-</script>
+      function closeAllPopups() {
+        var popups = document.querySelectorAll('.popup-container');
+        var overlay = document.getElementById('overlay');
+        popups.forEach(function(popup) {
+          popup.style.display = 'none';
+        });
+        overlay.style.display = 'none';
+      }
+  </script>
 
 {% endblock %}
