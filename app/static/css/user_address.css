@@ -165,10 +165,11 @@
 }
 
 .profile-page {
-    display: flex;
-    flex-direction: row;
-    gap: 2rem;
-    /* This adds spacing between the sidebar and the profile content */
+    display: grid;
+    grid-template-columns: 250px 1fr; /* Sidebar takes the width it needs, and the profile container takes the rest */
+    align-items: start; /* Align items to the start of the grid row */
+    height: 100vh; /* Full viewport height */
+    width: 100%; /* Full width of the viewport */
 }
 
 .nav-link {
@@ -205,6 +206,9 @@
 }
 
 .profile-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically */
     background-color: #fff;
     /* White background */
     border-radius: 8px;
@@ -213,13 +217,24 @@
     /* A subtle shadow */
     padding: 20px;
     /* Space inside the box */
-    margin: 20px;
+    margin: auto;
     /* Space outside the box */
-    flex-grow: 0.6;
+    flex-grow: 0.8;
+    width: 70%; /* Sets width to 40% of its grid area */
+    max-width: 1200px; /* Adjust max width as needed */
+    margin-top: 30px; /* Fixed space from the bottom of the header */
 }
 
 .sidebar-divider {
     height: 1px;
     background-color: #dee2e6; /* Light grey color, adjust as needed */
     margin: 5px 20px; /* Adds some vertical space and horizontal padding */
+}
+
+/* If you want the button to take a minimum width, you can also use min-width */
+.btn {
+    min-width: 100px; /* Ensures the button is at least 200px wide */
+    padding: 10px 30px; /* More padding can make the button appear larger */
+    margin-right: 20px;
+    margin-top: 20px;
 }
