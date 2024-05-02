@@ -24,7 +24,7 @@
     font-size: 18px;
     line-height: 18px;
     text-decoration: none;
-    color: #3858D6;
+    color: #333;
 }
 
 .navigation a:hover {
@@ -38,7 +38,7 @@
     height: 42px;
     left: 12%;
     top: 20%;
-    color: #3858D6;
+    color: #333;
 }
 
 /* Inventory Link */
@@ -48,7 +48,7 @@
     height: 42px;
     left: 12%;
     top: 30%;
-    color: #3858D6;
+    color: #333;
 }
 
 /* Order Link */
@@ -58,7 +58,7 @@
     height: 42px;
     left: 12%;
     top: 40%;
-    color: #3858D6;
+    color: #333;
 }
 
 /* Review Link */
@@ -68,7 +68,7 @@
     height: 42px;
     left: 12%;
     top: 50%;
-    color: #3858D6;
+    color: #333;
 }
 
 /* Profile Link */
@@ -78,7 +78,7 @@
     height: 42px;
     left: 12%;
     top: 60%;
-    color: #3858D6;
+    color: #333;
 }
 
 .sidebar {

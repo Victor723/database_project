@@ -132,6 +132,7 @@ class Order:
             products.append({
                 'product_name': line_item[0],
                 'seller_name': line_item[1] + ' ' + line_item[2],
+                'seller_key': line_item[3], # Seller key
                 'quantity': line_item[4],
                 'price': line_item[5],
                 'fulfillment_date': line_item[6].strftime('%Y-%m-%d') if line_item[6] else None,

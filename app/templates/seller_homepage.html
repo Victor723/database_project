@@ -8,8 +8,7 @@
     <div class="main-content">
         <h1>Welcome, Seller {{ seller_name }}</h1>
         {% if seller_key %}
-            <p>ID: {{ seller_key }}</p>
-            <h2>Total Income: ${{ total_income }}</h2>
+            <p>Total Income: ${{ total_income }}</p>
             <form action="" method="post">
                 <label for="start_date">Start Date:</label>
                 <input type="date" id="start_date" name="start_date" value="{{ start_date }}" required>

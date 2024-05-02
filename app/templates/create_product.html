@@ -37,7 +37,7 @@
         <div id="newCategoryForm" class="new-category-form" style="display: none;">
             <label for="new_category_name">New Category Name:</label>
             <input type="text" id="new_category_name" name="new_category_name">
-            <button type="button" id="confirmNewCategory">Confirm</button>
+            <button type="button" id="confirmNewCategory" onclick="confirmNewCategory()">Confirm</button>
             <button type="button" id="cancelNewCategory" onclick="cancelNewCategory()">Cancel</button>
         </div>
         <div class="form-group">
@@ -61,10 +61,34 @@
             newCategoryForm.style.display = 'none';
         }
     }
+    function confirmNewCategory() {
+        var newCategoryForm = document.getElementById('newCategoryForm');
+        var categorySelect = document.getElementById('category_key');
+        var newCategoryNameInput = document.getElementById('new_category_name');
+
+        // Get the new category name entered by the user
+        var newCategoryName = newCategoryNameInput.value;
+
+        // Add the new category to the dropdown list
+        var newOption = document.createElement('option');
+        newOption.value = newCategoryName; // Use a unique value (e.g., category name) as the option value
+        newOption.text = newCategoryName;
+        categorySelect.add(newOption);
+
+        // Select the newly added category in the dropdown
+        categorySelect.value = newCategoryName;
+
+        // Hide the "New Category" form
+        newCategoryForm.style.display = 'none';
+    }
     function cancelNewCategory() {
         var newCategoryForm = document.getElementById('newCategoryForm');
         var categorySelect = document.getElementById('category_key');
-        categorySelect.value = ''; // Reset the category selection
+
+        // Reset the category selection
+        categorySelect.value = '';
+
+        // Hide the "New Category" form
         newCategoryForm.style.display = 'none';
     }
 </script>
