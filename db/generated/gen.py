@@ -115,7 +115,7 @@ def gen_product_sellers(num_product_sellers, valid_product_ids, valid_seller_ids
             valid_product_seller_pairs.append((ps_productkey, ps_sellerkey))
             ps_quantity = random.randint(1, 100)
             ps_price = round(random.uniform(10.0, 500.0), 2)
-            ps_discount = round(random.uniform(0.0, ps_price), 2)
+            ps_discount = round(random.uniform(0.0, 1.0), 2)
             ps_createtime = fake.date_between(start_date='-1y', end_date='today')
             writer.writerow([ps_productkey, ps_sellerkey, ps_quantity, ps_price, ps_discount, ps_createtime])
     close_file(file)
@@ -224,7 +224,7 @@ def gen_lineitems(num_lineitems, available_oids, available_product_seller_pairs,
             product_key, seller_key = random.choice(available_product_seller_pairs)  # Randomly pick a valid product-seller pair
             quantity = random.randint(1, 10)  # Generate a random quantity between 1 and 10
             original_price = round(random.uniform(5, 200), 2)  # Random original price between $5 and $200
-            discount = round(random.uniform(0, original_price * 0.5), 2)  # Discount up to 50% of the original price
+            discount = round(random.uniform(0.0, 1.0), 2)  # Discount up to 50% of the original price
             tax = round(original_price * 0.1, 2)  # Tax is assumed to be 10% of the original price
 
             # Fetch the order date from the dictionary using the order_key
