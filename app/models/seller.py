@@ -31,7 +31,7 @@ class Seller():
             sellerkey=sellerkey)
         userkey = rows[0][0] if rows else None
         return userkey
-    
+
 
     @staticmethod
     def get_seller_information(sellerkey):

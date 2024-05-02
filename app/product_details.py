@@ -3,7 +3,6 @@ from flask_login import current_user
 import datetime
 
 from .models.product import Product
-from .models.cart import Cart
 from .models.productcart import ProductCart
 from .models.seller import Seller
 from .models.productreview import ProductReview
@@ -32,16 +31,15 @@ def product_details(product_id):
         user_key = current_user.user_key
     else:
         user_key = None
-
-    has_bought = Lineitem.check_product(user_key, product_id)
-    return render_template('product.html',
+    has_bought = Lineitem.check_product(user_key, product_id)   
+    return render_template('product_details.html',
                         product_details=product_details,
                         productseller_info=productseller_info,
                         product_reviews = product_reviews,
                         product_rating = product_rating,
                         product_review_counts = product_review_counts,
-                        has_bought = has_bought,
-                        user_key = user_key)
+                        user_key = user_key,
+                        has_bought = has_bought)
 
 
 @bp.route('/add_to_cart', methods=['POST'])
@@ -54,12 +52,9 @@ def add_to_cart():
             if key.startswith('quantity_'):
                 sellerkey = key.split('_')[1]
                 quantity = int(request.form[key])
-                # print(f"Quantity: {quantity} for seller {sellerkey}")
                 if quantity > 0:
                     # add quantity of product from seller to cart
-                    print(f"Adding {quantity} of product {productkey} from seller {sellerkey} to cart")
                     ProductCart.add_to_cart(userkey, productkey, sellerkey, quantity)
-
     else:
         return redirect(url_for('users.login'))  # Redirect to the cart page or another appropriate page
     return redirect(url_for('cart.shopping_cart'))  # Redirect to the cart page or another appropriate page

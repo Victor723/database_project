@@ -51,11 +51,20 @@
                             <td>${{ '%.2f'|format(product.price) }}</td>
                             <td>x{{ product.quantity }}</td>
                             <td>${{ '%.2f'|format(product.subtotal) }}</td>
+                            
                             <td>
+                                {% if product.fulfillment_date %}
+                                    Fulfilled on {{ product.fulfillment_date}}
+                                {% else %}
+                                    Not Fulfilled Yet
+                                {% endif %}
+                            </td>
+                            <td>
+                                
                                 <!-- Add a New Review -->
                                 <button class="btn btn-edit openPopup" onClick="togglePopup('newSellerPopup{{ loop.index }}')">New Review</button>
                                 <div class="popup-container" id="newSellerPopup{{ loop.index }}">
-                                    <form action="{{ url_for('myreview.new_seller_review', sr_sellerkey=product.sellerkey, sr_userkey=user_key) }}" method="POST">
+                                    <form action="{{ url_for('myreview.new_seller_review', sr_sellerkey=product.seller_key, sr_userkey=user_key) }}" method="POST">
                                     <label for="userInput-{{ loop.index }}">Review:</label>
                                     <input type="text" id="userInput-{{ loop.index }}" name="userInput" required style="width: 290px; height: 80px; margin-bottom: 20px;">
 
@@ -73,16 +82,7 @@
                                     </form>
                                 </div>
                             </td>
-                            <td>
-                                {% if product.fulfillment_date %}
-                                    Fulfilled on {{ product.fulfillment_date}}
-                                {% else %}
-                                    Not Fulfilled Yet
-                                {% endif %}
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-secondary review-button" data-product-id="{{ product.id }}">Review</button>
-                            </td>
+                            
                         </tr>
                         {% endfor %}
                     </tbody>
