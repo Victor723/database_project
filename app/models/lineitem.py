@@ -36,7 +36,6 @@ class Lineitem:
 
         # Return the newest fulfillment date or False if it doesn't exist
         return newest_fulfillmentdate if newest_fulfillmentdate else False
-
     
     @staticmethod
     def check_product(user_key, product_key):
@@ -49,7 +48,7 @@ class Lineitem:
             );
         '''
         result = app.db.execute(query, userkey=user_key, productkey=product_key)
-        return result[0] if result else False
+        return result[0][0] if result else False
 
     @staticmethod
     def check_seller(user_key, seller_key):
@@ -62,4 +61,4 @@ class Lineitem:
             );
         '''
         result = app.db.execute(query, userkey=user_key, sellerkey=seller_key)
-        return result[0] if result else False
+        return result[0][0] if result else False

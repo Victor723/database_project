@@ -1,5 +1,6 @@
 from flask import current_app as app
 from datetime import datetime
+from collections import defaultdict
 
 
 class Seller():
@@ -19,6 +20,17 @@ class Seller():
             userkey=userkey)
         sellerkey = rows[0][0] if rows else None
         return sellerkey
+    
+    @staticmethod
+    def get_userkey(sellerkey):
+        rows = app.db.execute("""
+            SELECT s_userkey
+            FROM Seller
+            WHERE s_sellerkey = :sellerkey
+            """,
+            sellerkey=sellerkey)
+        userkey = rows[0][0] if rows else None
+        return userkey
     
 
     @staticmethod
@@ -173,7 +185,13 @@ class Seller():
             discount = row[6]
             tax = row[7]
             quantity = row[8]
-            total_price = quantity * origin_price * (1 - discount) * (1 + tax)
+            if discount:
+                if tax:
+                    total_price = quantity * origin_price * (1 - discount) * (1 + tax)
+                else:
+                    total_price = quantity * origin_price * (1 - discount)
+            else:
+                total_price = quantity * origin_price
             order_info.append({
                 'order_id': row[0],
                 "lineitem_id": row[1],
@@ -267,7 +285,7 @@ class Seller():
                 'tax': tax,
                 'quantity': quantity,
                 'total_price': total_price,  
-                'status': rows[0][9]
+                'status': rows[0][10]
             }
         else:
             lineitem_info = None
@@ -337,7 +355,7 @@ class Seller():
 
 
     @staticmethod
-    def order_finish(s_sellerkey, o_orderkey, l_linenumber, p_productkey, inventory):
+    def order_finish(s_sellerkey, o_orderkey, l_linenumber):
         current_date = datetime.now()
         app.db.execute("""
             UPDATE Lineitem
@@ -345,6 +363,9 @@ class Seller():
             WHERE l_sellerkey = :sellerkey AND l_orderkey = :orderkey AND l_linenumber = :linenumber
         """, CURRENT_DATE=current_date, sellerkey=s_sellerkey, orderkey=o_orderkey, linenumber=l_linenumber)
 
+
+    @staticmethod
+    def update_quantity(s_sellerkey, p_productkey, inventory):
         # Update the quantity in the ProductSeller table
         app.db.execute("""
             UPDATE ProductSeller
@@ -371,4 +392,47 @@ class Seller():
             return inventory
         else:
             return None
-       
+
+
+    @staticmethod
+    def get_fulfilled_order_total_price(sellerkey):
+        rows = app.db.execute("""
+            SELECT SUM(total_price) FROM (
+                SELECT l.l_originalprice, l.l_discount, l.l_tax, l.l_quantity,
+                    (l.l_quantity * l.l_originalprice * (1 - l.l_discount) * (1 + l.l_tax)) AS total_price
+                FROM Lineitem l
+                JOIN Orders o ON l.l_orderkey = o.o_orderkey
+                WHERE l.l_sellerkey = :sellerkey
+                AND l.l_fulfillmentdate IS NOT NULL
+            ) AS fulfilled_orders
+        """, sellerkey=sellerkey)
+        
+        fulfilled_order_total_price = rows[0][0] if rows else 0
+        return fulfilled_order_total_price
+
+
+    @staticmethod
+    def get_monthly_income(sellerkey, start_date, end_date):
+        rows = app.db.execute("""
+            SELECT DATE_TRUNC('month', l.l_fulfillmentdate) AS month, 
+                SUM(
+                    l.l_quantity * 
+                    l.l_originalprice * 
+                    (1 - COALESCE(l.l_discount, 0)) * 
+                    (1 + COALESCE(l.l_tax, 0))
+                ) AS monthly_income
+            FROM Lineitem l
+            JOIN Orders o ON l.l_orderkey = o.o_orderkey
+            WHERE l.l_sellerkey = :sellerkey
+            AND l.l_fulfillmentdate BETWEEN :start_date AND :end_date
+            GROUP BY DATE_TRUNC('month', l.l_fulfillmentdate)
+            ORDER BY month
+        """, sellerkey=sellerkey, start_date=start_date, end_date=end_date)
+
+        monthly_income_data = defaultdict(float)
+        for row in rows:
+            month = row[0].strftime('%Y-%m')
+            income = row[1]
+            monthly_income_data[month] += income
+
+        return monthly_income_data

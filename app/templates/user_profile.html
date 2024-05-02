@@ -5,40 +5,45 @@
 
 <div class="profile-page">
     <!-- Sidebar Navigation -->
-    {% with active_page='dashboard', is_seller=is_seller %}
+    {% with active_page='dashboard', is_seller=is_seller%}
     {% include '_user_sidebar.html' %}
     {% endwith %}
 
     <div class="main-content">
         <div class="order-status-container">
             <!-- Total Orders -->
-            <div class="order-card total-orders">
-                <img src="{{ url_for('static', filename='img/user_order_rocket.png') }}" alt="Total Orders">
-                <div class="text-group">
-                    <div class="number">{{ user_order_counts[0] }}</div>
-                    <div class="label">Total Orders</div>
+            <a href="{{ url_for('orders.display_orders', mode='all') }}" class="order-card-link">
+                <div class="order-card total-orders">
+                    <img src="{{ url_for('static', filename='img/user_order_rocket.png') }}" alt="Total Orders">
+                    <div class="text-group">
+                        <div class="number">{{ user_order_counts[0] }}</div>
+                        <div class="label">Total Orders</div>
+                    </div>
                 </div>
-            </div>
+            </a>
 
             <!-- Pending Orders -->
-            <div class="order-card pending-orders">
-                <img src="{{ url_for('static', filename='img/user_order_note.png') }}" alt="Pending Orders">
-                <div class="text-group">
-                    <div class="number">{{ user_order_counts[1] }}</div>
-                    <div class="label">Pending Orders</div>
+            <a href="{{ url_for('orders.display_orders', mode='pending') }}" class="order-card-link">
+                <div class="order-card pending-orders">
+                    <img src="{{ url_for('static', filename='img/user_order_note.png') }}" alt="Pending Orders">
+                    <div class="text-group">
+                        <div class="number">{{ user_order_counts[2] }}</div>
+                        <div class="label">Pending Orders</div>
+                    </div>
                 </div>
-            </div>
+            </a>
 
             <!-- Completed Orders -->
-            <div class="order-card completed-orders">
-                <img src="{{ url_for('static', filename='img/user_order_box.png') }}" alt="Completed Orders">
-                <div class="text-group">
-                    <div class="number">{{ user_order_counts[2] }}</div>
-                    <div class="label">Completed Orders</div>
+            <a href="{{ url_for('orders.display_orders', mode='completed') }}" class="order-card-link">
+                <div class="order-card completed-orders">
+                    <img src="{{ url_for('static', filename='img/user_order_box.png') }}" alt="Completed Orders">
+                    <div class="text-group">
+                        <div class="number">{{ user_order_counts[1] }}</div>
+                        <div class="label">Completed Orders</div>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
-
 
         <!-- Profile Content -->
         <div class="profile-container">
@@ -49,32 +54,39 @@
                     <input type="file" name="profile_image" id="profileImageInput" accept="image/*"
                         onchange="this.form.submit()">
                 </form>
-                <img src="{{ url_for('static', filename=current_user.imageurl) }}" alt="Profile Picture"
+                <img src="{{ url_for('static', filename=current_user.image_url) }}" alt="Profile Picture"
                     onclick="document.getElementById('profileImageInput').click();" style="cursor: pointer;">
 
                 <div class="user-info">
-                    <h2>{{ current_user.firstname }} {{ current_user.lastname }}</h2>
+                    <h2>{{ current_user.first_name }} {{ current_user.last_name }}</h2>
                     <p>{{ current_user.email }}</p>
                 </div>
             </div>
             <div class="profile-info">
                 <div class="info-row">
                     <label class="info-label">Company Name:</label>
-                    <span class="info-value">{{ current_user.companyname }}</span>
+                    {% if current_user.company_name %}
+                    <span class="info-value">{{ current_user.company_name }}</span>
+                    {% endif %}
                 </div>
                 <div class="info-row">
                     <label class="info-label">Address:</label>
+                    {% if current_user.street_address and current_user.city and current_user.state_region and
+                    current_user.zip_code and current_user.country %}
                     <span class="info-value">
-                        {{ current_user.streetaddress }},
+                        {{ current_user.street_address }},
                         {{ current_user.city }},
-                        {{ current_user.stateregion }},
-                        {{ current_user.zipcode }},
+                        {{ current_user.state_region }},
+                        {{ current_user.zip_code }},
                         {{ current_user.country }}
                     </span>
+                    {% endif %}
                 </div>
                 <div class="info-row">
                     <label class="info-label">Phone Number:</label>
-                    <span class="info-value">{{ current_user.phonenumber }}</span>
+                    {% if current_user.phone_number %}
+                    <span class="info-value">{{ current_user.phone_number }}</span>
+                    {% endif %}
                 </div>
             </div>
         </div>

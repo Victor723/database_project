@@ -165,10 +165,11 @@
 }
 
 .profile-page {
-    display: flex;
-    flex-direction: row;
-    gap: 2rem;
-    /* This adds spacing between the sidebar and the profile content */
+    display: grid;
+    grid-template-columns: 250px 1fr; /* Sidebar takes the width it needs, and the profile container takes the rest */
+    align-items: start; /* Align items to the start of the grid row */
+    height: 100vh; /* Full viewport height */
+    width: 100%; /* Full width of the viewport */
 }
 
 .nav-link {
@@ -213,6 +214,9 @@
 }
 
 .profile-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically */
     background-color: #fff;
     /* White background */
     border-radius: 8px;
@@ -221,21 +225,73 @@
     /* A subtle shadow */
     padding: 20px;
     /* Space inside the box */
-    margin: 20px;
-    /* Space outside the box */
-    flex-grow: 0.6;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%; /* Sets width to 40% of its grid area */
+    max-width: 1200px; /* Adjust max width as needed */
+    margin-top: 30px; /* Fixed space from the bottom of the header */
 }
 
-div.profile-container:has(#expenditureChart) {
-    height: 500px;  /* Fixed height */
+
+
+.profile-page .profile-container:nth-child(1) {
+    max-height: 300px;  /* Set the maximum height */
+    min-height: 300px;  /* Set the maximum height */
+    overflow: auto;     /* Adds scrollbars if content exceeds the container size */
 }
 
-div.profile-container:has(#spendingPieChart) {
-    height: 700px;  /* Fixed height */
+.profile-page .profile-container:nth-child(2) {
+    max-height: 600px;  /* Set the maximum height */
+    min-height: 600px;  /* Set the maximum height */
+    overflow: auto;     /* Adds scrollbars if content exceeds the container size */
 }
+
+.profile-page .profile-container:nth-child(3) {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center vertically */
+    align-items: center; /* Aligns children in the center horizontally */
+    background-color: #fff;  /* Specific background color for this container */
+    margin: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 30px; /* Fixed space from the bottom of the header */
+    padding-top: 0;
+    height: 1500px;  /* Set the maximum height */
+}
+
+
 
 .sidebar-divider {
     height: 1px;
     background-color: #dee2e6; /* Light grey color, adjust as needed */
     margin: 5px 20px; /* Adds some vertical space and horizontal padding */
+}
+
+.balance-info img {
+    width: 60px;
+    height: auto;
+    margin-right: 35px; /* Add space between the image and the text */
+}
+
+.balance-amount {
+    font-size: 32px;  /* Set the font size as large as you want */
+
+}
+
+.balance-actions {
+    display: flex;
+    justify-content: flex-start; /* Aligns children (buttons) to the right */
+    gap: 20px; /* Optional: adds space between buttons */
+    margin-top: 40px;
+    margin-left: 40px;
+}
+
+.balance-actions .btn {
+    min-width: 200px; /* Minimum width for smaller content */
+}
+
+.date-range-title {
+    font-size: 24px; /* Increase font size as needed */
+    margin-bottom: 0px; /* Adds space between the title and the form */
 }
