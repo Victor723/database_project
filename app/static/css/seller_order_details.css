@@ -1,0 +1,27 @@
+
+.main-content {
+    width: 80%;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    margin-top: 20px;
+    margin-left: 20%;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: left;
+}
+
+.order-info {
+    margin-top: 20px;
+}
+
+.order-info p {
+    margin-bottom: 10px;
+}
+
+.order-info p strong {
+    margin-right: 10px;
+}

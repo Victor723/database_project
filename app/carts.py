@@ -3,6 +3,7 @@ from .models.cart import Cart
 from .models.productseller import ProductSeller
 from .models.user import User
 from .models.productcart import ProductCart
+from .models.order import Order
 from flask_login import current_user, login_required
 from decimal import Decimal, ROUND_HALF_UP
 
@@ -177,9 +178,17 @@ def checkout():
     if has_balance: 
         new_balance = User.get_balance(user_key) - rounded_cost
         if User.update_balance(user_key, -rounded_cost, new_balance):
-            if Cart.create_order_from_cart(user_key, cart_key):
+            order_key = Cart.create_order_from_cart(user_key, cart_key)
+            if order_key:
                 print(f'Order created successfully! Your new balance is ${new_balance:.2f}')
-                return jsonify({'success': f'Order created successfully! Your new balance is ${new_balance:.2f}'}), 200
+                # renew the inventory
+                message = Order.update_seller_inventory(order_key)
+                if message == "Checkout successfully":
+                    return jsonify({'success': f'Order created successfully! Your new balance is ${new_balance:.2f}'}), 200
+                else:
+                    return jsonify(message)
+            elif type(result) == str:
+                return jsonify(result), 200
             else:
                 return jsonify({'error': 'Failed to create order'}), 500
             

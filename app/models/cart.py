@@ -1,5 +1,6 @@
 from flask import current_app as app
 from flask_sqlalchemy import SQLAlchemy
+from .order import Order
 
 class Cart():
     def __init__(self, c_cartkey, c_userkey):
@@ -95,6 +96,7 @@ class Cart():
             cartkey = result[0][0]
         return cartkey
 
+
     @staticmethod
     def create_order_from_cart(user_key, cart_key):
         try:
@@ -136,7 +138,8 @@ class Cart():
             # Execute the update and line item creation as a single operation
             app.db.execute(update_cart_and_create_lineitems, order_key=order_key, cart_key=cart_key)
 
-            return True
+            return order_key
         except Exception as e:
             print(f"Error creating order from cart: {e}")
             return False
+

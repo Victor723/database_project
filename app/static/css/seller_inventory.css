@@ -12,6 +12,7 @@
     margin-left: 20%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 /* Style for table header */
@@ -84,7 +85,7 @@
 .search-form input[type="text"] {
     margin-left: 0%;
     padding: 8px;
-    width: 300px;
+    width: 500px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
@@ -104,12 +105,14 @@
 
 /* Add Product button style */
 .add-product-btn {
-    float: right;
+    margin-left: 20%;
+    margin-top: 50px;
     background-color: #3858D6;
     color: #fff;
     padding: 10px 20px;
     border-radius: 4px;
     text-decoration: none;
+    margin-bottom: 50px; 
 }
 
 .add-product-btn:hover {
