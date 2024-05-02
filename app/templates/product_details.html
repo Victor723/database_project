@@ -31,7 +31,7 @@
                   {% for ps in productseller_info %}
                   <div class="mb-3 d-flex justify-content-between align-items-center">
                       <label for="quantity_{{ ps.sellerkey }}" class="form-label" style="margin-right: 5px;">
-                          {{ ps.sellername }} (Stock: {{ ps.quantity }})
+                        <a href="/user_profile/{{ps.userkey}}">{{ ps.sellername }}</a> (Stock: {{ ps.quantity }})
                       </label>
                       <input type="number" name="quantity_{{ ps.sellerkey }}" id="quantity_{{ ps.sellerkey }}"
                           class="form-control" min="0" max="{{ ps.quantity }}" value="0" style="width: 100px;">

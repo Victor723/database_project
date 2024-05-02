@@ -21,16 +21,16 @@ def product_details(product_id):
     sellers_ids = ProductSeller.get_sellerkey_by_productkey(product_id)
     productseller_info = []
     for sid in sellers_ids:
-        productseller_info.append(ProductSeller.get_product_info(sid, product_id))
-    
+        ps_info = ProductSeller.get_product_info(sid, product_id)
+        seller_userkey = Seller.get_userkey(ps_info['sellerkey'])
+        ps_info.update({'userkey':seller_userkey})
+        productseller_info.append(ps_info)
+
     if current_user.is_authenticated:
         user_key = current_user.userkey
     else:
         user_key = None
 
-    # had_review = ProductReview.get(user_key, product_id)
-    # # bought = Order.get()
-    # can_add_review = not had_review # & bought
     return render_template('product_details.html',
                         product_details=product_details,
                         productseller_info=productseller_info,

@@ -12,15 +12,6 @@ class Product:
         self.p_catname = p_catname
         self.p_rating = p_rating
 
-#     @staticmethod
-#     def get(p_productkey):
-#         rows = app.db.execute('''
-# SELECT p_productkey, p_productname, p_price
-# FROM Product
-# WHERE p_productkey = :p_productkey
-# ''',
-#                               p_productkey=p_productkey)
-#         return Product(*(rows[0])) if rows is not None else None
 
     @staticmethod
     def get_prod_details(p_productkey):

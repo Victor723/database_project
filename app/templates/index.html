@@ -9,6 +9,58 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchForm = document.querySelector(".search-form");
+            const topKForm = document.getElementById("topKForm");
+            const filterForm = document.querySelector(".filter-form");
+
+            function updateUrlAndSubmit(form, paramName, value) {
+                var url = new URL(window.location.href);
+                var params = new URLSearchParams(url.search);
+                params.set(paramName, value);
+                // Clear other parameters
+                ['search', 'topK', 'category'].forEach(p => {
+                    if (p !== paramName) {
+                        params.delete(p);
+                    }
+                });
+                url.search = params.toString();
+                window.history.pushState({}, '', url);
+                form.submit(); // Submit the form after updating the URL
+            }
+
+            searchForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+                updateUrlAndSubmit(searchForm, 'search', searchForm.search.value);
+            });
+
+            topKForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+                updateUrlAndSubmit(topKForm, 'topK', topKForm.topK.value);
+            });
+
+            filterForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+                updateUrlAndSubmit(filterForm, 'category', filterForm.category.value);
+            });
+
+            function getParameterByName(name, url = window.location.href) {
+                name = name.replace(/[\[\]]/g, '\\$&');
+                var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, ' '));
+            }
+        
+            var category = getParameterByName('category');
+            if (category) {
+                var selectElement = document.getElementById('categorySelect');
+                selectElement.value = category;
+            }
+        });
+    </script>
 </head>
 
 <body>
@@ -29,7 +81,7 @@
             <div class="col-lg-6 mb-3">
                 <form method="post" id="topKForm">
                     <div class="input-group">
-                        <input type="number" class="form-control" id="topK" name="topK" min="1" placeholder="Number of products..." value="{{ topK_query|default('', true) }}">
+                        <input type="number" class="form-control" id="topK" name="topK" min="1" placeholder="Number of products..." value="{{ topK_query|default('', true) }}"">
                         <div class="input-group-append">
                             <button class="btn btn-outline-secondary" type="submit">Sort by Price</button>
                         </div>
@@ -85,73 +137,17 @@
             {% endfor %}
         </div>
     </div>
-    <!-- pages -->
+
+    <!-- Pagination -->
+    <div class="pagination">
+        {% for i in range(1, total_pages + 1) %}
+            <a href="{{ url_for('index.index', page=i, search=request.args.get('search', default=None), topK=request.args.get('topK', default=None), category=request.args.get('category', default=None)) }}">{{ i }}</a>
+        {% endfor %}
+    </div>
+
 
 </body>
 
 <br><br>
-
-<script>
-// Wait for the DOM to be fully loaded
-document.addEventListener('DOMContentLoaded', function() {
-
-    // Handle URL parameters and set category if present
-    const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get('category');
-    if (category) {
-        document.getElementById('categorySelect').value = category;
-    }
-
-    // Retrieve values from local storage and set them in the respective input fields
-    const savedTopK = localStorage.getItem('topK');
-    if (savedTopK) {
-        document.getElementById('topK').value = savedTopK;
-    }
-    const savedSearchInput = localStorage.getItem('searchInput');
-    if (savedSearchInput) {
-        document.getElementById('searchInput').value = savedSearchInput;
-    }
-
-    // When 'topKForm' is submitted, save the value to local storage, update URL, and submit the form
-    document.getElementById('topKForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Stop the form from submitting in the traditional way
-        const topKValue = document.getElementById('topK').value;
-        localStorage.setItem('topK', topKValue);
-        localStorage.removeItem('searchInput'); // Clear the search input from local storage
-        document.querySelector('.search-form').reset(); // Reset the search form
-        document.getElementById('categorySelect').value = ""; // Reset the category selector
-
-        // Update URL with topK parameter
-        const currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.set('topK', topKValue);
-
-        // Remove search parameter from URL
-        currentUrl.searchParams.delete('search');
-        currentUrl.searchParams.delete('category');
-        
-        window.location.href = currentUrl.toString();
-    });
-
-    // When 'search-form' is submitted, save the value to local storage, clear other data, and submit the form
-    document.querySelector('.search-form').addEventListener('submit', function(event) {
-        event.preventDefault(); // Stop the form from submitting in the traditional way
-        localStorage.setItem('searchInput', document.getElementById('searchInput').value);
-        localStorage.removeItem('topK'); // Clear topK from local storage
-        document.getElementById('topKForm').reset(); // Reset the topK form
-        document.getElementById('categorySelect').value = ""; // Reset the category selector
-        this.submit(); // Now, submit the form
-    });
-
-    // When 'filter-form' is submitted, simply clear other fields without changing the form's behavior
-    document.querySelector('.filter-form').addEventListener('submit', function(event) {
-        localStorage.removeItem('topK'); // Clear topK from local storage
-        localStorage.removeItem('searchInput'); // Clear the search input from local storage
-        document.getElementById('topKForm').reset(); // Reset the topK form
-        document.querySelector('.search-form').reset(); // Reset the search form
-    });
-});
-
-</script>
-
 
 {% endblock %}
