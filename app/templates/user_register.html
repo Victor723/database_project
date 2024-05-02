@@ -152,6 +152,7 @@
 
     </div>
 
+    <!-- check box to allow a user to sign up also as a seller -->
     <div class="form-group" style="margin-top: 20px;">
       <input type="checkbox" id="register_as_seller" name="register_as_seller" onclick="toggleFields()" {{ 'checked' if
         form.register_as_seller.data else '' }}>
@@ -165,6 +166,7 @@
 </div>
 
 <script>
+  // toggle password visibility
   function togglePasswordVisibility(passwordFieldId) {
     var passwordInput = document.getElementById(passwordFieldId);
     if (passwordInput.type === 'password') {
@@ -176,6 +178,8 @@
   document.addEventListener('DOMContentLoaded', function() {
   toggleFields();  // Ensure fields are shown or hidden correctly on page load
 });
+
+// toggle fields in the form depending on if a user signs up as a user or a user and a seller
   function toggleFields() {
     var checkBox = document.getElementById('register_as_seller');
     var additionalFields = document.getElementById('additionalFields');

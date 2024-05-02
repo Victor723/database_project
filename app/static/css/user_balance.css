@@ -295,3 +295,10 @@
     font-size: 24px; /* Increase font size as needed */
     margin-bottom: 0px; /* Adds space between the title and the form */
 }
+
+.total-spending {
+    font-size: 20px; /* Large font size for visibility */
+    color: #333; /* Dark color for readability */
+    text-align: center; /* Center-align the text */
+    margin-top: 20px; /* Space above the total spending display */
+}

@@ -1,18 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<style>
-    .total-spending {
-        font-size: 20px; /* Large font size for visibility */
-        color: #333; /* Dark color for readability */
-        text-align: center; /* Center-align the text */
-        margin-top: 20px; /* Space above the total spending display */
-    }
-</style>
+
 <link rel="stylesheet" href="{{ url_for('static', filename='css/user_balance.css') }}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="profile-page">
+
+    <!-- sidebar -->
     {% with active_page='wallet', is_seller=is_seller %}
     {% include '_user_sidebar.html' %}
     {% endwith %}
@@ -96,11 +91,13 @@
 
         </div>
         
+        <!-- display bar chart for monthly and weekly spending -->
         {% if filled_monthly_expenditure and filled_weekly_expenditure %}
         <div class="profile-container">
             <canvas id="expenditureChart"></canvas>
         </div>
 
+        <!-- display pie chart for spending summary by category -->
         <div class="profile-container" id="summary-container">
             <div class="date-range-title">Select a date range for spending summary by category</div>
             <form id="dateRangeForm">
@@ -143,6 +140,7 @@
 </script>
 
 
+<!-- script for bar chart -->
 <script>
     var chartData = {
         monthly: {
@@ -193,7 +191,7 @@
                 }
             },
             plugins: {
-                legend: {
+                legend: { // allow users to click to switch between monthly and weekly chart in the same chart
                     onClick: function(e, legendItem, legend) {
                         // Toggle dataset type
                         currentDatasetType = (currentDatasetType === 'monthly') ? 'weekly' : 'monthly';
