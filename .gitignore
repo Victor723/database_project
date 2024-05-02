@@ -2,11 +2,13 @@
 **/__pycache__
 **/.venv
 poetry.lock
-./db/data/ *.csv
+./db/data/*.csv
 ./app/static/img/*.jpeg
 ./app/static/img/*.jpg
 ./app/static/img/*.png
 *.csv
 
 .flaskenv
-temp_backup
+temp_backup.DS_Store
+
+db/.DS_Store.DS_Store

@@ -90,9 +90,9 @@ def seller_inventory(s_sellerkey):
     total_pages = (total_products + products_per_page - 1) // products_per_page
 
     # Render the template with the product information and pagination details
+
     return render_template('seller_inventory.html', seller_key=s_sellerkey, productseller_info=productseller_info,
                            current_page=page, total_pages=total_pages, sort_column=sort_column, sort_order=sort_order)
-
 
 @bp.route('/seller/<s_sellerkey>/<p_productkey>/details', methods=['GET', 'POST'])
 @login_required
@@ -322,11 +322,15 @@ def finish_order(s_sellerkey, o_orderkey, l_linenumber):
 @bp.route('/seller/<s_sellerkey>/review', methods=['GET'])
 @login_required
 def seller_review(s_sellerkey):
-    seller_review_counts = SellerReview.get_seller_review_counts(s_sellerkey)
-    seller_review_rating = SellerReview.get_seller_rating(s_sellerkey)
+    page = request.args.get('page', 1, type=int)
+    per_page = 10  # Number of reviews per page
     seller_reviews = SellerReview.get_seller_reviews(s_sellerkey)
-    return render_template('seller_review.html', seller_key=s_sellerkey, seller_reviews=seller_reviews, seller_rating = seller_review_rating, seller_review_counts = seller_review_counts)
+    seller_review_rating = SellerReview.get_seller_rating(s_sellerkey)
+    seller_review_counts = SellerReview.get_seller_review_counts(s_sellerkey)
 
+    total_pages = (seller_review_counts + per_page - 1) // per_page  # Calculate the total number of pages
+
+    return render_template('seller_review.html', seller_key=s_sellerkey, seller_reviews=seller_reviews, seller_rating=seller_review_rating, seller_review_counts=seller_review_counts, page_num=page, total_pages=total_pages)
 
 @bp.route('/seller/<s_sellerkey>/profile', methods=['GET', 'POST'])
 @login_required

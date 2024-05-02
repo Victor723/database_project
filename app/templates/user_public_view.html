@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user_profile.css') }}">
+
+<div class="profile-page">
+    <div class="main-content">
+        <!-- Profile Content -->
+        <div class="profile-container">
+            <div class="profile-header">
+                <img src="{{ url_for('static', filename=user_info['image_url']) }}" alt="Profile Picture" style="width: 250px; height: auto;">
+                <div class="user-info" style="margin-left: 30px;">
+                    <h2>{{ user_info['first_name'] }} {{ user_info['last_name'] }}</h2>
+                    {% if is_seller %}
+                   {{ user_info['email'] }}
+                    {% endif %}
+                </div>
+            </div>
+            {% if is_seller %}
+            <div class="profile-info">
+                <h1 style="font-size: 18px; margin-bottom: 20px;"><strong>Detailed Seller Information</strong></h1>
+                <div class="info-row">
+                    <label class="info-label">Company Name:</label>
+                    <span class="info-value">{{ user_info['company_name'] }}</span>
+                </div>
+                <div class="info-row">
+                    <label class="info-label">Address: </label>
+                    <span class="info-value">
+                        {{ user_info['street_address'] }},
+                        {{ user_info['city'] }},
+                        {{ user_info['state_region'] }},
+                        {{ user_info['zip_code'] }},
+                        {{ user_info['country'] }}
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if is_seller %}
+        <div class="profile-container">
+            {% if seller_review %}
+            <h2>{{user_info['first_name']}}'s Seller Reviews</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Seller Name</th>
+                        <th>Review Date</th>
+                        <th>Review</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in seller_review %}
+                    <tr>
+                        <td>{{ review.sr_sellername }}</td>
+                        <td>{{ review.sr_reviewdate }}</td>
+                        <td>{{ review.sr_review }}</td>
+                        <td>{{ review.sr_rating }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <h1 style="font-size: 18px;">{{ user_info['first_name'] }} does not have any seller review yet.</h1>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if user_review %}
+        <div class="profile-container">
+
+            <h2>Reviews by {{ user_info['first_name'] }}</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Review Date</th>
+                        <th>Review</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in user_review %}
+                    <tr>
+                        <td>{{ review.pr_productname }}</td>
+                        <td>{{ review.pr_reviewdate }}</td>
+                        <td>{{ review.pr_review }}</td>
+                        <td>{{ review.pr_rating }}</td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+</div>
+
+
+{% endblock %}

@@ -1,37 +1,29 @@
 from flask import current_app as app
 
 class Product:
-    def __init__(self, p_productkey, p_productname, p_price, p_catname, p_description=None, p_imageurl=None, p_link=None):
+    def __init__(self, p_productkey, p_productname, p_price, p_catname, p_description=None, p_imageurl=None, p_rating=None, p_discount=None):
         self.p_productkey = p_productkey
         self.p_productname = p_productname
         self.p_price = p_price
         self.p_description = p_description
         self.p_imageurl = p_imageurl 
         self.p_catname = p_catname
+        self.p_rating = p_rating
 
-#     @staticmethod
-#     def get(p_productkey):
-#         rows = app.db.execute('''
-# SELECT p_productkey, p_productname, p_price
-# FROM Product
-# WHERE p_productkey = :p_productkey
-# ''',
-#                               p_productkey=p_productkey)
-#         return Product(*(rows[0])) if rows is not None else None
 
     @staticmethod
     def get_prod_details(p_productkey):
         rows = app.db.execute('''
 SELECT p_productkey, p_productname, p_price, cat_catname, p_description, p_imageurl
 FROM Product, Category
-WHERE p_productkey = :p_productkey AND p_catkey = cat_catkey
+WHERE p_productkey = :p_productkey
 ''',
                       p_productkey=p_productkey)
         return Product(*(rows[0])) if rows is not None else None
     
 
     @staticmethod
-    def get_all(available=True):
+    def get_all():
         rows = app.db.execute('''
 SELECT p_productkey, p_productname, p_price, cat_catname, p_description, p_imageurl
 FROM Product, Category
@@ -80,9 +72,10 @@ WHERE p_catkey = cat_catkey AND p_catkey = :catkey
 SELECT p_productkey, p_productname, p_price, cat_catname, p_description, p_imageurl
 FROM Product, Category
 WHERE p_catkey = cat_catkey
-AND p_productname LIKE :like_pattern OR p_description LIKE :like_pattern''', 
+AND (p_productname LIKE :like_pattern OR p_description LIKE :like_pattern)''', 
             like_pattern=like_pattern)
         return [Product(*row) for row in rows]
+
 
     def find_max_productkey():
         row = app.db.execute('''
@@ -105,7 +98,6 @@ AND p_productname LIKE :like_pattern OR p_description LIKE :like_pattern''',
             search_query=f'%{search_query}%'
         )
 
-        return search_results
     
     @staticmethod
     def create_product(product_key, product_name, product_price, product_description, product_image_url, category_key):
