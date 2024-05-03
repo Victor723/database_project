@@ -1,0 +1,118 @@
+/* search_results.css */
+
+/* Main heading */
+h1 {
+    margin-left: 20%; /* Adjust as needed */
+    margin-bottom: 20px;
+}
+
+/* Form container */
+form {
+    margin-left: 20%; /* Adjust as needed */
+    margin-bottom: 20px;
+}
+
+/* Label for search query */
+form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Input field for search query */
+form input[type="text"] {
+    padding: 8px;
+    width: 300px; /* Adjust width as needed */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+/* Search button */
+form button[type="submit"] {
+    padding: 8px 16px;
+    background-color: #3858D6;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Create product button */
+.create-product-btn {
+    margin-left: 20%; /* Adjust as needed */
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.create-product-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Flex container for product boxes */
+.product-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around; /* Horizontally distribute product boxes */
+    margin-left: 20%;
+}
+
+/* Styling for each product box */
+.product-box {
+    width: calc(33.33% - 20px); /* Adjust width to fit three boxes per row */
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: left; /* Align text to the left */
+    background-color: #f9f9f9; /* Background color for product box */
+}
+
+/* Styling for product image */
+.product-image {
+    width: 150px; /* Absolute width for the product image */
+    height: 150px; /* Absolute height for the product image */
+    object-fit: cover; /* Maintain aspect ratio while covering the container */
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+/* Styling for product name */
+.product-box h2 {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+/* Styling for product category */
+.product-box p.category {
+    margin-bottom: 5px;
+}
+
+/* Styling for product description */
+.product-box p.description {
+    margin-bottom: 10px;
+}
+
+/* Styling for product price */
+.product-box p.price {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* Styling for "Add" button */
+.product-box .btn {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Hover effect for "Add" button */
+.product-box .btn:hover {
+    background-color: #007bff;
+}

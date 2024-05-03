@@ -32,6 +32,10 @@
     background-color: #f9f9f9;
 }
 
+.custom-details-btn {
+    background-color: #3858D6;
+}
+
 /* Style for pagination controls */
 .pagination {
     margin-left: 20%;
@@ -62,7 +66,7 @@
 .search-form input[type="text"] {
     margin-left: 0%;
     padding: 8px;
-    width: 300px;
+    width: 500px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }

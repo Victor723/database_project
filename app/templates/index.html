@@ -1,114 +1,153 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchForm = document.querySelector(".search-form");
+            const topKForm = document.getElementById("topKForm");
+            const filterForm = document.querySelector(".filter-form");
+
+            function updateUrlAndSubmit(form, paramName, value) {
+                var url = new URL(window.location.href);
+                var params = new URLSearchParams(url.search);
+                params.set(paramName, value);
+                // Clear other parameters
+                ['search', 'topK', 'category'].forEach(p => {
+                    if (p !== paramName) {
+                        params.delete(p);
+                    }
+                });
+                url.search = params.toString();
+                window.history.pushState({}, '', url);
+                form.submit(); // Submit the form after updating the URL
+            }
+
+            searchForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+                updateUrlAndSubmit(searchForm, 'search', searchForm.search.value);
+            });
+
+            topKForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+                updateUrlAndSubmit(topKForm, 'topK', topKForm.topK.value);
+            });
+
+            filterForm.addEventListener("submit", function(event) {
+                event.preventDefault();
+                updateUrlAndSubmit(filterForm, 'category', filterForm.category.value);
+            });
+
+            function getParameterByName(name, url = window.location.href) {
+                name = name.replace(/[\[\]]/g, '\\$&');
+                var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, ' '));
+            }
+        
+            var category = getParameterByName('category');
+            if (category) {
+                var selectElement = document.getElementById('categorySelect');
+                selectElement.value = category;
+            }
+        });
+    </script>
 </head>
 
-{% extends "base.html" %}
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12 mb-3">
+                <form action="/" method="get" class="search-form">
+                    <div class="input-group input-group-lg">
+                        <input type="text" class="form-control form-control-lg" name="search" id="searchInput" placeholder="Search products..." value="{{ search_query|default('', true) }}">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mb-3">
+                <form method="post" id="topKForm">
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="topK" name="topK" min="1" placeholder="Number of products..." value="{{ topK_query|default('', true) }}"">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit">Sort by Price</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-6 mb-3">
+                <form action="/" method="get" class="filter-form">
+                    <div class="input-group">
+                        <select class="custom-select" name="category" id="categorySelect">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.catkey }}">{{ category.catname }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="submit">Filter by Category</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+      
+    <br><br>
+    
+    <div class="container mt-5">
+        <h2 class="mt-4 mb-4">
+            {% if search_query %}
+            Results for "{{ search_query }}":
+            {% else %}
+            Products for sale:
+            {% endif %}
+        </h2> 
+        <div class="row">
+            {% for product in avail_products %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ product.p_imageurl }}" class="card-img-top" alt="{{ product.p_productname }}" style="height: 200px; object-fit: contain;">
+                    <div class="card-body">
+                        <a href="/product/{{ product.p_productkey }}"><h5 class="card-title">{{ product.p_productname }}</h5></a>
+                        <p class="card-text">${{ product.p_price }}</p>
+                        <p class="card-text">Category: {{ product.p_catname }}</p>
+                        <div class="star-rating">
+                            <div class="filled-stars" style="width:{{ product.p_rating / 5 * 100 }}%">
+                                ★★★★★
+                            </div>
+                            ★★★★★
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
-{% block content %}
-
-<div class="container mt-5">
-  <div class="row">
-      <div class="col-12 mb-3">
-          <form action="/" method="get" class="search-form">
-              <div class="input-group input-group-lg">
-                  <input type="text" class="form-control form-control-lg" name="search" id="searchInput" placeholder="Search products...">
-                  <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="submit">Search</button>
-                  </div>
-              </div>
-          </form>
-      </div>
-  </div>
-  <div class="row">
-      <div class="col-lg-6 mb-3">
-          <form method="post" id="topKForm">
-              <div class="input-group">
-                  <input type="number" class="form-control" id="topK" name="topK" min="1" placeholder="Number of products...">
-                  <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="submit">Sort by Price</button>
-                  </div>
-              </div>
-          </form>
-      </div>
-      <div class="col-lg-6 mb-3">
-          <form action="/" method="get" class="filter-form">
-              <div class="input-group">
-                  <select class="custom-select" name="category" id="categorySelect">
-                      <option value="">All Categories</option>
-                      {% for category in categories %}
-                      <option value="{{ category.catkey }}">{{ category.catname }}</option>
-                      {% endfor %}
-                  </select>
-                  <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="submit">Filter by Category</button>
-                  </div>
-              </div>
-          </form>
-      </div>
-  </div>
-</div>
+    <!-- Pagination -->
+    <div class="pagination">
+        {% for i in range(1, total_pages + 1) %}
+            <a href="{{ url_for('index.index', page=i, search=request.args.get('search', default=None), topK=request.args.get('topK', default=None), category=request.args.get('category', default=None)) }}">{{ i }}</a>
+        {% endfor %}
+    </div>
 
 
+</body>
 
 <br><br>
-
-<div class="container mt-5">
-  <h2 class="mt-4 mb-4">Products for sale:</h2> 
-  <div class="row">
-      {% for product in avail_products %}
-      <div class="col-md-4 mb-4">
-          <div class="card">
-              <img src="{{ product.p_imageurl }}" class="card-img-top" alt="{{ product.p_productname }}" style="height: 200px; object-fit: contain;">
-              <div class="card-body">
-                  <a href="/product/{{ product.p_productkey }}"><h5 class="card-title">{{ product.p_productname }}</h5></a>
-                  <p class="card-text">${{ product.p_price }}</p>
-                  <p class="card-text">Category: {{ product.p_catname }}</p>
-              </div>
-          </div>
-      </div>
-      {% endfor %}
-  </div>
-
-  <!-- pages -->
-</div>
-
-
-
-<br><br>
-
-<script>
-  // Wait for the DOM to be fully loaded
-  document.addEventListener('DOMContentLoaded', function() {
-    // Check if there's a stored value in Local Storage and set it as the input value
-    const savedTopK = localStorage.getItem('topKValue');
-    if (savedTopK) {
-      document.getElementById('topK').value = savedTopK;
-    }
-  
-    // Listen for form submission to store the input value
-    document.getElementById('topKForm').addEventListener('submit', function() {
-      const topKValue = document.getElementById('topK').value;
-      localStorage.setItem('topKValue', topKValue);
-    });
-  });
-
- 
-  document.addEventListener('DOMContentLoaded', (event) => {
-      // Retrieve the current URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const category = urlParams.get('category'); // Get the category parameter from the URL
-
-      if (category) {
-          // If there's a category selected, set it as the selected value in the dropdown
-          document.getElementById('categorySelect').value = category;
-      }
-  });
-
-  </script>
-
 
 {% endblock %}
+

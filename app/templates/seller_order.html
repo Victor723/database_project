@@ -50,10 +50,10 @@
                     <td>{{ order.product_name }}</td>
                     <td>{{ order.date }}</td>
                     <td>{{ order.customer_name }}</td>
-                    <td>{{ order.total_price }}</td>
+                    <td>${{ order.total_price }}</td>
                     <td>{{ order.status }}</td>
                     <td>
-                        <a href="{{ url_for('sellers.order_details', s_sellerkey=seller_key, o_orderkey=order.order_id, l_linenumber=order.lineitem_id) }}" class="btn btn-info">Detail</a>
+                        <a href="{{ url_for('sellers.order_details', s_sellerkey=seller_key, o_orderkey=order.order_id, l_linenumber=order.lineitem_id) }}" class="btn btn-info btn btn-info custom-details-btn">Details</a>
                         {% if order.status == 'Pending' %}
                             <a href="{{ url_for('sellers.finish_order', s_sellerkey=seller_key, o_orderkey=order.order_id, l_linenumber=order.lineitem_id) }}" class="btn btn-success">Finish</a>
                         {% endif %}

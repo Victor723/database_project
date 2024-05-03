@@ -16,6 +16,8 @@
                     {% endif %}
                 </div>
             </div>
+
+            <!-- display additional info if this user is also a seller -->
             {% if is_seller %}
             <div class="profile-info">
                 <h1 style="font-size: 18px; margin-bottom: 20px;"><strong>Detailed Seller Information</strong></h1>
@@ -37,6 +39,7 @@
             {% endif %}
         </div>
 
+        <!-- display reviews this user has written -->
         {% if is_seller %}
         <div class="profile-container">
             {% if seller_review %}
@@ -67,6 +70,7 @@
         </div>
         {% endif %}
 
+        <!-- display reviews other users have written to this user -->
         {% if user_review %}
         <div class="profile-container">
 

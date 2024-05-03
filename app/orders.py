@@ -4,7 +4,6 @@ from .models.order import Order
 from .models.seller import Seller
 from .models.lineitem import Lineitem
 from datetime import datetime, timedelta
-from flask import current_app
 
 bp = Blueprint('orders', __name__)
 
@@ -15,8 +14,8 @@ def display_orders():
     per_page = 10
     offset = (page - 1) * per_page
 
-    mode = request.args.get('mode', 'all')
-    time_frame = request.args.get('time_frame', 'all')
+    mode = request.args.get('mode', 'all') # order fulfillment status (all, pending, and completed), default all (order)
+    time_frame = request.args.get('time_frame', 'all') # selected time frame to filter orders
     product_name = request.args.get('product_name', '')  # Retrieve product name from query parameters
     
     current_date = datetime.now()
@@ -41,7 +40,6 @@ def display_orders():
     product_names = [product_name] if product_name else []
 
     orders, total_orders = Order.get_orders(current_user.user_key, offset, per_page, start_date, end_date, mode, product_names)
-    # current_app.logger.info(f'{len(orders)}, {total_orders}')
     total_pages = (total_orders + per_page - 1) // per_page  # Calculate the total number of pages
 
     return render_template('orders.html', orders=orders, page=page, total_pages=total_pages, 
@@ -67,8 +65,8 @@ def order_details():
             if order_details:
                 user_key = current_user.user_key
                 # Render the order details template with the order data
-                print(order_details['products'])
-                return render_template('order_details.html', order_details=order_details, user_key = user_key)
+                print(order_details)
+                return render_template('order_details.html', order_details=order_details, fulfilled_date = fulfilled_date, user_key = user_key)
             else:
                 flash('Order not found.', 'error')
                 return redirect(url_for('orders.display_orders'))

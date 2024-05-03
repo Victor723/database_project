@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search_results.css') }}">
+    {% include "seller_navigation.html" %}
     <div class="main-content">
         <h1>Search Results</h1>
         <form method="post" action="{{ url_for('sellers.add_product', s_sellerkey=seller_key) }}">
@@ -8,37 +11,23 @@
             <input type="text" id="search_query" name="search_query" value="{{ search_query }}">
             <input type="submit" value="Search">
         </form>
-
-        {% if search_results %}
-            <table class="search-results-table">
-                <thead>
-                    <tr>
-                        <th>Product Key</th>
-                        <th>Product Name</th>
-                        <th>Description</th>
-                        <th>Price</th>
-                        <th>Image</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in search_results %}
-                        <tr>
-                            <td>{{ product.p_productkey }}</td>
-                            <td>{{ product.p_productname }}</td>
-                            <td>{{ product.p_description }}</td>
-                            <td>{{ product.p_price }}</td>
-                            <td><img src="{{ product.p_imageurl }}" alt="Product Image" class="product-image"></td>
-                            <td>
-                                <!-- Button for adding exit product-->
-                                <a href="{{ url_for('sellers.add_exit_product', s_sellerkey=seller_key, p_productkey=product.p_productkey)}}" class="btn btn-warning">Add</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No results found.</p>
-        {% endif %}
+        <a href="{{ url_for('sellers.create_product', s_sellerkey=seller_key) }}" class="create-product-btn">Create</a>
+        <div class="product-container">
+            {% if search_results %}
+                {% for product in search_results %}
+                    <div class="product-box">
+                        <img src="{{ product.p_imageurl }}" alt="Product Image" class="product-image">
+                        <h2>Name: {{ product.p_productname }}</h2>
+                        <p>Category: {{ product.cat_catname }}</p>
+                        <p>Description: {{ product.p_description }}</p>
+                        <p>Price: ${{ product.p_price }}</p>
+                        <a href="{{ url_for('sellers.add_exit_product', s_sellerkey=seller_key, p_productkey=product.p_productkey)}}" class="btn btn-warning">Add</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No results found.</p>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
+

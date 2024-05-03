@@ -7,7 +7,7 @@
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
   <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/example.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
   <link href="//use.fontawesome.com/releases/v5.8.1/css/all.css" rel="stylesheet">
   <style>
     body {
@@ -145,7 +145,7 @@
       style="display: flex; align-items: center; color: aliceblue; text-decoration: none;">
       <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Mini Amazon Logo"
         style="width: 50px; height: auto; margin-right: 10px;">
-      <h1 style="color:aliceblue"> Mini Amazon by FiveGuys </h1>
+        <h1 style="color: aliceblue; margin: 0; margin-top: 10px;">Mini Amazon by FiveGuys</h1>
     </a>
     <div style="color:aliceblue; text-align: right; margin-bottom: 25px">
       {% if current_user.is_authenticated %}
@@ -153,7 +153,10 @@
       <!-- <a href="{{ url_for('users.user_profile') }}" type="button" class="btn btn-light">Profile</a> -->
       <a href="{{ url_for('users.user_profile') }}" class="icon-button">
         <img src="{{ url_for('static', filename='img/user_icon.png') }}" alt="User Icon"
-          style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
+          style="height: 24px; margin-bottom: 10px; margin-right: 20px;">
+      </a>
+      <a href="{{ url_for('cart.shopping_cart') }}" class="icon-button" style="margin-right: 50px;">
+        <i class="fas fa-shopping-cart" style="font-size: 24px; color: aliceblue; "></i>
       </a>
       {% else %} <!-- not logged in yet -->
       <!-- <a href="{{ url_for('users.login') }}" type="button" class="btn btn-light">Log in</a> -->
@@ -162,6 +165,7 @@
           style="height: 24px; margin-bottom: 10px; margin-right: 40px;">
       </a>
       {% endif %}
+      
     </div>
     {% endblock %}
   </div>

@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify
 from werkzeug.urls import url_parse
+import json
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
@@ -21,15 +22,42 @@ bp = Blueprint('sellers', __name__)
 @bp.route('/seller/<s_sellerkey>', methods=['GET', 'POST'])
 @login_required
 def seller_homepage(s_sellerkey):
+    # Initialize start_date and end_date with default values
+    start_date = datetime(2024, 1, 1).date()
+    end_date = datetime(2024, 12, 31).date()
+    
+    # Check if the request method is POST
+    if request.method == 'POST':
+        # Get start_date and end_date from the form data
+        start_date_str = request.form.get('start_date')
+        end_date_str = request.form.get('end_date')
+        # Convert start_date and end_date to datetime.date objects
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
     user_info = Seller.get_seller_information(s_sellerkey)
+    total_income = 0
+    months = []
+    monthly_incomes = []
+
     # Check if user_info is not empty and contains user's name
     if user_info:
         seller_name = user_info[0]['first_name'] + user_info[0]['last_name']
+        total_income = Seller.get_fulfilled_order_total_price(s_sellerkey)
+        total_income = total_income if total_income else 0
+        # Get monthly income data based on the selected period
+        monthly_income_data = Seller.get_monthly_income(s_sellerkey, start_date, end_date)
+        months = list(monthly_income_data.keys())
+        monthly_incomes = list(monthly_income_data.values())
+
     else:
-        # Handle case where user_info is empty or invalid seller key
         seller_name = "User Not Found"
+    
     # Render the HTML template with the fetched data
-    return render_template('seller_homepage.html', seller_name=seller_name, seller_key=s_sellerkey)
+    return render_template('seller_homepage.html', seller_name=seller_name, seller_key=s_sellerkey, 
+                           total_income=total_income, months=months, monthly_incomes=monthly_incomes, 
+                           start_date=start_date, end_date=end_date) 
+
 
 
 @bp.route('/seller/<s_sellerkey>/inventory', methods=['GET', 'POST'])
@@ -65,9 +93,9 @@ def seller_inventory(s_sellerkey):
     total_pages = (total_products + products_per_page - 1) // products_per_page
 
     # Render the template with the product information and pagination details
+
     return render_template('seller_inventory.html', seller_key=s_sellerkey, productseller_info=productseller_info,
                            current_page=page, total_pages=total_pages, sort_column=sort_column, sort_order=sort_order)
-
 
 @bp.route('/seller/<s_sellerkey>/<p_productkey>/details', methods=['GET', 'POST'])
 @login_required
@@ -104,50 +132,20 @@ def modify_product(s_sellerkey, p_productkey):
         product_imageurl = request.form['product_imageurl']
         product_quantity = request.form['product_quantity']
         product_discount = request.form['product_discount']
+        product_category = request.form['product_category']
         current_time = datetime.now()
 
-        # Update Product table
-        app.db.execute(
-            """
-            UPDATE Product
-            SET p_productname = :product_name,
-                p_price = :product_price,
-                p_description = :product_description,
-                p_imageurl = :product_imageurl
-            WHERE p_productkey = :product_key
-            """,
-            product_name=product_name,
-            product_key=p_productkey,
-            product_price=product_price,
-            product_description=product_description,
-            product_imageurl=product_imageurl
-        )
-
-        # Update ProductSeller table if necessary
-        app.db.execute(
-            """
-            UPDATE ProductSeller
-            SET ps_price = :product_price,
-                ps_quantity = :product_quantity,
-                ps_discount = :product_discount,
-                ps_createtime = :current_time
-            WHERE ps_productkey = :product_key AND ps_sellerkey = :seller_key
-            """,
-            product_price=product_price,
-            product_key=p_productkey,
-            seller_key=s_sellerkey,
-            product_quantity=product_quantity,
-            product_discount=product_discount,
-            current_time=current_time
-        )
+        Seller.update_product(p_productkey, product_name, product_price, product_description, product_imageurl, product_category)
+        Seller.update_product_seller(p_productkey, s_sellerkey, product_price, product_quantity, product_discount, current_time)
 
         # Redirect to inventory page after modification
         return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
     else:
         # Retrieve product information for pre-filling the form
         product_info = ProductSeller.get_product_info(s_sellerkey, p_productkey)
+        categories = Category.get_all()
         if product_info:
-            return render_template('modify_product.html', seller_key=s_sellerkey, product_key=p_productkey, product_info=product_info)
+            return render_template('modify_product.html', seller_key=s_sellerkey, product_key=p_productkey, product_info=product_info, categories=categories)
         else:
             flash('Product not found.', 'error')
             return redirect(url_for('sellers.seller_inventory', s_sellerkey=s_sellerkey))
@@ -159,6 +157,7 @@ def add_product(s_sellerkey):
     if request.method == 'POST':
         search_query = request.form.get('search_query')
         search_results = Product.search_products_by_name(search_query)
+        print(search_results)
         return render_template('search_results.html', seller_key=s_sellerkey, search_results=search_results, search_query=search_query)
     else:
         return render_template('add_product.html', seller_key=s_sellerkey)
@@ -168,16 +167,25 @@ def add_product(s_sellerkey):
 @login_required
 def create_product(s_sellerkey):
     if request.method == 'POST':
-        # Retrieve form data
+        # Check if 'Add New Category' was selected
+        if request.form['category_key'] == 'new_category':
+            # Create new category
+            new_category_name = request.form['new_category_name']
+            category_key = Category.create_category(new_category_name)
+            if not category_key:
+                flash('Failed to create new category.', 'error')
+                return redirect(url_for('sellers.create_product', s_sellerkey=s_sellerkey))
+        else:
+            category_key = request.form['category_key']
+
+        # Continue with product creation
         product_key = Product.find_max_productkey() + 1
         product_name = request.form['product_name']
         product_price = request.form['price']
         product_description = request.form['description']
         product_image_url = request.form['imageurl']
-        category_key = request.form['category_key']
         quantity = request.form['quantity']
         discount = request.form['discount']
-
         try:
             Product.create_product(product_key, product_name, product_price, product_description, product_image_url, category_key)
             ProductSeller.create_productseller(product_key, s_sellerkey, quantity, discount, product_price)
@@ -185,10 +193,10 @@ def create_product(s_sellerkey):
             return redirect(url_for('sellers.add_product', s_sellerkey=s_sellerkey))
         except Exception as e:
             flash(str(e), 'error')
-            return redirect(url_for('sellers.add_product', s_sellerkey=s_sellerkey))
+            return redirect(url_for('sellers.create_product', s_sellerkey=s_sellerkey))
     else:
-        # Render the template for creating a new product
-        return render_template('create_product.html', seller_key=s_sellerkey)
+        categories = Category.get_all()
+        return render_template('create_product.html', seller_key=s_sellerkey, categories=categories)
 
 
 @bp.route('/seller/<s_sellerkey>/add_product/<p_productkey>', methods=['GET', 'POST'])
@@ -277,16 +285,11 @@ def order_details(s_sellerkey, o_orderkey, l_linenumber):
 @bp.route('/seller/<s_sellerkey>/<o_orderkey>/<l_linenumber>/finish', methods=['GET', 'POST'])
 @login_required
 def finish_order(s_sellerkey, o_orderkey, l_linenumber):
-    # Check if the seller has enough quantity
-    lineitem_info = Seller.get_lineitem_info(s_sellerkey, o_orderkey, l_linenumber)
-    product_key = lineitem_info['product_key']
-    inventory = Seller.check_quantity(s_sellerkey, o_orderkey, l_linenumber, product_key)
-    if inventory:
-        # If there is enough quantity, mark the order line item as fulfilled
-        Seller.order_finish(s_sellerkey, o_orderkey, l_linenumber, product_key, inventory)
+    try:
+        Seller.order_finish(s_sellerkey, o_orderkey, l_linenumber)
         flash('Order line item marked as fulfilled.', 'success')
-    else:
-        flash('The item is out of stock.', 'error')
+    except Exception as e:
+        flash(f'An error occurred: {str(e)}', 'error')
     return redirect(url_for('sellers.seller_order', s_sellerkey=s_sellerkey))
 
 
@@ -323,8 +326,14 @@ def create_category():
         category_name = request.json.get('category_name')
 
         # Check if the category name is provided
-        if not category_name:
+        if not category_name:         
             raise ValueError('Category name is required.')
+
+        # Check if the category name already exists
+        check_category = Category.check_category(category_name)
+        if check_category:
+            print("here")
+            raise ValueError('Category name already exists.')
 
         # Create the new category
         category_created = Category.create_category(category_name)

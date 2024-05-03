@@ -19,7 +19,11 @@
             <label for="product_description">Description:</label>
             <textarea id="product_description" name="product_description">{{ product_info.description }}</textarea><br><br>
             <label for="product_category">Category:</label>
-            <input type="text" id="product_category" name="product_category" value="{{ product_info.category }}"><br><br>
+            <select id="product_category" name="product_category">
+                {% for category in categories %}
+                    <option value="{{ category.catkey }}" {% if category.catkey == product_info.category[0] %} selected {% endif %}>{{ category.catname }}</option>
+                {% endfor %}
+            </select><br><br>
             <label for="product_quantity">Quantity:</label>
             <input type="text" id="product_quantity" name="product_quantity" value="{{ product_info.quantity }}"><br><br>
             <label for="product_discount">Discount:</label>
@@ -29,4 +33,10 @@
             <input type="submit" value="Save Changes">
         </form>
     </div>
+
+    <script>
+        document.getElementById('product_category').addEventListener('change', function() {
+            document.getElementById('modify-product-form').submit();
+        });
+    </script>
 {% endblock %}

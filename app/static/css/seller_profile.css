@@ -1,0 +1,37 @@
+/* styles.css */
+
+/* Main heading */
+h1 {
+    margin-left: 20%; /* Adjust as needed */
+    margin-bottom: 20px;
+}
+
+/* Main content container */
+.main-content {
+    margin-left: 20%;
+    margin: 20px;
+}
+
+/* Seller profile details */
+.seller-profile {
+    margin-left: 20%;
+    margin-bottom: 20px;
+}
+
+.seller-profile p {
+    margin-bottom: 10px;
+}
+
+/* Modify button */
+.modify-button {
+    background-color: #2e4ecf;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.modify-button:hover {
+    background-color: #2e4ecf;
+}

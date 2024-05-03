@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seller_navigation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search_results.css') }}">
+    {% include "seller_navigation.html" %}
     <div class="main-content">
         <h1>Add Product</h1>
         <form method="post">

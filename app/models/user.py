@@ -4,9 +4,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from .. import login
 
-
+# Define a User class that inherits from UserMixin for handling user sessions
 class User(UserMixin):
-
+    #  Constructor for the User class
     def __init__(self, user_key, email, first_name, last_name, balance, company_name, 
              street_address, city, state_region, zip_code, country, phone_number,
              image_url):
@@ -24,26 +24,31 @@ class User(UserMixin):
         self.phone_number = phone_number
         self.image_url = image_url
 
+    # Method to get the user's ID as a string
     def get_id(self):
         return str(self.user_key)
 
+    # Static method to retrieve user's balance from the database
     @staticmethod
     def get_balance(user_key):
         try:
+            # Execute SQL query to fetch user balance
             rows = app.db.execute("""
                 SELECT ROUND(u_balance, 2)
                 FROM Users
                 WHERE u_userkey = :user_key
                 """,
                 user_key=user_key)
-            return rows[0][0]
+            return rows[0][0] # Return the balance rounded to two decimal places
         except Exception as e:
             app.logger.error(f"Unexpected error getting balance: {e}")
             return None
     
+    # Static method to authenticate user by email and password
     @staticmethod
     def get_by_auth(email, password):
         try:
+            # Execute SQL query to fetch user details based on email
             rows = app.db.execute("""
                 SELECT u_password, u_userkey, u_email, u_firstname, u_lastname, u_balance, u_companyname, 
                     u_streetaddress, u_city, u_stateregion, u_zipcode, u_country, u_phonenumber, u_imageurl
@@ -58,16 +63,16 @@ class User(UserMixin):
         if not rows:  # email not found
             app.logger.info('Invalid login credentials.')
             return None
-        # elif not check_password_hash(rows[0][0], password):  # incorrect password
-        #     app.logger.info('Invalid login credentials.')
-        #     return None
+        elif not check_password_hash(rows[0][0], password):  # incorrect password
+            app.logger.info('Invalid login credentials.')
+            return None
         else:  # return a newly instantiated user instance
             # Since the password is the first element and not needed in the User constructor,
             # we skip the first element (password) and unpack the rest
             return User(*(rows[0][1:]))
     
 
-
+    # Static method to check if an email already exists in the database
     @staticmethod
     def email_exists(email):
         try:
@@ -75,15 +80,16 @@ class User(UserMixin):
                 SELECT EXISTS(SELECT 1 FROM Users WHERE u_email = :email)
                 """,
                 email=email)
-            return rows[0][0] # true/false
+            return rows[0][0] # Return True or False
         except Exception as e:
             app.logger.error(f"Error checking if email exists: {e}")
             return False
 
+    # Static method to register a new user in the database
     @staticmethod
     def register(email, password, first_name, last_name, company_name=None, street_address=None, 
                  city=None, state_region=None, zip_code=None, country=None, phone_number=None):
-        if not (email and password and first_name and last_name):
+        if not (email and password and first_name and last_name): # Make sure all required fields are present
             return {'error': 'Missing required fields'}
         try:
             rows = app.db.execute("""
@@ -106,12 +112,13 @@ class User(UserMixin):
                 country=country,
                 phonenumber=phone_number)
             user_key = rows[0][0]
-            return User.get(user_key)
+            return User.get(user_key) # Retrieve and return the newly created user
         except Exception as e:
             # likely email already in use; better error checking and reporting needed;
             app.logger.error(f"Unexpected error during registration: {e}")
             return None
         
+    # Loader function for flask_login to load user from session
     @staticmethod
     @login.user_loader
     def get(user_key):
@@ -124,13 +131,16 @@ class User(UserMixin):
                 WHERE u_userkey = :userkey
                 """,
                 userkey=user_key)
-            return User(*(rows[0])) if rows else None
+            return User(*(rows[0])) if rows else None # Return a User object if found
         except Exception as e:
             app.logger.error(f"Failed to retrieve user {user_key}: {str(e)}")
             return None
 
     @staticmethod
     def get_for_public_view(user_key, is_seller):
+        """
+        Retrieves limited user information for public viewing based on user role (seller or not).
+        """
         try:
             rows = app.db.execute("""
                 SELECT u_firstname, u_lastname, u_imageurl, u_email, u_companyname, u_streetaddress, 
@@ -153,6 +163,9 @@ class User(UserMixin):
 
     @staticmethod
     def update_user_details(user_key, email=None, first_name=None, last_name=None):
+        """
+        Updates user details such as email, first name, and last name in the database. Can update any one or two or all of them.
+        """
         updates = {}
         if email:
             updates['u_email'] = email
@@ -177,6 +190,9 @@ class User(UserMixin):
         
     @staticmethod
     def check_password(user_key, old_plain_password):  # check pwd given a userkey, for password update
+        """
+        Verifies a user's password against the hashed password stored in the database.
+        """
         try:
             rows = app.db.execute("""
                 SELECT u_password
@@ -197,6 +213,9 @@ class User(UserMixin):
 
     @staticmethod
     def update_password(user_key, new_plain_password):
+        """
+        Updates a user's password in the database after hashing the new password.
+        """
         try:
             rows = app.db.execute("""
                 UPDATE Users
@@ -215,6 +234,9 @@ class User(UserMixin):
     @staticmethod
     def update_address(user_key, company_name=None, street_address=None, country=None, state_region=None, 
                     city=None, zip_code=None, phone_number=None):
+        """
+        Updates user address details in the database. Can update any number of fields in address.
+        """
         updates = {}
         if company_name:
             updates['u_companyname'] = company_name
@@ -249,6 +271,9 @@ class User(UserMixin):
     
     @staticmethod
     def update_balance(user_key, amount):
+        """
+        Updates the user's balance in the database.
+        """
         try:
             rows = app.db.execute("""
                 UPDATE Users
@@ -266,6 +291,9 @@ class User(UserMixin):
     
     @staticmethod
     def update_image_url(user_key, new_url):
+        """
+        Updates the user's profile image URL in the database.
+        """
         try:
             rows = app.db.execute("""
                 UPDATE Users
@@ -279,5 +307,4 @@ class User(UserMixin):
             return rows[0][0] == user_key
         except Exception as e:
             app.logger.error(f"An error occurred: {e}") 
-            return False
             return False
